@@ -12,8 +12,8 @@ The code based is based on MSFS Pop Out Panel Manager (for MSFS 2020). Still wai
 ## App Release schedule
 November 19, 2024 - MSFS 2024 Game release<br/><br/>
 November 19, 2024 to November 21, 2024 - Game testing with existing code and gap analysis<br/><br/>
-November 22, 2024 to December 13, 2024 - Family vacation / holiday (unable to develop)<br/><br/>
-December 21, 2024 - targeted release 1.0 of MSFS 2024 Pop Out Panel Manager
+November 22, 2024 to December 13, 2024 - Family vacation / holiday (unable to play the game and develop POPM)<br/><br/>
+Before Christmas 2024 - targeted release 1.0 of MSFS 2024 Pop Out Panel Manager
 
 ## Note: No gaurantee! But I try hard to do a beta release if 
 - the functionality gap between MSFS 2020 and MSFS 2024 is not massive
