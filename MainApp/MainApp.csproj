@@ -4,13 +4,13 @@
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net7.0-windows</TargetFramework>
 		<UseWPF>true</UseWPF>
-		<AssemblyName>MSFSPopoutPanelManager</AssemblyName>
+		<AssemblyName>MSFS2024PopoutPanelManager</AssemblyName>
 		<PackageId>MSFS 2024 Popout Panel Manager</PackageId>
 		<Product>MSFS 2024 Popout Panel Manager</Product>
 		<Authors>Stanley Kwok</Authors>
 		<Company>Stanley Kwok</Company>
-		<Copyright>Stanley Kwok 2021</Copyright>
-		<PackageProjectUrl>https://github.com/hawkeye-stan/msfs-popout-panel-manager</PackageProjectUrl>
+		<Copyright>Stanley Kwok 2024</Copyright>
+		<PackageProjectUrl>https://github.com/hawkeye-stan/msfs-2024-popout-panel-manager</PackageProjectUrl>
 		<RootNamespace>MSFSPopoutPanelManager.MainApp</RootNamespace>
 		<ApplicationIcon>logo.ico</ApplicationIcon>
 		<Platforms>x64</Platforms>

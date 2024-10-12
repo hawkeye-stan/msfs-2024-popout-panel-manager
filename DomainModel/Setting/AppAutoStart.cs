@@ -13,7 +13,7 @@ namespace MSFSPopoutPanelManager.DomainModel.Setting
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             var filePath = GetFilePath();
-            var autoStartArg = new LaunchAddOn() { Name = "MSFS Popout Panel Manager", Disabled = "false", Path = $@"{Directory.GetCurrentDirectory()}\MSFSPopoutPanelManager.exe" };
+            var autoStartArg = new LaunchAddOn() { Name = "MSFS 2024 Popout Panel Manager", Disabled = "false", Path = $@"{Directory.GetCurrentDirectory()}\MSFSPopoutPanelManager.exe" };
             var serializer = new XmlSerializer(typeof(SimBaseDocument));
 
             if (filePath != null && File.Exists(filePath))
@@ -40,7 +40,7 @@ namespace MSFSPopoutPanelManager.DomainModel.Setting
                 }
                 else
                 {
-                    var autoStartIndex = data.LaunchAddOn.FindIndex(x => x.Name == "MSFS Popout Panel Manager");
+                    var autoStartIndex = data.LaunchAddOn.FindIndex(x => x.Name == "MSFS 2024 Popout Panel Manager");
 
                     if (autoStartIndex > -1)
                         data.LaunchAddOn[autoStartIndex] = autoStartArg;
@@ -95,7 +95,7 @@ namespace MSFSPopoutPanelManager.DomainModel.Setting
 
             if (data.LaunchAddOn.Count > 0)
             {
-                var autoStartIndex = data.LaunchAddOn.FindIndex(x => x.Name == "MSFS Popout Panel Manager");
+                var autoStartIndex = data.LaunchAddOn.FindIndex(x => x.Name == "MSFS 2024 Popout Panel Manager");
 
                 if (autoStartIndex > -1)
                     data.LaunchAddOn.RemoveAt(autoStartIndex);
@@ -128,7 +128,7 @@ namespace MSFSPopoutPanelManager.DomainModel.Setting
                 {
                     if (data.LaunchAddOn.Count > 0)
                     {
-                        var autoStartIndex = data.LaunchAddOn.FindIndex(x => x.Name == "MSFS Popout Panel Manager");
+                        var autoStartIndex = data.LaunchAddOn.FindIndex(x => x.Name == "MSFS 2024 Popout Panel Manager");
 
                         if (autoStartIndex > -1)
                             return true;

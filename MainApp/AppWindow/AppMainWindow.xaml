@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:viewmodel="clr-namespace:MSFSPopoutPanelManager.MainApp.ViewModel"
-    Title="MSFS POP OUT PANEL MANAGER"
+    Title="MSFS 2024 POP OUT PANEL MANAGER"
     Width="1000"
     Height="600"
     AllowsTransparency="True"
@@ -96,7 +96,7 @@
                                         VerticalAlignment="Center"
                                         Foreground="White"
                                         Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                        Text="MSFS POP OUT PANEL MANAGER" />
+                                        Text="MSFS 2024 POP OUT PANEL MANAGER" />
                                 </StackPanel>
                                 <StackPanel
                                     Grid.Column="2"

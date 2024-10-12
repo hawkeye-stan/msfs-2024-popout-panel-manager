@@ -5,7 +5,7 @@ namespace MSFSPopoutPanelManager.DomainModel.DataFile
 {
     public class UserProfileFile
     {
-        public string FileVersion { get; set; } = "4.0";
+        public string FileVersion { get; set; } = "1.0";
 
         public IList<UserProfile> Profiles { get; set; } = new List<UserProfile>();
     }

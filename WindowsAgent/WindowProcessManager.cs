@@ -34,12 +34,12 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
         public static void GetSimulatorProcess()
         {
-            SimulatorProcess = GetWindowProcess("FlightSimulator");
+            SimulatorProcess = GetWindowProcess("FlightSimulator2024Beta");
         }
 
         public static WindowProcess GetApplicationProcess()
         {
-            return GetWindowProcess("MSFSPopoutPanelManager");
+            return GetWindowProcess("MSFS2024PopoutPanelManager");
         }
 
         private static WindowProcess GetWindowProcess(string processName)

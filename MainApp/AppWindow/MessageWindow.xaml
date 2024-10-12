@@ -6,7 +6,7 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodel="clr-namespace:MSFSPopoutPanelManager.MainApp.ViewModel"
-    Title="MSFS Pop Out Panel Manager"
+    Title="MSFS 2024 Pop Out Panel Manager"
     Width="Auto"
     Height="Auto"
     AllowsTransparency="True"
@@ -32,7 +32,7 @@
                     Padding="10,5,10,5"
                     HorizontalAlignment="Stretch"
                     Style="{StaticResource MaterialDesignBody1TextBlock}">
-                    MSFS POP OUT PANEL MANAGER
+                    MSFS 2024 POP OUT PANEL MANAGER
                 </TextBlock>
             </WrapPanel>
             <WrapPanel Margin="20,5,20,10">

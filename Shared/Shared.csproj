@@ -7,8 +7,8 @@
     <Product>MSFS 2024 Popout Panel Manager Shared</Product>
     <Authors>Stanley Kwok</Authors>
     <Company>Stanley Kwok</Company>
-    <Copyright>Stanley Kwok 2021</Copyright>
-    <PackageProjectUrl>https://github.com/hawkeye-stan/msfs-popout-panel-manager</PackageProjectUrl>
+    <Copyright>Stanley Kwok 2024</Copyright>
+    <PackageProjectUrl>https://github.com/hawkeye-stan/msfs-2024-popout-panel-manager</PackageProjectUrl>
     <RootNamespace>MSFSPopoutPanelManager.Shared</RootNamespace>
     <Platforms>x64</Platforms>
     <Version>1.0.0.0</Version>
