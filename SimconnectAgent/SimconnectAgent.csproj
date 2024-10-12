@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFramework>net7.0-windows</TargetFramework>
+    <AssemblyName>SimConnectAgent</AssemblyName>
+    <PackageId>MSFS 2024 Popout Panel Manager SimConnectAgent</PackageId>
+    <Product>MSFS 2024 Popout Panel Manager SimConnectAgent</Product>
+    <Authors>Stanley Kwok</Authors>
+    <Company>Stanley Kwok</Company>
+    <Copyright>Stanley Kwok 2021</Copyright>
+    <PackageProjectUrl>https://github.com/hawkeye-stan/msfs-popout-panel-manager</PackageProjectUrl>
+    <RootNamespace>MSFSPopoutPanelManager.SimConnectAgent</RootNamespace>
+    <Platforms>x64</Platforms>
+    <Version>1.0.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <DebugType>Embedded</DebugType>
+    <Configurations>Debug;Release;Local</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(Configuration)' == 'ReleaseTouchPanel' Or '$(Configuration)' == 'DebugTouchPanel' ">
+    <Content Include="Resources\MobiFlightPresets\msfs2020_eventids.cip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\MobiFlightPresets\msfs2020_eventids_user.cip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\MobiFlightPresets\msfs2020_simvars.cip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Shared\Shared.csproj" />
+	  <ProjectReference Include="..\WindowsAgent\WindowsAgent.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="Microsoft.FlightSimulator.SimConnect">
+	    <HintPath>Resources\SimConnect\Managed\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
+  <ItemGroup>
+    <ContentWithTargetPath Include=".\Resources\SimConnect\SimConnect.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SimConnect.dll</TargetPath>
+    </ContentWithTargetPath>
+  </ItemGroup>
+
+</Project>
