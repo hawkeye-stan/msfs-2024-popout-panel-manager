@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>VLogic</title>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="/Pages/VCockpit/Instruments/Shared/Utils/XMLLogic.js"></script>
+    <script type="text/javascript" src="/JS/coherent.js"></script>
+    <script type="text/javascript" src="/JS/common.js"></script>
+    <script type="text/javascript" src="/JS/Types.js"></script>
+    <script type="text/javascript" src="/JS/simvar.js"></script>
+    <script type="text/javascript" src="/JS/avionics.js"></script>
+    <script type="text/javascript" src="/Pages/VCockpit/Systems/Systems.js"></script>
+    <script type="text/javascript" src="VCockpitLogic.js"></script>
+</head>
+<body>
+    <vcockpit-logic id="logic"></vcockpit-logic>
+    <script>
+        // Define ready to fly button skip delay in seconds
+        const READY_TO_FLY_BUTTON_SKIP_DELAY = 5;
+
+        // Click ready to fly button
+        Coherent.on("Ready", () => {
+            setTimeout(() => {
+                LaunchFlowEventToGlobalFlow("END_BRIEFING", "FlyButton");
+                Coherent.trigger("END_BRIEFING", "FlyButton");
+            }, READY_TO_FLY_BUTTON_SKIP_DELAY * 1000);
+        });
+    </script>
+</body>
+</html>
