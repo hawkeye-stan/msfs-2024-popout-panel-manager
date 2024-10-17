@@ -16,9 +16,6 @@ namespace MSFSPopoutPanelManager.DomainModel.Profile
             {
                 if (e is PropertyChangedExtendedEventArgs { DisableSave: false })
                     OnProfileChanged?.Invoke(this, EventArgs.Empty);
-
-                if (e.PropertyName == nameof(IsUsedLegacyCameraSystem))
-                    OnPanelConfigChanged();
             };
 
             PanelConfigs.CollectionChanged += (_, e) =>
@@ -81,8 +78,6 @@ namespace MSFSPopoutPanelManager.DomainModel.Profile
         public MsfsGameWindowConfig MsfsGameWindowConfig { get; set; } = new();
 
         public int PanelSourceCockpitZoomFactor { get; set; } = 50;
-
-        public bool IsUsedLegacyCameraSystem { get; set; } = true;
 
         public int CompareTo(UserProfile other)
         {

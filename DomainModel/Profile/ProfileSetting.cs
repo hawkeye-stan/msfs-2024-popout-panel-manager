@@ -13,8 +13,6 @@ namespace MSFSPopoutPanelManager.DomainModel.Profile
 
         public bool IncludeInGamePanels { get; set; }
 
-        public HudBarConfig HudBarConfig { get; set; } = new();
-
         public RefocusOnDisplay RefocusOnDisplay { get; set; } = new();
 
         public NumPadConfig NumPadConfig { get; set; } = new();

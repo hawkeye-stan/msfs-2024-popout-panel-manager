@@ -5,18 +5,13 @@
     xmlns:appUserControl="clr-namespace:MSFSPopoutPanelManager.MainApp.AppUserControl"
     xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:dotNetKitControls="clr-namespace:DotNetKit.Windows.Controls;assembly=DotNetKit.Wpf.AutoCompleteComboBox"
-    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-    xmlns:local="clr-namespace:MSFSPopoutPanelManager.MainApp"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:viewmodel="clr-namespace:MSFSPopoutPanelManager.MainApp.ViewModel"
-    Width="1024"
+    Width="Auto"
+    Height="Auto"
+    d:DataContext="{d:DesignInstance viewmodel:ProfileCardListViewModel}"
     mc:Ignorable="d">
     <UserControl.Resources>
-        <system:Double x:Key="IconSize">22</system:Double>
-        <system:Double x:Key="ButtonSize">28</system:Double>
         <DataTrigger
             x:Key="TriggerIsDisabledAppInput"
             Binding="{Binding ActiveProfile.IsDisabledStartPopOut}"
@@ -27,17 +22,21 @@
             <Setter Property="FrameworkElement.Opacity" Value="0.5" />
             <Setter Property="FrameworkElement.IsHitTestVisible" Value="False" />
         </DataTrigger>
-
     </UserControl.Resources>
-    <StackPanel d:DataContext="{d:DesignInstance viewmodel:ProfileCardListViewModel}" Orientation="Horizontal">
-        <StackPanel.Style>
+    <DockPanel
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
+        Background="#334055">
+        <DockPanel.Style>
             <Style>
                 <Style.Triggers>
                     <StaticResource ResourceKey="TriggerIsDisabledAppInput" />
                 </Style.Triggers>
             </Style>
-        </StackPanel.Style>
-        <DockPanel Width="62">
+        </DockPanel.Style>
+        <!--<appUserControl:ProfileCardEmpty Visibility="{c:Binding 'ProfileData.Profiles.Count == 0'}" />-->
+        <appUserControl:ProfileCard Padding="10" Visibility="{c:Binding 'ProfileData.Profiles.Count > 0'}" />
+        <!--<DockPanel Width="62">
             <Button
                 Width="{StaticResource ButtonSize}"
                 Height="{StaticResource ButtonSize}"
@@ -51,42 +50,8 @@
                     Height="{StaticResource IconSize}"
                     Kind="ChevronLeft" />
             </Button>
-        </DockPanel>
-        <DockPanel Width="900">
-            <materialDesign:Transitioner x:Name="TransitionProfile" SelectedIndex="{Binding ProfileTransitionIndex}">
-                <materialDesign:TransitionerSlide x:Name="Slide1" ClipToBounds="True">
-                    <materialDesign:TransitionerSlide.ForwardWipe>
-                        <materialDesign:SlideWipe Duration="0:0:0.8" />
-                    </materialDesign:TransitionerSlide.ForwardWipe>
-                    <materialDesign:TransitionerSlide.BackwardWipe>
-                        <materialDesign:SlideWipe Duration="0:0:0.8" />
-                    </materialDesign:TransitionerSlide.BackwardWipe>
-                    <materialDesign:TransitionerSlide.OpeningEffects>
-                        <materialDesign:TransitionEffect Kind="SlideInFromRight" Duration="0:0:0.8" />
-                    </materialDesign:TransitionerSlide.OpeningEffects>
-                    <StackPanel>
-                        <appUserControl:ProfileCardEmpty Visibility="{c:Binding 'ProfileData.Profiles.Count == 0'}" />
-                        <appUserControl:ProfileCard Visibility="{c:Binding 'ProfileData.Profiles.Count > 0'}" />
-                    </StackPanel>
-                </materialDesign:TransitionerSlide>
-                <materialDesign:TransitionerSlide x:Name="Slide2" ClipToBounds="True">
-                    <materialDesign:TransitionerSlide.ForwardWipe>
-                        <materialDesign:SlideWipe Duration="0:0:0.8" />
-                    </materialDesign:TransitionerSlide.ForwardWipe>
-                    <materialDesign:TransitionerSlide.BackwardWipe>
-                        <materialDesign:SlideWipe Duration="0:0:0.8" />
-                    </materialDesign:TransitionerSlide.BackwardWipe>
-                    <materialDesign:TransitionerSlide.OpeningEffects>
-                        <materialDesign:TransitionEffect Kind="SlideInFromRight" Duration="0:0:0.8" />
-                    </materialDesign:TransitionerSlide.OpeningEffects>
-                    <StackPanel>
-                        <appUserControl:ProfileCardEmpty Visibility="{c:Binding 'ProfileData.Profiles.Count == 0'}" />
-                        <appUserControl:ProfileCard Visibility="{c:Binding 'ProfileData.Profiles.Count > 0'}" />
-                    </StackPanel>
-                </materialDesign:TransitionerSlide>
-            </materialDesign:Transitioner>
-        </DockPanel>
-        <DockPanel Width="62" Margin="-5,10,0,0">
+        </DockPanel>-->
+        <!--<DockPanel Width="62" Margin="-5,10,0,0">
             <StackPanel Orientation="Vertical">
                 <Button
                     Width="{StaticResource ButtonSize}"
@@ -162,6 +127,6 @@
                         Kind="ChevronRight" />
                 </Button>
             </StackPanel>
-        </DockPanel>
-    </StackPanel>
+        </DockPanel>-->
+    </DockPanel>
 </UserControl>

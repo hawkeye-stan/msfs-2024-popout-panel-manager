@@ -23,7 +23,7 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         public void AddProfile(string profileName)
         {
-            var newProfile = new UserProfile { Name = profileName, IsUsedLegacyCameraSystem = false };
+            var newProfile = new UserProfile { Name = profileName };
             newProfile.OnProfileChanged += (_, _) => WriteProfiles();
 
             Profiles.Add(newProfile);
@@ -57,7 +57,6 @@ namespace MSFSPopoutPanelManager.Orchestration
             newProfile.ProfileSetting = copiedProfile.ProfileSetting.Copy();
             newProfile.MsfsGameWindowConfig = copiedProfile.MsfsGameWindowConfig.Copy();
             newProfile.PanelSourceCockpitZoomFactor = copiedProfile.PanelSourceCockpitZoomFactor;
-            newProfile.IsUsedLegacyCameraSystem = copiedProfile.IsUsedLegacyCameraSystem;
 
             newProfile.OnProfileChanged += (_, _) => WriteProfiles();
 

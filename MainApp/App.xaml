@@ -8,13 +8,14 @@
             <ResourceDictionary.MergedDictionaries>
                 <materialDesign:BundledTheme
                     BaseTheme="Dark"
-                    PrimaryColor="BlueGrey"
-                    SecondaryColor="Blue" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                    PrimaryColor="LightBlue"
+                    SecondaryColor="Lime" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
                 <ResourceDictionary Source="CustomControl/themes/NumericUpDown.xaml" />
                 <ResourceDictionary Source="Styles/CustomScrollViewStyle.xaml" />
-                <ResourceDictionary x:Name="CustomMaterialDesignExpander" Source="Styles/CustomMaterialDesignExpander.xaml" />
+                <ResourceDictionary Source="Styles/CustomMaterialDesignExpander.xaml" />
+                <ResourceDictionary Source="Styles/CommonResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -9,6 +9,7 @@
     Title="PanelCoorOverlay"
     Width="30"
     Height="30"
+    d:DataContext="{d:DesignInstance viewModel:PanelCoorOverlayViewModel}"
     AllowsTransparency="True"
     Background="#01F0F0FF"
     Loaded="Window_Loaded"
@@ -20,7 +21,6 @@
     <Canvas
         Width="30"
         Height="30"
-        d:DataContext="{d:DesignInstance viewModel:PanelCoorOverlayViewModel}"
         PreviewMouseDown="Canvas_PreviewMouseDown"
         ToolTip="{Binding Panel.PanelName}">
         <Grid>

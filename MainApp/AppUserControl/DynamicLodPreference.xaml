@@ -5,275 +5,176 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:system="clr-namespace:System;assembly=System.Runtime"
     xmlns:viewModel="clr-namespace:MSFSPopoutPanelManager.MainApp.ViewModel"
+    d:DataContext="{d:DesignInstance viewModel:ApplicationViewModel}"
     d:DesignHeight="800"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <UserControl.Resources>
-        <system:Double x:Key="IconSize">22</system:Double>
-        <system:Double x:Key="ButtonSize">22</system:Double>
-        <Style
-            x:Key="TextBlockHeading"
-            BasedOn="{StaticResource {x:Type TextBlock}}"
-            TargetType="TextBlock">
-            <Setter Property="TextWrapping" Value="Wrap" />
-            <Setter Property="Width" Value="Auto" />
-            <Setter Property="Margin" Value="0,5,0,0" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="FontWeight" Value="Bold" />
-        </Style>
-        <Style
-            x:Key="TextBlockLabel"
-            BasedOn="{StaticResource {x:Type TextBlock}}"
-            TargetType="TextBlock">
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-            <Setter Property="Margin" Value="0,7,0,0" />
-            <Setter Property="LineHeight" Value="20" />
-        </Style>
-        <Style
-            x:Key="ToggleButton"
-            BasedOn="{StaticResource MaterialDesignSwitchToggleButton}"
-            TargetType="ToggleButton">
-            <Setter Property="Margin" Value="4,0,4,0" />
-        </Style>
-    </UserControl.Resources>
-    <Grid d:DataContext="{d:DesignInstance viewModel:ApplicationViewModel}">
-        <WrapPanel Orientation="Vertical">
-            <WrapPanel Margin="120,10,0,0">
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <WrapPanel Margin="80,10,0,0">
                 <GroupBox
                     Margin="0"
-                    Padding="5,2,5,2"
+                    Padding="5"
                     Header="Sim Values"
                     Style="{StaticResource MaterialDesignGroupBox}">
                     <GroupBox.HeaderTemplate>
                         <HierarchicalDataTemplate>
-                            <Label
-                                Height="12"
-                                Margin="10,1,1,1"
-                                Padding="0"
-                                FontSize="12">
+                            <Label Padding="0" FontSize="12">
                                 Sim Values
                             </Label>
                         </HierarchicalDataTemplate>
                     </GroupBox.HeaderTemplate>
-                    <WrapPanel Margin="3">
+                    <DockPanel>
                         <TextBox
-                            Width="75"
-                            Margin="20,0,0,0"
-                            materialDesign:HintAssist.FloatingScale="0.75"
                             materialDesign:HintAssist.Hint="FPS"
-                            IsHitTestVisible="False"
-                            IsReadOnly="True"
                             PreviewTextInput="TxtBox_NumbersOnly"
-                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                            Style="{StaticResource FloatingHintTextBoxReadOnly}"
                             Text="{Binding FlightSimData.DynamicLodSimData.Fps, StringFormat='{}{0:0}'}" />
                         <TextBox
-                            Width="75"
-                            Margin="20,0,0,0"
-                            materialDesign:HintAssist.FloatingScale="0.75"
                             materialDesign:HintAssist.Hint="TLOD"
-                            IsHitTestVisible="False"
-                            IsReadOnly="True"
                             PreviewTextInput="TxtBox_NumbersOnly"
-                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                            Style="{StaticResource FloatingHintTextBoxReadOnly}"
                             Text="{Binding FlightSimData.DynamicLodSimData.Tlod}" />
                         <TextBox
-                            Width="75"
-                            Margin="20,0,0,0"
-                            materialDesign:HintAssist.FloatingScale="0.75"
                             materialDesign:HintAssist.Hint="OLOD"
-                            IsHitTestVisible="False"
-                            IsReadOnly="True"
                             PreviewTextInput="TxtBox_NumbersOnly"
-                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                            Style="{StaticResource FloatingHintTextBoxReadOnly}"
                             Text="{Binding FlightSimData.DynamicLodSimData.Olod}" />
                         <TextBox
-                            Width="75"
-                            Margin="20,0,0,0"
-                            materialDesign:HintAssist.FloatingScale="0.75"
                             materialDesign:HintAssist.Hint="AGL"
-                            IsHitTestVisible="False"
-                            IsReadOnly="True"
                             PreviewTextInput="TxtBox_NumbersOnly"
-                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                            Style="{StaticResource FloatingHintTextBoxReadOnly}"
                             Text="{Binding FlightSimData.DynamicLodSimData.Agl, StringFormat='{}{0:0}'}" />
                         <TextBox
-                            Width="75"
-                            Margin="20,0,0,0"
-                            materialDesign:HintAssist.FloatingScale="0.75"
                             materialDesign:HintAssist.Hint="Clouds"
-                            IsHitTestVisible="False"
-                            IsReadOnly="True"
                             PreviewTextInput="TxtBox_NumbersOnly"
-                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                            Style="{StaticResource FloatingHintTextBoxReadOnly}"
                             Text="{Binding FlightSimData.DynamicLodSimData.CloudQuality}" />
-                    </WrapPanel>
+                    </DockPanel>
                 </GroupBox>
             </WrapPanel>
-            <WrapPanel Margin="47,10,0,0" Orientation="Vertical">
-                <WrapPanel Margin="0,0,0,0">
+            <StackPanel Margin="0,10,0,0" Orientation="Vertical">
+                <StackPanel Style="{StaticResource SectionHeader}">
                     <TextBlock Style="{StaticResource TextBlockHeading}">General Options</TextBlock>
-                    <Line
-                        Stretch="Fill"
-                        Stroke="Gray"
-                        X2="1" />
-                    <TextBox
-                        Width="100"
-                        Margin="0,0,0,0"
-                        Padding="5,5,0,0"
-                        materialDesign:HintAssist.FloatingScale="0.75"
-                        materialDesign:HintAssist.Foreground="White"
-                        materialDesign:HintAssist.Hint="Targeted FPS"
-                        Background="#607D8B"
-                        PreviewTextInput="TxtBox_NumbersOnly"
-                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                        Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.TargetedFps, Mode=TwoWay}" />
-                    <TextBox
-                        Width="75"
-                        Margin="40,0,0,0"
-                        materialDesign:HintAssist.FloatingScale="0.75"
-                        materialDesign:HintAssist.Hint="FPS Tolerance"
-                        materialDesign:TextFieldAssist.SuffixText="%"
-                        PreviewTextInput="TxtBox_NumbersOnly"
-                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                        Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.FpsTolerance, Mode=TwoWay}" />
-                    <WrapPanel Margin="40,10,0,0">
-                        <ToggleButton IsChecked="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.PauseWhenMsfsLoseFocus, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
-                        <TextBlock Style="{StaticResource TextBlockLabel}">Pause when MSFS loses focus</TextBlock>
-                    </WrapPanel>
-                    <WrapPanel Margin="20,10,0,0">
-                        <ToggleButton IsChecked="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.PauseOutsideCockpitView, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
-                        <TextBlock Style="{StaticResource TextBlockLabel}">Pause when not in cockpit view</TextBlock>
-                    </WrapPanel>
-                </WrapPanel>
-                <WrapPanel Margin="0,15,0,0">
+                    <Line />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox
+                            materialDesign:HintAssist.Hint="Targeted FPS"
+                            PreviewTextInput="TxtBox_NumbersOnly"
+                            Style="{StaticResource FloatingHintTextBox}"
+                            Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.TargetedFps, Mode=TwoWay}" />
+                        <TextBox
+                            materialDesign:HintAssist.Hint="FPS Tolerance"
+                            materialDesign:TextFieldAssist.SuffixText="%"
+                            PreviewTextInput="TxtBox_NumbersOnly"
+                            Style="{StaticResource FloatingHintTextBox}"
+                            Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.FpsTolerance, Mode=TwoWay}" />
+                        <DockPanel Margin="20,0,0,0" VerticalAlignment="Center">
+                            <ToggleButton IsChecked="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.PauseWhenMsfsLoseFocus, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
+                            <TextBlock Style="{StaticResource TextBlockLabel}">Pause when MSFS loses focus</TextBlock>
+                        </DockPanel>
+                        <DockPanel Margin="20,0,0,0" VerticalAlignment="Center">
+                            <ToggleButton IsChecked="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.PauseOutsideCockpitView, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
+                            <TextBlock Style="{StaticResource TextBlockLabel}">Pause when not in cockpit view</TextBlock>
+                        </DockPanel>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Style="{StaticResource SectionHeader}">
                     <TextBlock Style="{StaticResource TextBlockHeading}">TLOD Options</TextBlock>
-                    <Line
-                        Stretch="Fill"
-                        Stroke="Gray"
-                        X2="1" />
-                    <TextBox
-                        Width="75"
-                        Margin="0,0,0,0"
-                        materialDesign:HintAssist.FloatingScale="0.75"
-                        materialDesign:HintAssist.Hint="TLOD Minimum"
-                        PreviewTextInput="TxtBox_NumbersOnly"
-                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                        Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.TlodMin, Mode=TwoWay}" />
-                    <TextBox
-                        Width="75"
-                        Margin="40,0,0,0"
-                        materialDesign:HintAssist.FloatingScale="0.75"
-                        materialDesign:HintAssist.Hint="TLOD Maximum"
-                        PreviewTextInput="TxtBox_NumbersOnly"
-                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                        Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.TlodMax, Mode=TwoWay}" />
-                    <TextBox
-                        Width="75"
-                        Margin="40,0,0,0"
-                        materialDesign:HintAssist.FloatingScale="0.75"
-                        materialDesign:HintAssist.Hint="TLOD Base Alt"
-                        materialDesign:TextFieldAssist.SuffixText="ft"
-                        PreviewTextInput="TxtBox_NumbersOnly"
-                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                        Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.AltTlodBase, Mode=TwoWay}" />
-                    <WrapPanel Margin="40,10,0,0">
-                        <ToggleButton IsChecked="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.TlodMinOnGround, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
-                        <TextBlock Style="{StaticResource TextBlockLabel}">TLOD minimum on ground/TLOD Base Altitude</TextBlock>
-                    </WrapPanel>
-                </WrapPanel>
-                <WrapPanel Margin="0,15,0,0">
+                    <Line />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox
+                            materialDesign:HintAssist.Hint="TLOD Minimum"
+                            PreviewTextInput="TxtBox_NumbersOnly"
+                            Style="{StaticResource FloatingHintTextBox}"
+                            Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.TlodMin, Mode=TwoWay}" />
+                        <TextBox
+                            materialDesign:HintAssist.Hint="TLOD Maximum"
+                            PreviewTextInput="TxtBox_NumbersOnly"
+                            Style="{StaticResource FloatingHintTextBox}"
+                            Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.TlodMax, Mode=TwoWay}" />
+                        <TextBox
+                            materialDesign:HintAssist.Hint="TLOD Base Alt"
+                            materialDesign:TextFieldAssist.SuffixText="ft"
+                            PreviewTextInput="TxtBox_NumbersOnly"
+                            Style="{StaticResource FloatingHintTextBox}"
+                            Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.AltTlodBase, Mode=TwoWay}" />
+                        <DockPanel Margin="20,0,0,0" VerticalAlignment="Center">
+                            <ToggleButton IsChecked="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.TlodMinOnGround, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
+                            <TextBlock Style="{StaticResource TextBlockLabel}">TLOD minimum on ground/TLOD Base Altitude</TextBlock>
+                        </DockPanel>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Style="{StaticResource SectionHeader}">
                     <TextBlock Style="{StaticResource TextBlockHeading}">OLOD Options</TextBlock>
-                    <Line
-                        Stretch="Fill"
-                        Stroke="Gray"
-                        X2="1" />
-                    <TextBox
-                        Width="75"
-                        Margin="0,0,0,0"
-                        materialDesign:HintAssist.FloatingScale="0.75"
-                        materialDesign:HintAssist.Hint="OLOD at Base Alt"
-                        PreviewTextInput="TxtBox_NumbersOnly"
-                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                        Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.OlodBase, Mode=TwoWay}" />
-                    <TextBox
-                        Width="75"
-                        Margin="40,0,0,0"
-                        materialDesign:HintAssist.FloatingScale="0.75"
-                        materialDesign:HintAssist.Hint="OLOD at Top Alt"
-                        PreviewTextInput="TxtBox_NumbersOnly"
-                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                        Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.OlodTop, Mode=TwoWay}" />
-                    <TextBox
-                        Width="75"
-                        Margin="40,0,0,0"
-                        materialDesign:HintAssist.FloatingScale="0.75"
-                        materialDesign:HintAssist.Hint="OLOD Base Alt"
-                        materialDesign:TextFieldAssist.SuffixText="ft"
-                        PreviewTextInput="TxtBox_NumbersOnly"
-                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                        Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.AltOlodBase, Mode=TwoWay}" />
-                    <TextBox
-                        Width="75"
-                        Margin="40,0,0,0"
-                        materialDesign:HintAssist.FloatingScale="0.75"
-                        materialDesign:HintAssist.Hint="OLOD Top Alt"
-                        materialDesign:TextFieldAssist.SuffixText="ft"
-                        PreviewTextInput="TxtBox_NumbersOnly"
-                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                        Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.AltOlodTop, Mode=TwoWay}" />
-                </WrapPanel>
-                <WrapPanel Margin="0,15,0,0">
+                    <Line />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox
+                            materialDesign:HintAssist.Hint="OLOD at Base Alt"
+                            PreviewTextInput="TxtBox_NumbersOnly"
+                            Style="{StaticResource FloatingHintTextBox}"
+                            Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.OlodBase, Mode=TwoWay}" />
+                        <TextBox
+                            materialDesign:HintAssist.Hint="OLOD at Top Alt"
+                            PreviewTextInput="TxtBox_NumbersOnly"
+                            Style="{StaticResource FloatingHintTextBox}"
+                            Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.OlodTop, Mode=TwoWay}" />
+                        <TextBox
+                            materialDesign:HintAssist.Hint="OLOD Base Alt"
+                            materialDesign:TextFieldAssist.SuffixText="ft"
+                            PreviewTextInput="TxtBox_NumbersOnly"
+                            Style="{StaticResource FloatingHintTextBox}"
+                            Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.AltOlodBase, Mode=TwoWay}" />
+                        <TextBox
+                            materialDesign:HintAssist.Hint="OLOD Top Alt"
+                            materialDesign:TextFieldAssist.SuffixText="ft"
+                            PreviewTextInput="TxtBox_NumbersOnly"
+                            Style="{StaticResource FloatingHintTextBox}"
+                            Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.AltOlodTop, Mode=TwoWay}" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Style="{StaticResource SectionHeader}">
                     <TextBlock Style="{StaticResource TextBlockHeading}">Cloud Options</TextBlock>
-                    <Line
-                        Stretch="Fill"
-                        Stroke="Gray"
-                        X2="1" />
-                    <TextBox
-                        Width="100"
-                        Margin="0,0,0,0"
-                        materialDesign:HintAssist.FloatingScale="0.75"
-                        materialDesign:HintAssist.Hint="Cloud Adjust at TLOD"
-                        PreviewTextInput="TxtBox_NumbersOnly"
-                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                        Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.CloudRecoveryTlod, Mode=TwoWay}" />
-                    <WrapPanel Margin="20,10,0,0">
-                        <ToggleButton IsChecked="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.DecreaseCloudQuality, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
-                        <TextBlock Style="{StaticResource TextBlockLabel}">Decrease cloud quality by one level to archive desired FPS</TextBlock>
-                    </WrapPanel>
-                </WrapPanel>
-                <WrapPanel Margin="0,15,0,0">
+                    <Line />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox
+                            materialDesign:HintAssist.Hint="TLOD to adjust"
+                            PreviewTextInput="TxtBox_NumbersOnly"
+                            Style="{StaticResource FloatingHintTextBox}"
+                            Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.CloudRecoveryTlod, Mode=TwoWay}" />
+                        <DockPanel Margin="20,0,0,0" VerticalAlignment="Center">
+                            <ToggleButton IsChecked="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.DecreaseCloudQuality, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
+                            <TextBlock Style="{StaticResource TextBlockLabel}">Decrease cloud quality by one level to archive desired FPS</TextBlock>
+                        </DockPanel>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Style="{StaticResource SectionHeader}">
                     <TextBlock Style="{StaticResource TextBlockHeading}">Reset TLOD and OLOD on Exit</TextBlock>
                     <Line
                         Stretch="Fill"
                         Stroke="Gray"
                         X2="1" />
-                    <WrapPanel Margin="0,0,0,0">
-                        <WrapPanel Margin="0,7,0,0">
+                    <DockPanel Margin="0,0,0,0">
+                        <DockPanel Margin="0,0,20,0" VerticalAlignment="Center">
                             <ToggleButton IsChecked="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.ResetEnabled, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
                             <TextBlock Style="{StaticResource TextBlockLabel}">Reset on Exit</TextBlock>
-                        </WrapPanel>
-                        <TextBox
-                            Width="75"
-                            Margin="40,0,0,0"
-                            materialDesign:HintAssist.FloatingScale="0.75"
-                            materialDesign:HintAssist.Hint="TLOD"
-                            PreviewTextInput="TxtBox_NumbersOnly"
-                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                            Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.ResetTlod, Mode=TwoWay}" />
-                        <TextBox
-                            Width="75"
-                            Margin="40,0,0,0"
-                            materialDesign:HintAssist.FloatingScale="0.75"
-                            materialDesign:HintAssist.Hint="OLOD"
-                            PreviewTextInput="TxtBox_NumbersOnly"
-                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                            Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.ResetOlod, Mode=TwoWay}" />
-                    </WrapPanel>
-                </WrapPanel>
-            </WrapPanel>
-        </WrapPanel>
+                        </DockPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox
+                                materialDesign:HintAssist.Hint="TLOD"
+                                PreviewTextInput="TxtBox_NumbersOnly"
+                                Style="{StaticResource FloatingHintTextBox}"
+                                Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.ResetTlod, Mode=TwoWay}" />
+                            <TextBox
+                                materialDesign:HintAssist.Hint="OLOD"
+                                PreviewTextInput="TxtBox_NumbersOnly"
+                                Style="{StaticResource FloatingHintTextBox}"
+                                Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.ResetOlod, Mode=TwoWay}" />
+                        </StackPanel>
+                    </DockPanel>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </UserControl>

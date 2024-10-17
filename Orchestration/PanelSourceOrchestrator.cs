@@ -1,6 +1,4 @@
 ﻿using MSFSPopoutPanelManager.DomainModel.Profile;
-using MSFSPopoutPanelManager.DomainModel.Setting;
-using MSFSPopoutPanelManager.Shared;
 using MSFSPopoutPanelManager.WindowsAgent;
 using System;
 using System.Collections.Generic;
@@ -13,9 +11,6 @@ namespace MSFSPopoutPanelManager.Orchestration
 {
     public class PanelSourceOrchestrator : BaseOrchestrator
     {
-        private const int CAMERA_VIEW_HOME_COCKPIT_MODE = 8;
-        private const int CAMERA_VIEW_CUSTOM_CAMERA = 7;
-
         private readonly FlightSimOrchestrator _flightSimOrchestrator;
         private bool _isEditingPanelSourceLock;
 
@@ -35,8 +30,6 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         private UserProfile ActiveProfile => ProfileData?.ActiveProfile;
 
-        private ApplicationSetting AppSetting => AppSettingData?.ApplicationSetting;
-
         public event EventHandler<PanelConfig> OnOverlayShowed;
         public event EventHandler<PanelConfig> OnNonEditOverlayShowed;
         public event EventHandler<PanelConfig> OnOverlayRemoved;
@@ -51,13 +44,12 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         public void StartPanelSelection(PanelConfig panelConfig)
         {
-            // ReSharper disable once EventUnsubscriptionViaAnonymousDelegate
             InputHookManager.OnLeftClick -= (_, e) => HandleOnPanelSelectionAdded(panelConfig, e);
             InputHookManager.OnLeftClick += (_, e) => HandleOnPanelSelectionAdded(panelConfig, e);
             InputHookManager.StartMouseHook();
         }
 
-        public async Task StartEditPanelSources()
+        public void StartEditPanelSources()
         {
             if (_isEditingPanelSourceLock)
                 return;
@@ -66,22 +58,14 @@ namespace MSFSPopoutPanelManager.Orchestration
 
             // Turn off TrackIR if TrackIR is started
             _flightSimOrchestrator.TurnOffTrackIR();
-
-            if (ActiveProfile.IsUsedLegacyCameraSystem)
-                await StartEditPanelSourcesLegacyCamera();
-            else
-                await StartEditPanelSourcesFixedCamera();
         }
 
         public async Task EndEditPanelSources()
         {
             if (!_isEditingPanelSourceLock)
                 return;
-            
-            if (ActiveProfile.IsUsedLegacyCameraSystem)
-                EndEditPanelSourcesLegacyCamera();
-            else
-                EndEditPanelSourcesFixedCamera();
+
+            _flightSimOrchestrator.ResetCameraView();
 
             _isEditingPanelSourceLock = false;
 
@@ -118,17 +102,6 @@ namespace MSFSPopoutPanelManager.Orchestration
 
             if (panel.HasPanelSource)
                 OnOverlayShowed?.Invoke(this, panel);
-        }
-
-        public void ShowPanelSourceNonEdit(PanelConfig panel)
-        {
-            if (panel.HasPanelSource)
-                OnNonEditOverlayShowed?.Invoke(this, panel);
-        }
-
-        public void ClosePanelSourceNonEdit(PanelConfig panel)
-        {
-            OnOverlayRemoved?.Invoke(this, panel);
         }
 
         public void CloseAllPanelSource()
@@ -201,105 +174,6 @@ namespace MSFSPopoutPanelManager.Orchestration
             OnOverlayRemoved?.Invoke(this, panelConfig);
 
             ProfileData.ActiveProfile.PanelConfigs.Remove(panelConfig);
-        }
-
-        private void LoadCustomView(string keyBinding)
-        {
-            int retry = 3;
-            for (var i = 0; i < retry; i++)
-            {
-                InputEmulationManager.LoadCustomView(keyBinding);
-                Thread.Sleep(750);  // wait for flightsimdata to be updated
-                if (FlightSimData.CameraViewTypeAndIndex1 == CAMERA_VIEW_CUSTOM_CAMERA)    // custom camera view enum
-                    break;
-            }
-        }
-
-        private void SetCockpitZoomLevel(int zoom)
-        {
-            var retry = 3;
-            for (var i = 0; i < retry; i++)
-            {
-                _flightSimOrchestrator.SetCockpitCameraZoomLevel(zoom);
-                Thread.Sleep(750);  // wait for flightsimdata to be updated
-
-                if (FlightSimData.CockpitCameraZoom == zoom)
-                    break;
-            }
-        }
-
-        private async Task StartEditPanelSourcesLegacyCamera()
-        {
-            await Task.Run(() =>
-            {
-                OnStatusMessageStarted?.Invoke(this, EventArgs.Empty);
-                StatusMessageWriter.IsEnabled = true;
-                StatusMessageWriter.ClearMessage();
-                StatusMessageWriter.WriteMessage("Loading camera view. Please wait......", StatusMessageType.Info);
-                
-                // Set Windowed Display Mode window's configuration if needed
-                if (AppSettingData.ApplicationSetting.WindowedModeSetting.AutoResizeMsfsGameWindow)
-                    WindowActionManager.SetMsfsGameWindowLocation(ActiveProfile.MsfsGameWindowConfig);
-
-                if (AppSetting.PopOutSetting.AutoPanning.IsEnabled)
-                {
-                    if (FlightSimData.CameraViewTypeAndIndex1 == CAMERA_VIEW_HOME_COCKPIT_MODE)
-                    {
-                        _flightSimOrchestrator.SetCockpitCameraZoomLevel(ProfileData.ActiveProfile.PanelSourceCockpitZoomFactor);
-                    }
-                    else
-                    {
-                        LoadCustomView(AppSetting.PopOutSetting.AutoPanning.KeyBinding);
-                        _flightSimOrchestrator.SetCockpitCameraZoomLevel(50);
-                    }
-
-                    WindowActionManager.BringWindowToForeground(ApplicationHandle);
-                }
-
-                foreach (var panel in ProfileData.ActiveProfile.PanelConfigs)
-                {
-                    if (panel.HasPanelSource)
-                        OnOverlayShowed?.Invoke(this, panel);
-                }
-
-                Thread.Sleep(500);
-                StatusMessageWriter.IsEnabled = false;
-                OnStatusMessageEnded?.Invoke(this, EventArgs.Empty);
-            });
-        }
-
-        private Task StartEditPanelSourcesFixedCamera()
-        {
-            return Task.CompletedTask;
-        }
-
-        private void EndEditPanelSourcesLegacyCamera()
-        {
-            // Save last auto panning camera angle
-            if (AppSetting.PopOutSetting.AutoPanning.IsEnabled)
-            {
-                // If using windows mode, save MSFS game window configuration
-                if (AppSettingData.ApplicationSetting.WindowedModeSetting.AutoResizeMsfsGameWindow)
-                    ProfileData.SaveMsfsGameWindowConfig();
-
-                if (FlightSimData.CameraViewTypeAndIndex1 == CAMERA_VIEW_HOME_COCKPIT_MODE)
-                {
-                    ProfileData.ActiveProfile.PanelSourceCockpitZoomFactor = FlightSimData.CockpitCameraZoom;
-                }
-                else
-                {
-                    // !!! Fix MSFS issue that without setting zoom, everything will be off by few pixels at a time
-                    SetCockpitZoomLevel(FlightSimData.CockpitCameraZoom);
-                    InputEmulationManager.SaveCustomView(AppSetting.PopOutSetting.AutoPanning.KeyBinding);
-                }
-            }
-
-            Thread.Sleep(500);  // wait for custom view save to be completed
-        }
-
-        private void EndEditPanelSourcesFixedCamera()
-        {
-            _flightSimOrchestrator.ResetCameraView();
         }
 
         public ObservableCollection<FixedCameraConfig> GetFixedCameraConfigs()

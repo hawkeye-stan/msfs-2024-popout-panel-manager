@@ -4,8 +4,6 @@ using MSFSPopoutPanelManager.Orchestration;
 using MSFSPopoutPanelManager.Shared;
 using MSFSPopoutPanelManager.WindowsAgent;
 using Prism.Commands;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
 using MSFSPopoutPanelManager.MainApp.AppUserControl.Dialog;
@@ -35,8 +33,6 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 
         public ICommand IncludeInGamePanelUpdatedCommand { get; }
 
-        public ICommand AddHudBarUpdatedCommand { get; }
-
         public ICommand RefocusDisplayUpdatedCommand { get; }
 
         public ICommand AddNumPadUpdatedCommand { get; }
@@ -47,9 +43,6 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 
         public DelegateCommand<string> RefocusDisplaySelectionUpdatedCommand { get; }
 
-        public List<string> HudBarTypes => Enum.GetNames(typeof(HudBarType)).Where(x => x != "None").Select(x => x.Replace("_", " ")).ToList();
-
-
         public ProfileCardViewModel(SharedStorage sharedStorage, ProfileOrchestrator profileOrchestrator, PanelSourceOrchestrator panelSourceOrchestrator, PanelConfigurationOrchestrator panelConfigurationOrchestrator, PanelPopOutOrchestrator panelPopOutOrchestrator) : base(sharedStorage)
         {
             _profileOrchestrator = profileOrchestrator;
@@ -59,7 +52,7 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 
             DeleteProfileCommand = new DelegateCommand(OnDeleteProfile);
 
-            ToggleAircraftBindingCommand = new DelegateCommand(OnEditAircraftBinding, () => ProfileData != null && ActiveProfile != null && FlightSimData != null && FlightSimData.HasAircraftName && ProfileData.IsAllowedAddAircraftBinding && FlightSimData.IsSimulatorStarted)
+            ToggleAircraftBindingCommand = new DelegateCommand(OnEditAircraftBinding, () => ProfileData != null && ActiveProfile != null && FlightSimData is { HasAircraftName: true } && ProfileData.IsAllowedAddAircraftBinding && FlightSimData.IsSimulatorStarted)
                                                                                 .ObservesProperty(() => ActiveProfile)
                                                                                 .ObservesProperty(() => FlightSimData.AircraftName)
                                                                                 .ObservesProperty(() => FlightSimData.HasAircraftName)
@@ -81,11 +74,10 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                                                                                 .ObservesProperty(() => ActiveProfile.IsLocked)
                                                                                 .ObservesProperty(() => FlightSimData.IsInCockpit);
 
-            StartPopOutCommand = new DelegateCommand(OnStartPopOut, () => ProfileData != null && ActiveProfile != null && (ActiveProfile.PanelConfigs.Count > 0 || ActiveProfile.ProfileSetting.IncludeInGamePanels || ActiveProfile.ProfileSetting.HudBarConfig.IsEnabled) && !ActiveProfile.HasUnidentifiedPanelSource && !ActiveProfile.IsEditingPanelSource && !ActiveProfile.IsDisabledStartPopOut && FlightSimData.IsInCockpit)
+            StartPopOutCommand = new DelegateCommand(OnStartPopOut, () => ProfileData != null && ActiveProfile != null && (ActiveProfile.PanelConfigs.Count > 0 || ActiveProfile.ProfileSetting.IncludeInGamePanels) && !ActiveProfile.HasUnidentifiedPanelSource && !ActiveProfile.IsEditingPanelSource && !ActiveProfile.IsDisabledStartPopOut && FlightSimData.IsInCockpit)
                                                                                 .ObservesProperty(() => ActiveProfile)
                                                                                 .ObservesProperty(() => ActiveProfile.PanelConfigs.Count)
                                                                                 .ObservesProperty(() => ActiveProfile.ProfileSetting.IncludeInGamePanels)
-                                                                                .ObservesProperty(() => ActiveProfile.ProfileSetting.HudBarConfig.IsEnabled)
                                                                                 .ObservesProperty(() => ActiveProfile.HasUnidentifiedPanelSource)
                                                                                 .ObservesProperty(() => ActiveProfile.IsEditingPanelSource)
                                                                                 .ObservesProperty(() => ActiveProfile.IsDisabledStartPopOut)
@@ -99,10 +91,8 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 
             IncludeInGamePanelUpdatedCommand = new DelegateCommand(OnIncludeInGamePanelUpdated);
 
-            AddHudBarUpdatedCommand = new DelegateCommand(OnAddHudBarUpdated);
-
             AddNumPadUpdatedCommand = new DelegateCommand(OnAddNumPadUpdated);
-#if LOCAL
+#if LOCAL || DEBUG
             AddSwitchWindowUpdatedCommand = new DelegateCommand(OnAddSwitchWindowUpdated);
 #endif
             RefocusDisplayUpdatedCommand = new DelegateCommand(OnRefocusDisplayUpdated);
@@ -154,17 +144,17 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
         private async void OnToggleEditPanelSource()
         {
             if (ActiveProfile.IsEditingPanelSource)
-                await _panelSourceOrchestrator.StartEditPanelSources();
+                _panelSourceOrchestrator.StartEditPanelSources();
             else
                 await _panelSourceOrchestrator.EndEditPanelSources();
         }
 
-        private async void OnAddPanel()
+        private void OnAddPanel()
         {
             _profileOrchestrator.AddPanel();
 
             ActiveProfile.IsEditingPanelSource = true;
-            await _panelSourceOrchestrator.StartEditPanelSources();
+            _panelSourceOrchestrator.StartEditPanelSources();
         }
 
         private async void OnStartPopOut()
@@ -187,33 +177,6 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
         {
             if (ActiveProfile != null && !ActiveProfile.ProfileSetting.IncludeInGamePanels)
                 ActiveProfile.PanelConfigs.RemoveAll(p => p.PanelType == PanelType.BuiltInPopout);
-        }
-
-        private void OnAddHudBarUpdated()
-        {
-            if (ActiveProfile == null)
-                return;
-
-            if (ActiveProfile.ProfileSetting.HudBarConfig.IsEnabled)
-            {
-                if (ActiveProfile.PanelConfigs.Any(p => p.PanelType == PanelType.HudBarWindow))
-                    return;
-
-                ActiveProfile.PanelConfigs.Add(new PanelConfig
-                {
-                    PanelName = "HUD Bar",
-                    PanelType = PanelType.HudBarWindow,
-                    Left = 0,
-                    Top = 0,
-                    Width = 1920,
-                    Height = 40,
-                    AutoGameRefocus = false
-                });
-            }
-            else
-            {
-                ActiveProfile.PanelConfigs.RemoveAll(p => p.PanelType == PanelType.HudBarWindow);
-            }
         }
 
         private void OnAddNumPadUpdated()

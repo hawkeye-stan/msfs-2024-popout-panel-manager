@@ -27,7 +27,6 @@ namespace MSFSPopoutPanelManager.MainApp.AppWindow
             StateChanged += AppWindow_StateChanged;
             WindowActionManager.OnPopOutManagerAlwaysOnTopChanged += (_, e) => { Topmost = e; };
             MouseLeftButtonDown += (_, _) => DragMove();
-
         }
 
         private void AppWindow_Loaded(object sender, RoutedEventArgs e)
@@ -79,13 +78,13 @@ namespace MSFSPopoutPanelManager.MainApp.AppWindow
             }
         }
 
-        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        private void BtnSettings_Click(object sender, RoutedEventArgs e)
         {
             PanelDrawers.Children.Clear();
             PanelDrawers.Children.Add(new PreferenceDrawer());
         }
 
-        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        private void BtnHelp_Click(object sender, RoutedEventArgs e)
         {
             PanelDrawers.Children.Clear();
             PanelDrawers.Children.Add(new HelpDrawer());

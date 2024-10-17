@@ -10,6 +10,7 @@
     Title="Switch Window"
     Height="60"
     MinHeight="60"
+    d:DataContext="{d:DesignInstance viewmodel:SwitchWindowViewModel}"
     ResizeMode="NoResize"
     WindowStyle="None"
     mc:Ignorable="d">
@@ -21,13 +22,15 @@
         BorderBrush="White"
         BorderThickness="1"
         Mode="Dark">
-        <Grid Margin="10,0" d:DataContext="{d:DesignInstance viewmodel:SwitchWindowViewModel}">
+        <Grid Margin="10,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="30" />
             </Grid.ColumnDefinitions>
-            <WrapPanel Grid.Column="0" VerticalAlignment="Center" Name="WrapPanelCustomButtons">
-            </WrapPanel>
+            <WrapPanel
+                Name="WrapPanelCustomButtons"
+                Grid.Column="0"
+                VerticalAlignment="Center" />
             <WrapPanel
                 Grid.Column="1"
                 Margin="0,0,0,0"

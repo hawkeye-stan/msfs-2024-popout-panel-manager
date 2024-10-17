@@ -3,7 +3,6 @@
     public enum DataDefinition
     {
         REQUIRED_DEFINITION = 0,
-        HUDBAR_DEFINITION,
         DYNAMICLOD_DEFINITION,
         WRITABLE_TRACK_IR_DEFINITION,
         WRITABLE_COCKPIT_CAMERA_ZOOM_DEFINITION,
@@ -17,7 +16,6 @@
     public enum DataRequest
     {
         REQUIRED_REQUEST = 0,
-        HUDBAR_REQUEST,
         DYNAMICLOD_REQUEST,
         NA
     }

@@ -9,8 +9,9 @@
     xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
     Width="400"
     MinHeight="170"
+    d:DataContext="{d:DesignInstance viewModel:ConfirmationViewModel}"
     mc:Ignorable="d">
-    <StackPanel d:DataContext="{d:DesignInstance viewModel:ConfirmationViewModel}">
+    <StackPanel>
         <materialDesign:ColorZone
             Height="30"
             materialDesign:ElevationAssist.Elevation="Dp4"

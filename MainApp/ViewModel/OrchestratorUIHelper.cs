@@ -31,9 +31,6 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
             panelPopOutOrchestrator.OnPopOutCompleted -= HandleOnPopOutCompleted;
             panelPopOutOrchestrator.OnPopOutCompleted += HandleOnPopOutCompleted;
 
-            panelPopOutOrchestrator.OnHudBarOpened -= HandleOnHudBarOpened;
-            panelPopOutOrchestrator.OnHudBarOpened += HandleOnHudBarOpened;
-
             panelPopOutOrchestrator.OnNumPadOpened -= HandleOnNumPadOpened;
             panelPopOutOrchestrator.OnNumPadOpened += HandleOnNumPadOpened;
 
@@ -67,22 +64,6 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                         }
                     }
                 }
-            });
-        }
-
-        private void HandleOnHudBarOpened(object sender, PanelConfig panelConfig)
-        {
-            Application.Current.Dispatcher.Invoke(async () =>
-            {
-                var hudBar = new HudBar(panelConfig.Id);
-                hudBar.Show();
-
-                await Task.Run(() =>
-                {
-                    Thread.Sleep(1000);
-                    WindowActionManager.MoveWindow(panelConfig.PanelHandle, panelConfig.Left, panelConfig.Top, panelConfig.Width, panelConfig.Height);
-                    WindowActionManager.MoveWindow(panelConfig.PanelHandle, panelConfig.Left, panelConfig.Top, panelConfig.Width, panelConfig.Height);
-                });
             });
         }
 

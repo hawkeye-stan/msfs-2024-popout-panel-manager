@@ -12,6 +12,7 @@
     xmlns:viewModel="clr-namespace:MSFSPopoutPanelManager.MainApp.ViewModel"
     Width="860"
     MinHeight="54"
+    d:DataContext="{d:DesignInstance viewModel:PopOutPanelSourceCardViewModel}"
     mc:Ignorable="d">
     <UserControl.Resources>
         <converter:StringEmptyConverter x:Key="StringEmptyConverter" />

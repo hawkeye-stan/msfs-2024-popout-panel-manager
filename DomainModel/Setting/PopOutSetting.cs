@@ -9,8 +9,6 @@ namespace MSFSPopoutPanelManager.DomainModel.Setting
             InitializeChildPropertyChangeBinding();
         }
 
-        public AutoPanning AutoPanning { get; set; } = new();
-
         public AfterPopOutCameraView AfterPopOutCameraView { get; set; } = new();
 
         public bool MinimizeDuringPopOut { get; set; } = true;

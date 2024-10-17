@@ -25,7 +25,7 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl
             Loaded += (_, _) => { DataContext = _viewModel; };
 
 #if LOCAL || DEBUG
-            this.WrapPanelSwitchWindow.Visibility = Visibility.Visible;
+            //this.WrapPanelSwitchWindow.Visibility = Visibility.Visible;
 #else
             this.WrapPanelSwitchWindow.Visibility = Visibility.Collapsed;
 #endif
@@ -42,22 +42,17 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl
 
         private void TxtBoxProfileTitle_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key != Key.Enter) 
+            if (e.Key != Key.Enter)
                 return;
 
             ToggleButtonEditProfileTitle.IsChecked = false;
             Keyboard.ClearFocus();
-            FocusManager.SetFocusedElement(FocusManager.GetFocusScope(RootCard), RootCard);
+            //FocusManager.SetFocusedElement(FocusManager.GetFocusScope(RootCard), RootCard);
         }
 
         private void IncludeInGamePanel_TargetUpdated(object sender, DataTransferEventArgs e)
         {
             _viewModel.IncludeInGamePanelUpdatedCommand?.Execute(null);
-        }
-
-        private void AddHudBar_TargetUpdated(object sender, DataTransferEventArgs e)
-        {
-            _viewModel.AddHudBarUpdatedCommand?.Execute(null);
         }
 
         private void AddRefocusDisplay_TargetUpdated(object sender, DataTransferEventArgs e)
@@ -73,22 +68,6 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl
         private void AddSwitchWindow_TargetUpdated(object sender, DataTransferEventArgs e)
         {
             _viewModel.AddSwitchWindowUpdatedCommand?.Execute(null);
-        }
-    }
-
-
-    [ValueConversion(typeof(DateTime), typeof(String))]
-    public class StringToHudBarTypeConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return value?.ToString()?.Replace("_", " ");
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            var data = value.ToString();
-            return Enum.Parse<HudBarType>(data.Replace(" ", "_"));
         }
     }
 }

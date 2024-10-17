@@ -9,6 +9,7 @@
     Title="MSFS 2024 Pop Out Panel Manager"
     Width="Auto"
     Height="Auto"
+    d:DataContext="{d:DesignInstance viewmodel:MessageWindowViewModel}"
     AllowsTransparency="True"
     ResizeMode="NoResize"
     ShowInTaskbar="False"
@@ -20,10 +21,7 @@
         Width="Auto"
         Height="Auto"
         Mode="Dark">
-        <DockPanel
-            Width="{Binding WindowWidth}"
-            Height="{Binding WindowHeight}"
-            d:DataContext="{d:DesignInstance viewmodel:MessageWindowViewModel}">
+        <DockPanel Width="{Binding WindowWidth}" Height="{Binding WindowHeight}">
             <WrapPanel
                 Height="30"
                 Background="SlateGray"

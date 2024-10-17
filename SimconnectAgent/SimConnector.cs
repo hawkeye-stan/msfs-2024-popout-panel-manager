@@ -21,12 +21,10 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
 
         private readonly List<SimConnectDataDefinition> _simConnectRequiredDataDefinitions = SimDataDefinitions.GetRequiredDefinitions();
         private readonly List<SimConnectDataDefinition> _simConnectDynamicLodDataDefinitions = SimDataDefinitions.GetDynamicLodDefinitions();
-        private List<SimConnectDataDefinition> _simConnectHudBarDataDefinitions;
         private readonly FieldInfo[] _simConnectStructFields = typeof(SimConnectStruct).GetFields(BindingFlags.Public | BindingFlags.Instance);
 
         public event EventHandler<string> OnException;
         public event EventHandler<List<SimDataItem>> OnReceivedRequiredData;
-        public event EventHandler<List<SimDataItem>> OnReceivedHudBarData;
         public event EventHandler<List<SimDataItem>> OnReceivedDynamicLodData;
         public event EventHandler OnConnected;
         public event EventHandler OnDisconnected;
@@ -63,12 +61,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             _connectionTimer.Enabled = true;
         }
 
-        public void SetSimConnectHudBarDataDefinition(SimDataDefinitionType definitionType)
-        {
-            _simConnectHudBarDataDefinitions = SimDataDefinitions.GetHudBarDefinitions(definitionType);
-            AddHudBarDataDefinitions();
-        }
-
         public void SetSimConnectDynamicLodDataDefinition()
         {
             AddDynamicLodDataDefinitions();
@@ -102,26 +94,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             try
             {
                 _simConnect.RequestDataOnSimObjectType(DataRequest.REQUIRED_REQUEST, DataDefinition.REQUIRED_DEFINITION, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
-            }
-            catch
-            {
-                if (!_isDisabledReconnect)
-                    _isDisabledReconnect = true;
-
-                OnException?.Invoke(this, null);
-            }
-        }
-
-        public void RequestHudBarData()
-        {
-            if (_simConnect == null || !Connected)
-                return;
-
-            try
-            {
-
-                if (_simConnectHudBarDataDefinitions != null)
-                    _simConnect.RequestDataOnSimObjectType(DataRequest.HUDBAR_REQUEST, DataDefinition.HUDBAR_DEFINITION, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
             }
             catch
             {
@@ -380,41 +352,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             _simConnect.RegisterDataDefineStruct<SimConnectStruct>(DataDefinition.WRITABLE_CAMERA_VIEW_TYPE_INDEX_1_DEFINITION);
         }
 
-        private void AddHudBarDataDefinitions()
-        {
-            if (_simConnect == null)
-                return;
-
-            _simConnect.ClearDataDefinition(DataDefinition.HUDBAR_DEFINITION);
-
-            if (_simConnectHudBarDataDefinitions == null)
-                return;
-
-            foreach (var definition in _simConnectHudBarDataDefinitions)
-            {
-                if (definition.DefinitionId != DataDefinition.HUDBAR_DEFINITION ||
-                    definition.DataDefinitionType != DataDefinitionType.SimConnect) continue;
-
-                SIMCONNECT_DATATYPE simConnectDataType;
-                switch (definition.DataType)
-                {
-                    case DataType.String:
-                        simConnectDataType = SIMCONNECT_DATATYPE.STRING256;
-                        break;
-                    case DataType.Float64:
-                        simConnectDataType = SIMCONNECT_DATATYPE.FLOAT64;
-                        break;
-                    default:
-                        simConnectDataType = SIMCONNECT_DATATYPE.FLOAT64;
-                        break;
-                }
-
-                _simConnect.AddToDataDefinition(definition.DefinitionId, definition.VariableName, definition.SimConnectUnit, simConnectDataType, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-            }
-
-            _simConnect.RegisterDataDefineStruct<SimConnectStruct>(DataDefinition.HUDBAR_DEFINITION);
-        }
-
         private void AddDynamicLodDataDefinitions()
         {
             if (_simConnect == null)
@@ -490,16 +427,12 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
                 case (int)DataRequest.REQUIRED_REQUEST:
                     ParseRequiredReceivedSimData(data);
                     break;
-                case (int)DataRequest.HUDBAR_REQUEST:
-                    ParseHudBarReceivedSimData(data);
-                    break;
                 case (int)DataRequest.DYNAMICLOD_REQUEST:
                     ParseDynamicLodReceivedSimData(data);
                     break;
             }
         }
-
-
+        
         private void ParseRequiredReceivedSimData(SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
         {
             if (_simConnectRequiredDataDefinitions == null)
@@ -535,46 +468,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
                 FileLogger.WriteException($"SimConnector: SimConnect received required data exception - {ex.Message}", ex);
             }
         }
-
-        private void ParseHudBarReceivedSimData(SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
-        {
-            try
-            {
-                if (_simConnectHudBarDataDefinitions == null)
-                    return;
-
-                var simData = new List<SimDataItem>();
-                var simDataStruct = (SimConnectStruct)data.dwData[0];
-
-                var i = 0;
-                lock (_simConnectHudBarDataDefinitions)
-                {
-                    foreach (var definition in _simConnectHudBarDataDefinitions)
-                    {
-                        if (definition.DataDefinitionType != DataDefinitionType.SimConnect)
-                            continue;
-
-                        var dataValue = _simConnectStructFields[i].GetValue(simDataStruct);
-                        var simDataItem = new SimDataItem
-                        {
-                            PropertyName = definition.PropName,
-                            Value = dataValue == null ? 0 : (double)dataValue
-                        };
-
-                        simData.Add(simDataItem);
-                        i++;
-                    }
-                }
-
-                OnReceivedHudBarData?.Invoke(this, simData);
-            }
-            catch (Exception ex)
-            {
-                FileLogger.WriteException($"SimConnector: SimConnect received hud bar data exception - {ex.Message}", ex);
-                StopAndReconnect();
-            }
-        }
-
 
         private void ParseDynamicLodReceivedSimData(SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
         {

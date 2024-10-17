@@ -9,6 +9,7 @@
     Title="Virtual NumPad"
     Width="300"
     Height="400"
+    d:DataContext="{d:DesignInstance viewModel:NumPadViewModel}"
     ResizeMode="CanResize"
     WindowStyle="None"
     mc:Ignorable="d">
@@ -42,7 +43,7 @@
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
         Mode="Dark">
-        <Grid d:DataContext="{d:DesignInstance viewModel:NumPadViewModel}">
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="35" />
                 <RowDefinition Height="*" />

@@ -11,12 +11,13 @@
     xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
     Width="400"
     Height="210"
+    d:DataContext="{d:DesignInstance Type=viewmodel:AddProfileViewModel}"
     DataContext="{Binding RelativeSource={RelativeSource Self}, Path=ViewModel}"
     mc:Ignorable="d">
     <UserControl.Resources>
         <converter:InverseBooleanOrConverter x:Key="InverseBooleanOrConverter" />
     </UserControl.Resources>
-    <StackPanel d:DataContext="{d:DesignInstance viewmodel:AddProfileViewModel}">
+    <StackPanel>
         <materialDesign:ColorZone
             Height="30"
             materialDesign:ElevationAssist.Elevation="Dp4"

@@ -48,7 +48,6 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         public event EventHandler OnPopOutStarted;
         public event EventHandler OnPopOutCompleted;
-        public event EventHandler<PanelConfig> OnHudBarOpened;
         public event EventHandler<PanelConfig> OnNumPadOpened;
         public event EventHandler<PanelConfig> OnSwitchWindowOpened;
 
@@ -119,8 +118,6 @@ namespace MSFSPopoutPanelManager.Orchestration
             await StepAddCustomPanels(builtInPanelHandles);
 
             StepAddBuiltInPanels(builtInPanelHandles);
-
-            StepAddHudBar();
 
             StepAddNumPad();
 
@@ -209,28 +206,7 @@ namespace MSFSPopoutPanelManager.Orchestration
 
                 // Turn on Active Pause
                 _flightSimOrchestrator.TurnOnActivePause();
-                
-                // Setting custom camera angle for auto panning
-                if (AppSetting.PopOutSetting.AutoPanning.IsEnabled && ActiveProfile.IsUsedLegacyCameraSystem)
-                {
-                    StatusMessageWriter.WriteMessageWithNewLine("Setting auto panning camera view", StatusMessageType.Info);
-                   
-                    if (FlightSimData.CameraViewTypeAndIndex1 == CAMERA_VIEW_HOME_COCKPIT_MODE)
-                    {
-                        SetCockpitZoomLevel(ProfileData.ActiveProfile.PanelSourceCockpitZoomFactor, AppSetting.GeneralSetting.TurboMode);
-                    }
-                    else 
-                    {
-                        WorkflowStepWithMessage.Execute("Resetting camera view", () => ResetCockpitView(AppSetting.GeneralSetting.TurboMode), true);
-
-                        var success = WorkflowStepWithMessage.Execute("Loading custom camera view", () => LoadCustomView(AppSetting.PopOutSetting.AutoPanning.KeyBinding, AppSetting.GeneralSetting.TurboMode, false), true);
-                        if (!success)
-                            return false;
-
-                        WorkflowStepWithMessage.Execute("Setting camera zoom level", () => SetCockpitZoomLevel(50, AppSetting.GeneralSetting.TurboMode), true);
-                    }
-                }
-
+              
                 return true;
             });
         }
@@ -246,11 +222,8 @@ namespace MSFSPopoutPanelManager.Orchestration
                     StatusMessageWriter.WriteMessageWithNewLine("Popping out user defined panels", StatusMessageType.Info);
 
                 // Resetting camera to default first
-                if (!ActiveProfile.IsUsedLegacyCameraSystem)
-                {
-                    _flightSimOrchestrator.ResetCameraView();
-                    Thread.Sleep(250);
-                }
+                _flightSimOrchestrator.ResetCameraView();
+                Thread.Sleep(250);
                 
                 int index = 0;
                 foreach (var panelConfig in ActiveProfile.PanelConfigs)
@@ -259,8 +232,7 @@ namespace MSFSPopoutPanelManager.Orchestration
                     {
                         WorkflowStepWithMessage.Execute(panelConfig.PanelName, () =>
                             {
-                                if (!ActiveProfile.IsUsedLegacyCameraSystem)
-                                    _flightSimOrchestrator.SetFixedCamera(panelConfig.FixedCameraConfig.CameraType, panelConfig.FixedCameraConfig.CameraIndex);
+                                _flightSimOrchestrator.SetFixedCamera(panelConfig.FixedCameraConfig.CameraType, panelConfig.FixedCameraConfig.CameraIndex);
                                 
                                 panelConfig.IsSelectedPanelSource = true;
 
@@ -367,18 +339,6 @@ namespace MSFSPopoutPanelManager.Orchestration
                            ActiveProfile.PanelConfigs.Count(p => p.PanelType == PanelType.BuiltInPopout) != 0;
                 });
             }
-        }
-
-        private void StepAddHudBar()
-        {
-            if (!ActiveProfile.ProfileSetting.HudBarConfig.IsEnabled)
-                return;
-
-            WorkflowStepWithMessage.Execute("Opening HUD Bar", () =>
-            {
-                var panelConfig = ActiveProfile.PanelConfigs.FirstOrDefault(p => p.PanelType == PanelType.HudBarWindow);
-                OnHudBarOpened?.Invoke(this, panelConfig);
-            });
         }
 
         private void StepAddNumPad()
@@ -619,19 +579,6 @@ namespace MSFSPopoutPanelManager.Orchestration
             }
 
             return ignoreError;
-        }
-
-        private void SetCockpitZoomLevel(int zoom, bool isTurboMode)
-        {
-            const int retry = 10;
-            for (var i = 0; i < retry; i++)
-            {
-                _flightSimOrchestrator.SetCockpitCameraZoomLevel(zoom);
-                Thread.Sleep(isTurboMode ? 600 : 1000);  // wait for flightsimdata to be updated
-
-                if (FlightSimData.CockpitCameraZoom == zoom) 
-                    break;
-            }
         }
     }
 }

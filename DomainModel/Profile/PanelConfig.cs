@@ -93,12 +93,14 @@ namespace MSFSPopoutPanelManager.DomainModel.Profile
         [JsonIgnore] public bool IsFloating { get; set; } = true;
 
         [JsonIgnore]
-        public bool IsDeletablePanel => PanelType != PanelType.HudBarWindow && PanelType != PanelType.RefocusDisplay &&
-                                        PanelType != PanelType.NumPadWindow && PanelType != PanelType.SwitchWindow;
+        public bool IsDeletablePanel => PanelType != PanelType.RefocusDisplay 
+                                        && PanelType != PanelType.NumPadWindow 
+                                        && PanelType != PanelType.SwitchWindow;
 
         [JsonIgnore]
-        public bool IsTouchEnablePanel => PanelType != PanelType.HudBarWindow && PanelType != PanelType.RefocusDisplay &&
-                                        PanelType != PanelType.NumPadWindow && PanelType != PanelType.SwitchWindow;
+        public bool IsTouchEnablePanel => PanelType != PanelType.RefocusDisplay 
+                                          && PanelType != PanelType.NumPadWindow
+                                          && PanelType != PanelType.SwitchWindow;
 
         [JsonIgnore]
         public bool IsCustomPopOut => PanelType == PanelType.CustomPopout;
@@ -106,9 +108,6 @@ namespace MSFSPopoutPanelManager.DomainModel.Profile
 
         [JsonIgnore] 
         public bool IsBuiltInPopOut => PanelType == PanelType.BuiltInPopout;
-
-        [JsonIgnore] 
-        public bool IsHudBarWindow => PanelType == PanelType.HudBarWindow;
 
         [JsonIgnore] 
         public bool IsRefocusDisplay => PanelType == PanelType.RefocusDisplay;

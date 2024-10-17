@@ -1,5 +1,4 @@
-﻿using MSFSPopoutPanelManager.DomainModel.SimConnect;
-using MSFSPopoutPanelManager.Shared;
+﻿using MSFSPopoutPanelManager.Shared;
 using System;
 using System.ComponentModel;
 using MSFSPopoutPanelManager.DomainModel.DynamicLod;
@@ -49,8 +48,6 @@ namespace MSFSPopoutPanelManager.Orchestration
         public bool IsInCockpit { get; set; }
 
         public bool IsFlightStarted { get; set; }
-
-        public IHudBarData HudBarData { get; set; }
 
         public DynamicLodSimData DynamicLodSimData { get; set; } = new();
 

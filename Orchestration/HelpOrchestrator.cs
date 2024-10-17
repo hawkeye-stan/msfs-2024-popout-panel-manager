@@ -1,5 +1,4 @@
-﻿using AutoUpdaterDotNET;
-using MSFSPopoutPanelManager.Shared;
+﻿using MSFSPopoutPanelManager.Shared;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -11,22 +10,12 @@ namespace MSFSPopoutPanelManager.Orchestration
     {
         public void OpenGettingStarted()
         {
-            Process.Start(new ProcessStartInfo("https://github.com/hawkeye-stan/msfs-popout-panel-manager/blob/master/GETTING_STARTED.md") { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo("https://github.com/hawkeye-stan/msfs-2024-popout-panel-manager/blob/master/GETTING_STARTED.md") { UseShellExecute = true });
         }
 
         public void OpenUserGuide()
         {
-            Process.Start(new ProcessStartInfo("https://github.com/hawkeye-stan/msfs-popout-panel-manager#msfs-pop-out-panel-manager") { UseShellExecute = true });
-        }
-
-        public void OpenLatestDownloadGitHub()
-        {
-            Process.Start(new ProcessStartInfo("https://github.com/hawkeye-stan/msfs-popout-panel-manager/releases") { UseShellExecute = true });
-        }
-
-        public void OpenLatestDownloadFligthsimTo()
-        {
-            Process.Start(new ProcessStartInfo("https://flightsim.to/file/35759/msfs-pop-out-panel-manager") { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo("https://github.com/hawkeye-stan/msfs-2024-popout-panel-manager#msfs-pop-out-panel-manager") { UseShellExecute = true });
         }
 
         public void OpenLicense()
@@ -37,19 +26,6 @@ namespace MSFSPopoutPanelManager.Orchestration
         public void OpenVersionInfo()
         {
             Process.Start("notepad.exe", "VERSION.md");
-        }
-
-        public bool HasOrphanAppCache()
-        {
-            var appLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var srcPath = Path.Combine(appLocal, @"temp\.net\MSFSPopoutPanelManager");
-
-            var di = new DirectoryInfo(srcPath);
-
-            if (di.Exists)
-                return di.GetDirectories().Length > 1;
-
-            return false;
         }
 
         public void DownloadVccLibrary()

@@ -1,5 +1,4 @@
 ﻿using MSFSPopoutPanelManager.DomainModel.Profile;
-using MSFSPopoutPanelManager.DomainModel.SimConnect;
 using MSFSPopoutPanelManager.Shared;
 using MSFSPopoutPanelManager.SimConnectAgent;
 using MSFSPopoutPanelManager.WindowsAgent;
@@ -64,17 +63,9 @@ namespace MSFSPopoutPanelManager.Orchestration
                 MapRequiredSimConnectData(e);
             };
 
-            _simConnectProvider.OnSimConnectDataHudBarRefreshed += (_, e) =>
-            {
-                if (!ProfileData.ActiveProfile.ProfileSetting.HudBarConfig.IsEnabled || !FlightSimData.IsFlightStarted) 
-                    return;
-
-                MapHudBarSimConnectData(e);
-            };
-
-            var _lastDynamicLodPause = DateTime.Now;
-            var _isDynamicLodPausePrevously = true;
-            var _lastDyanmicLodUpdatedTime = DateTime.Now;
+            var lastDynamicLodPause = DateTime.Now;
+            var isDynamicLodPausePreviously = true;
+            var lastDynamicLodUpdatedTime = DateTime.Now;
 
             _simConnectProvider.OnSimConnectDataDynamicLodRefreshed += (_, e) =>
             {
@@ -84,24 +75,24 @@ namespace MSFSPopoutPanelManager.Orchestration
                 var isPaused = (AppSettingData.ApplicationSetting.DynamicLodSetting.PauseWhenMsfsLoseFocus && !WindowActionManager.IsMsfsInFocus()) ||
                                (AppSettingData.ApplicationSetting.DynamicLodSetting.PauseOutsideCockpitView && FlightSimData.CameraState != CameraState.Cockpit);
 
-                if (_isDynamicLodPausePrevously && !isPaused)
+                if (isDynamicLodPausePreviously && !isPaused)
                 {
-                    if (DateTime.Now - _lastDynamicLodPause <= TimeSpan.FromSeconds(3))
+                    if (DateTime.Now - lastDynamicLodPause <= TimeSpan.FromSeconds(3))
                         return;
                     
-                    _lastDynamicLodPause = DateTime.Now;
-                    _isDynamicLodPausePrevously = false;
+                    lastDynamicLodPause = DateTime.Now;
+                    isDynamicLodPausePreviously = false;
                 }
                 else if (isPaused)
                 {
-                    _isDynamicLodPausePrevously = true;
+                    isDynamicLodPausePreviously = true;
                     return;
                 }
                 
-                if (DateTime.Now - _lastDyanmicLodUpdatedTime <= TimeSpan.FromSeconds(0.4))     // take FPS sample every 0.4 seconds
+                if (DateTime.Now - lastDynamicLodUpdatedTime <= TimeSpan.FromSeconds(0.4))     // take FPS sample every 0.4 seconds
                     return;
                 
-                _lastDyanmicLodUpdatedTime = DateTime.Now;
+                lastDynamicLodUpdatedTime = DateTime.Now;
             
                 MapDynamicLodSimConnectData(e);
                 _dynamicLodOrchestrator.UpdateLod();
@@ -315,34 +306,7 @@ namespace MSFSPopoutPanelManager.Orchestration
                 _simConnectProvider.TurnOffActivePause();
             });
         }
-
-        public void IncreaseSimRate()
-        {
-            if (_simConnectProvider == null)
-                return;
-
-            if (Convert.ToInt32(FlightSimData.HudBarData.SimRate) == 16)
-                return;
-
-            _simConnectProvider.IncreaseSimRate();
-        }
-
-        public void DecreaseSimRate()
-        {
-            if (_simConnectProvider == null)
-                return;
-
-            if (FlightSimData.HudBarData.SimRate.ToString("N2") == "0.25")
-                return;
-
-            _simConnectProvider.DecreaseSimRate();
-        }
-
-        public void SetCockpitCameraZoomLevel(int zoomLevel)
-        {
-            _simConnectProvider.SetCockpitCameraZoomLevel(zoomLevel);
-        }
-
+        
         public void ResetCameraView()
         {
             _simConnectProvider.SetCameraRequestAction(1);
@@ -363,31 +327,6 @@ namespace MSFSPopoutPanelManager.Orchestration
             _simConnectProvider.SetCameraViewTypeAndIndex1(index);
         }
 
-        public void SetHudBarConfig()
-        {
-            if (_simConnectProvider == null)
-                return;
-
-            var hudBarType = ProfileData.ActiveProfile.ProfileSetting.HudBarConfig.HudBarType;
-            switch (hudBarType)
-            {
-                case HudBarType.PMDG_737:
-                    FlightSimData.HudBarData = new HudBarData737();
-                    break;
-                case HudBarType.Generic_Aircraft:
-                default:
-                    FlightSimData.HudBarData = new HudBarDataGeneric();
-                    break;
-            }
-
-            _simConnectProvider.SetHudBarConfig(hudBarType);
-        }
-
-        public void StopHudBar()
-        {
-            _simConnectProvider.StopHudBar();
-        }
-
         private void HandleOnFlightStarted(object sender, EventArgs e)
         {
             OnFlightStarted?.Invoke(this, EventArgs.Empty);
@@ -404,8 +343,6 @@ namespace MSFSPopoutPanelManager.Orchestration
             OnFlightStopped?.Invoke(this, EventArgs.Empty);
 
             CloseAllPopOuts();
-            
-            FlightSimData.HudBarData?.Clear();
 
             FlightSimData.IsFlightStarted = false;
 
@@ -479,37 +416,7 @@ namespace MSFSPopoutPanelManager.Orchestration
 
             FlightSimData.IsSimConnectDataReceived = true;
         }
-
-        private void MapHudBarSimConnectData(List<SimDataItem> simData)
-        {
-            if (CompareSimConnectData(simData, SimDataDefinitions.PropName.ElevatorTrim, FlightSimData.HudBarData.ElevatorTrim, out var newValue))
-                FlightSimData.HudBarData.ElevatorTrim = newValue;
-
-            if (CompareSimConnectData(simData, SimDataDefinitions.PropName.AileronTrim, FlightSimData.HudBarData.AileronTrim, out newValue))
-                FlightSimData.HudBarData.AileronTrim = newValue;
-
-            if (CompareSimConnectData(simData, SimDataDefinitions.PropName.RudderTrim, FlightSimData.HudBarData.RudderTrim, out newValue))
-                FlightSimData.HudBarData.RudderTrim = newValue;
-
-            if (CompareSimConnectData(simData, SimDataDefinitions.PropName.ParkingBrake, FlightSimData.HudBarData.ParkingBrake, out newValue))
-                FlightSimData.HudBarData.ParkingBrake = newValue;
-
-            if (CompareSimConnectData(simData, SimDataDefinitions.PropName.Flap, FlightSimData.HudBarData.Flap, out newValue))
-                FlightSimData.HudBarData.Flap = newValue;
-
-            if (CompareSimConnectData(simData, SimDataDefinitions.PropName.GearLeft, FlightSimData.HudBarData.GearLeft, out newValue))
-                FlightSimData.HudBarData.GearLeft = newValue;
-
-            if (CompareSimConnectData(simData, SimDataDefinitions.PropName.GearCenter, FlightSimData.HudBarData.GearCenter, out newValue))
-                FlightSimData.HudBarData.GearCenter = newValue;
-
-            if (CompareSimConnectData(simData, SimDataDefinitions.PropName.GearRight, FlightSimData.HudBarData.GearRight, out newValue))
-                FlightSimData.HudBarData.GearRight = newValue;
-
-            if (CompareSimConnectData(simData, SimDataDefinitions.PropName.SimRate, FlightSimData.HudBarData.SimRate, out newValue))
-                FlightSimData.HudBarData.SimRate = newValue;
-        }
-
+        
         private void MapDynamicLodSimConnectData(List<SimDataItem> simData)
         {
             if (CompareSimConnectData(simData, SimDataDefinitions.PropName.PlaneAltAboveGround, FlightSimData.DynamicLodSimData.Agl, out var newValue))

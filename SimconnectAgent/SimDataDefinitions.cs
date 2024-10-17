@@ -23,25 +23,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             return definitions;
         }
 
-        public static List<SimConnectDataDefinition> GetHudBarDefinitions(SimDataDefinitionType definitionType)
-        {
-            List<SimConnectDataDefinition> definitions;
-
-            switch (definitionType)
-            {
-                case SimDataDefinitionType.GenericHudBar:
-                    definitions = GetSharedHudBarDefinitions();
-                    definitions.AddRange(GetGenericAircraftHudBarDefinitions());
-                    return definitions;
-                case SimDataDefinitionType.Pmdg737HudBar:
-                    definitions = GetSharedHudBarDefinitions();
-                    definitions.AddRange(GetPmdg737HudBarDefinitions());
-                    return definitions;
-                case SimDataDefinitionType.NoHudBar:
-                default:
-                    return null;
-            }
-        }
 
         public static List<SimConnectDataDefinition> GetDynamicLodDefinitions()
         {
@@ -51,43 +32,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
                 new() { DefinitionId = DataDefinition.DYNAMICLOD_DEFINITION, RequestId = DataRequest.DYNAMICLOD_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.PlaneAltAboveGroundMinusCg, VariableName = "PLANE ALT ABOVE GROUND MINUS CG", SimConnectUnit = "feet", DataType = DataType.Float64 },
                 new() { DefinitionId = DataDefinition.DYNAMICLOD_DEFINITION, RequestId = DataRequest.DYNAMICLOD_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.SimOnGround, VariableName = "SIM ON GROUND", SimConnectUnit = "Bool", DataType = DataType.Float64 },
                 new() { DefinitionId = DataDefinition.DYNAMICLOD_DEFINITION, RequestId = DataRequest.DYNAMICLOD_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.GroundVelocity, VariableName = "GROUND VELOCITY", SimConnectUnit = "knots", DataType = DataType.Float64 }
-            };
-            return definitions;
-        }
-
-        private static List<SimConnectDataDefinition> GetSharedHudBarDefinitions()
-        {
-            var definitions = new List<SimConnectDataDefinition>
-            {
-                new() { DefinitionId = DataDefinition.HUDBAR_DEFINITION, RequestId = DataRequest.HUDBAR_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.SimRate, VariableName = "SIMULATION RATE", SimConnectUnit = "Number", DataType = DataType.Float64 },
-                new() { DefinitionId = DataDefinition.HUDBAR_DEFINITION, RequestId = DataRequest.HUDBAR_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.ParkingBrake, VariableName = "BRAKE PARKING INDICATOR", SimConnectUnit = "Bool", DataType = DataType.Float64 },
-                new() { DefinitionId = DataDefinition.HUDBAR_DEFINITION, RequestId = DataRequest.HUDBAR_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.GearLeft, VariableName = "GEAR LEFT POSITION", SimConnectUnit = "Percent", DataType = DataType.Float64 },
-                new() { DefinitionId = DataDefinition.HUDBAR_DEFINITION, RequestId = DataRequest.HUDBAR_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.GearCenter, VariableName = "GEAR CENTER POSITION", SimConnectUnit = "Percent", DataType = DataType.Float64 },
-                new() { DefinitionId = DataDefinition.HUDBAR_DEFINITION, RequestId = DataRequest.HUDBAR_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.GearRight, VariableName = "GEAR RIGHT POSITION", SimConnectUnit = "Percent", DataType = DataType.Float64 }
-            };
-            return definitions;
-        }
-
-        private static List<SimConnectDataDefinition> GetGenericAircraftHudBarDefinitions()
-        {
-            var definitions = new List<SimConnectDataDefinition>
-            {
-                new() { DefinitionId = DataDefinition.HUDBAR_DEFINITION, RequestId = DataRequest.HUDBAR_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.ElevatorTrim, VariableName = "ELEVATOR TRIM PCT", SimConnectUnit = "percent", DataType = DataType.Float64 },
-                new() { DefinitionId = DataDefinition.HUDBAR_DEFINITION, RequestId = DataRequest.HUDBAR_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.AileronTrim, VariableName = "AILERON TRIM", SimConnectUnit = "radians", DataType = DataType.Float64 },
-                new() { DefinitionId = DataDefinition.HUDBAR_DEFINITION, RequestId = DataRequest.HUDBAR_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.RudderTrim, VariableName = "RUDDER TRIM", SimConnectUnit = "radians", DataType = DataType.Float64 },
-                new() { DefinitionId = DataDefinition.HUDBAR_DEFINITION, RequestId = DataRequest.HUDBAR_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.Flap, VariableName = "TRAILING EDGE FLAPS LEFT ANGLE", SimConnectUnit = "degrees", DataType = DataType.Float64 }
-            };
-            return definitions;
-        }
-
-        private static List<SimConnectDataDefinition> GetPmdg737HudBarDefinitions()
-        {
-            var definitions = new List<SimConnectDataDefinition>
-            {
-                new() { DefinitionId = DataDefinition.HUDBAR_DEFINITION, RequestId = DataRequest.HUDBAR_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.ElevatorTrim, VariableName = "L:switch_690_73X", SimConnectUnit = "number", DataType = DataType.Float64 },
-                new() { DefinitionId = DataDefinition.HUDBAR_DEFINITION, RequestId = DataRequest.HUDBAR_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.AileronTrim, VariableName = "AILERON POSITION", SimConnectUnit = "Position 16k", DataType = DataType.Float64 },
-                new() { DefinitionId = DataDefinition.HUDBAR_DEFINITION, RequestId = DataRequest.HUDBAR_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.RudderTrim, VariableName = "RUDDER DEFLECTION PCT", SimConnectUnit = "Percent Over 100", DataType = DataType.Float64 },
-                new() { DefinitionId = DataDefinition.HUDBAR_DEFINITION, RequestId = DataRequest.HUDBAR_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.Flap, VariableName = "FLAPS HANDLE INDEX", SimConnectUnit = "Number", DataType = DataType.Float64 }
             };
             return definitions;
         }
@@ -110,17 +54,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             public static string PlaneAltAboveGroundMinusCg = "PlaneAltAboveGroundMinusCg";
             public static string SimOnGround = "SimOnGround";
             public static string GroundVelocity = "GroundVelocity";
-
-            // Hud Bar data
-            public static string ElevatorTrim = "ElevatorTrim";
-            public static string AileronTrim = "AileronTrim";
-            public static string RudderTrim = "RudderTrim";
-            public static string ParkingBrake = "ParkingBrake";
-            public static string Flap = "Flap";
-            public static string GearLeft = "GearLeft";
-            public static string GearCenter = "GearCenter";
-            public static string GearRight = "GearRight";
-            public static string SimRate = "SimRate";
         }
 
         public enum WritableVariableName
@@ -132,12 +65,5 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             CameraViewTypeAndIndex0,
             CameraViewTypeAndIndex1
         }
-    }
-
-    public enum SimDataDefinitionType
-    {
-        NoHudBar,
-        GenericHudBar,
-        Pmdg737HudBar
     }
 }

@@ -21,22 +21,22 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl
                 DataContext = _viewModel;
                 _viewModel.OnProfileSelected += (_, _) =>
                 {
-                    PopupBoxFinder.StaysOpen = false;
-                    PopupBoxFinder.IsPopupOpen = false;
+                    //PopupBoxFinder.StaysOpen = false;
+                    //PopupBoxFinder.IsPopupOpen = false;
                 };
             };
         }
 
         private void BtnPopupBoxFinder_Click(object sender, RoutedEventArgs e)
         {
-            PopupBoxFinder.IsPopupOpen = !PopupBoxFinder.IsPopupOpen;
-            PopupBoxFinder.StaysOpen = PopupBoxFinder.IsPopupOpen;
+            //PopupBoxFinder.IsPopupOpen = !PopupBoxFinder.IsPopupOpen;
+            //PopupBoxFinder.StaysOpen = PopupBoxFinder.IsPopupOpen;
 
-            if (PopupBoxFinder.IsPopupOpen)
-            {
-                ComboBoxSearchProfile.Text = null;
-                ComboBoxSearchProfile.Focus();
-            }
+            //if (PopupBoxFinder.IsPopupOpen)
+            //{
+            //    ComboBoxSearchProfile.Text = null;
+            //    ComboBoxSearchProfile.Focus();
+            //}
         }
     }
 }

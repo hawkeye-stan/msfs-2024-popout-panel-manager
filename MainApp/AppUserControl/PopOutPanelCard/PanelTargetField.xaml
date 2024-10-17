@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:system="clr-namespace:System;assembly=System.Runtime"
     xmlns:viewModel="clr-namespace:MSFSPopoutPanelManager.MainApp.ViewModel"
+    d:DataContext="{d:DesignInstance viewModel:PopOutPanelSourceCardViewModel}"
     mc:Ignorable="d">
     <UserControl.Resources>
         <system:Double x:Key="LeftRightIconSize">18</system:Double>
@@ -26,7 +27,6 @@
     <StackPanel
         Width="220"
         HorizontalAlignment="Center"
-        d:DataContext="{d:DesignInstance viewModel:PopOutPanelSourceCardViewModel}"
         Orientation="Horizontal">
         <TextBox
             Width="140"

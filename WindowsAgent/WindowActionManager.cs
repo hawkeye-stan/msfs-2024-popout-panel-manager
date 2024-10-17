@@ -178,9 +178,6 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
             if (className.IndexOf("HwndWrapper[MSFSPopoutPanelManager", StringComparison.Ordinal) > -1)
             {
-                if (caption.IndexOf("HudBar", StringComparison.Ordinal) > -1)
-                    return PanelType.HudBarWindow;
-                
                 if (caption.IndexOf("Virtual NumPad", StringComparison.Ordinal) > -1)
                     return PanelType.NumPadWindow;
 
@@ -199,7 +196,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             {
                 var panelType = GetWindowPanelType(hwnd);
 
-                if (panelType == PanelType.CustomPopout || panelType == PanelType.HudBarWindow || panelType == PanelType.NumPadWindow || panelType == PanelType.SwitchWindow)
+                if (panelType == PanelType.CustomPopout || panelType == PanelType.NumPadWindow || panelType == PanelType.SwitchWindow)
                     CloseWindow(hwnd);
 
                 return true;

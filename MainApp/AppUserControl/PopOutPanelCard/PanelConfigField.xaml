@@ -8,15 +8,15 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:viewModel="clr-namespace:MSFSPopoutPanelManager.MainApp.ViewModel"
+    d:DataContext="{d:DesignInstance viewModel:PanelConfigFieldViewModel}"
     mc:Ignorable="d">
     <UserControl.Resources>
         <system:Double x:Key="UpDownIconSize">14</system:Double>
         <system:Double x:Key="UpDownButtonSize">22</system:Double>
-        <Style BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}" TargetType="TextBox">
+        <Style BasedOn="{StaticResource FloatingHintTextBox}" TargetType="TextBox">
             <Setter Property="materialDesign:HintAssist.FloatingScale" Value="1" />
             <Setter Property="HorizontalContentAlignment" Value="Left" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Padding" Value="0" />
             <EventSetter Event="KeyDown" Handler="TextBox_KeyDown" />
             <EventSetter Event="GotFocus" Handler="TextBox_GotFocus" />
         </Style>
@@ -32,20 +32,18 @@
             <Setter Property="Command" Value="{Binding PlusMinusCommand}" />
         </Style>
     </UserControl.Resources>
-    <StackPanel d:DataContext="{d:DesignInstance viewModel:PanelConfigFieldViewModel}" Orientation="Horizontal">
+    <StackPanel IsEnabled="{c:Binding '!DataItem.FullScreen'}" Orientation="Horizontal">
         <TextBox
             x:Name="TxtBoxData"
-            Width="50"
-            Margin="0,0,0,0"
+            Width="40"
+            Margin="0"
             materialDesign:HintAssist.Hint="{Binding BindingPath}"
-            IsEnabled="{c:Binding '!DataItem.FullScreen'}"
             PreviewTextInput="TxtBox_NumbersOnly"
             SourceUpdated="Data_SourceUpdated"
             TextChanged="TxtBox_NumbersOnlyTextChanged" />
         <materialDesign:PopupBox
             x:Name="PopupBoxAdjustment"
             Padding="5"
-            IsEnabled="{c:Binding '!DataItem.FullScreen'}"
             PlacementMode="RightAndAlignMiddles"
             PopupHorizontalOffset="-20"
             PopupUniformCornerRadius="10"
@@ -55,7 +53,8 @@
                     Width="{StaticResource UpDownButtonSize}"
                     Height="{StaticResource UpDownButtonSize}"
                     Margin="-4,12,0,0"
-                    Click="BtnPopupBoxOpen_Click">
+                    Click="BtnPopupBoxOpen_Click"
+                    Style="{StaticResource IconButton}">
                     <materialDesign:PackIcon
                         Width="{StaticResource UpDownIconSize}"
                         Height="{StaticResource UpDownIconSize}"
@@ -64,8 +63,6 @@
                 </Button>
             </materialDesign:PopupBox.ToggleContent>
             <StackPanel
-                Width="155"
-                Margin="0"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Orientation="Horizontal">
