@@ -3,7 +3,9 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:appUserControl="clr-namespace:MSFSPopoutPanelManager.MainApp.AppUserControl"
+    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
+    xmlns:controls="clr-namespace:DotNetKit.Windows.Controls;assembly=DotNetKit.Wpf.AutoCompleteComboBox"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:domain="clr-namespace:MSFSPopoutPanelManager.DomainModel.Profile;assembly=DomainModel"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -126,19 +128,64 @@
                                     Kind="Pencil" />
                             </ToggleButton>
                         </StackPanel>
+
+                        <materialDesign:PopupBox
+                            x:Name="PopupBoxFinder"
+                            Margin="10,0,8,0"
+                            materialDesign:ElevationAssist.Elevation="Dp0"
+                            IsEnabled="{c:Binding 'ProfileData.Profiles.Count > 1'}"
+                            PlacementMode="LeftAndAlignMiddles"
+                            PopupHorizontalOffset="-8"
+                            PopupUniformCornerRadius="4"
+                            PopupVerticalOffset="-4"
+                            Style="{StaticResource MaterialDesignPopupBox}">
+                            <materialDesign:PopupBox.ToggleContent>
+                                <Button
+                                    Click="BtnPopupBoxFinder_Click"
+                                    Style="{StaticResource IconButton}"
+                                    ToolTip="Find an aircraft profile">
+                                    <materialDesign:PackIcon Foreground="White" Kind="Magnify" />
+                                </Button>
+                            </materialDesign:PopupBox.ToggleContent>
+                            <controls:AutoCompleteComboBox
+                                x:Name="ComboBoxSearchProfile"
+                                Width="250"
+                                Height="28"
+                                Margin="5,0"
+                                Padding="5,0"
+                                materialDesign:ComboBoxAssist.MaxLength="20"
+                                materialDesign:HintAssist.Hint="Search Profile"
+                                materialDesign:HintAssist.HintOpacity="0.5"
+                                DisplayMemberPath="Name"
+                                FontSize="12"
+                                Foreground="White"
+                                ItemsSource="{Binding ProfileData.Profiles}"
+                                MaxDropDownHeight="500"
+                                SelectedItem="{Binding SearchProfileSelectedItem}"
+                                SelectedValuePath="Id"
+                                Style="{StaticResource MaterialDesignComboBox}"
+                                TextSearch.TextPath="Name">
+                                <b:Interaction.Triggers>
+                                    <b:EventTrigger EventName="SelectionChanged">
+                                        <b:InvokeCommandAction Command="{Binding SearchProfileSelectedCommand}" />
+                                    </b:EventTrigger>
+                                </b:Interaction.Triggers>
+                            </controls:AutoCompleteComboBox>
+                        </materialDesign:PopupBox>
+
                         <Button
-                            x:Name="BtnDeleteProfile"
-                            Width="{StaticResource ButtonSize}"
-                            Height="{StaticResource ButtonSize}"
+                            Margin="0"
+                            Command="{Binding AddProfileCommand}"
+                            Style="{StaticResource IconButton}"
+                            ToolTip="Add a new aircraft profile">
+                            <materialDesign:PackIcon Kind="FilePlusOutline" />
+                        </Button>
+                        <Button
+                            Margin="0"
                             Command="{Binding DeleteProfileCommand}"
-                            IsEnabled="True"
-                            KeyboardNavigation.AcceptsReturn="False"
-                            Style="{StaticResource MaterialDesignIconForegroundButton}"
+                            Style="{StaticResource IconButton}"
                             ToolTip="Delete profile">
-                            <materialDesign:PackIcon
-                                Width="{StaticResource IconSize}"
-                                Height="{StaticResource IconSize}"
-                                Kind="DeleteOutline" />
+                            <materialDesign:PackIcon Kind="DeleteOutline" />
                         </Button>
                     </DockPanel>
                 </StackPanel>
@@ -215,22 +262,22 @@
 
                         <WrapPanel Margin="0,8,0,0">
                             <ToggleButton
+                                Command="{Binding IncludeInGamePanelUpdatedCommand}"
                                 IsChecked="{Binding ActiveProfile.ProfileSetting.IncludeInGamePanels, Mode=TwoWay, NotifyOnTargetUpdated=True}"
                                 IsHitTestVisible="{c:Binding '!ActiveProfile.IsLocked',
                                                              Mode=OneWay}"
-                                Style="{StaticResource ToggleButton}"
-                                TargetUpdated="IncludeInGamePanel_TargetUpdated" />
+                                Style="{StaticResource ToggleButton}" />
                             <TextBlock Style="{StaticResource TxtBlockDisableWhenLocked}" ToolTip="Add in-game menu bar panels such as VFR Map, Checklist, ATC, etc. to profile to enable panel size and location management and touch support">Include in-game menu bar panels for pop out management and touch screen support</TextBlock>
                         </WrapPanel>
 
                         <StackPanel Margin="0,8,0,0" Orientation="Vertical">
                             <WrapPanel>
                                 <ToggleButton
+                                    Command="{Binding RefocusDisplayUpdatedCommand}"
                                     IsChecked="{Binding ActiveProfile.ProfileSetting.RefocusOnDisplay.IsEnabled, Mode=TwoWay, NotifyOnTargetUpdated=True}"
                                     IsHitTestVisible="{c:Binding '!ActiveProfile.IsLocked',
                                                                  Mode=OneWay}"
-                                    Style="{StaticResource ToggleButton}"
-                                    TargetUpdated="AddRefocusDisplay_TargetUpdated" />
+                                    Style="{StaticResource ToggleButton}" />
                                 <TextBlock Style="{StaticResource TxtBlockDisableWhenLocked}" ToolTip="Automatically set focus back to game window after a period of inactivity after touching the designated monitor. This is overcome a bug in MSFS where NVIDIA frame generation does not work when focus is not in the game window.">Enable entire monitor display to have game refocus function when touch</TextBlock>
                             </WrapPanel>
                             <WrapPanel
@@ -281,21 +328,21 @@
 
                         <WrapPanel Margin="0,8,0,0">
                             <ToggleButton
+                                Command="{Binding AddNumPadUpdatedCommand}"
                                 IsChecked="{Binding ActiveProfile.ProfileSetting.NumPadConfig.IsEnabled, Mode=TwoWay, NotifyOnTargetUpdated=True}"
                                 IsHitTestVisible="{c:Binding '!ActiveProfile.IsLocked',
                                                              Mode=OneWay}"
-                                Style="{StaticResource ToggleButton}"
-                                TargetUpdated="AddNumPad_TargetUpdated" />
+                                Style="{StaticResource ToggleButton}" />
                             <TextBlock Style="{StaticResource TxtBlockDisableWhenLocked}" ToolTip="Add a virtual keyboard NumPad to the game that has MSFS focused before sending key command">Add a virtual keyboard NumPad</TextBlock>
                         </WrapPanel>
 
                         <WrapPanel Name="WrapPanelSwitchWindow" Margin="0,8,0,0">
                             <ToggleButton
+                                Command="{Binding AddSwitchWindowUpdatedCommand}"
                                 IsChecked="{Binding ActiveProfile.ProfileSetting.SwitchWindowConfig.IsEnabled, Mode=TwoWay, NotifyOnTargetUpdated=True}"
                                 IsHitTestVisible="{c:Binding '!ActiveProfile.IsLocked',
                                                              Mode=OneWay}"
-                                Style="{StaticResource ToggleButton}"
-                                TargetUpdated="AddSwitchWindow_TargetUpdated" />
+                                Style="{StaticResource ToggleButton}" />
                             <TextBlock Style="{StaticResource TxtBlockDisableWhenLocked}" ToolTip="Add a switch window command bar to the game">Add a switch window command bar</TextBlock>
                         </WrapPanel>
 
@@ -349,83 +396,13 @@
                     ToolTip="Start pop out process" />
                 <Button
                     x:Name="BtnClosePopOut"
-                    Width="Auto"
                     Margin="0,10,0,0"
                     HorizontalAlignment="Right"
                     Command="{Binding ClosePopOutCommand}"
                     Content="Close All Pop Outs"
-                    Foreground="White"
-                    KeyboardNavigation.AcceptsReturn="False"
-                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Style="{StaticResource FlatButton}"
                     ToolTip="Close all opened pop outs that are controlled by Popout Panel Manager" />
             </DockPanel>
         </Grid>
-        <!--<StackPanel Height="50" DockPanel.Dock="Bottom">
-            <Separator Margin="0,5,0,0" />
-            <Grid>
-                <StackPanel>
-                    <materialDesign:Snackbar
-                        x:Name="SnackbarMessage"
-                        HorizontalAlignment="Stretch"
-                        Background="DimGray"
-                        Foreground="White"
-                        IsActive="{Binding ActiveProfile.IsEditingPanelSource}">
-                        <materialDesign:SnackbarMessage>
-                            <StackPanel
-                                Width="800"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Orientation="Horizontal">
-                                <TextBlock Margin="160,0,0,0" VerticalAlignment="Center">Please complete editing of source panel locations by clicking</TextBlock>
-                                <materialDesign:PackIcon
-                                    Width="{StaticResource IconSize}"
-                                    Height="{StaticResource IconSize}"
-                                    Margin="5,0,5,0"
-                                    Foreground="LightGreen"
-                                    Kind="CrosshairsGps" />
-                                <TextBlock VerticalAlignment="Center">above to enable Start Pop Out</TextBlock>
-                            </StackPanel>
-                        </materialDesign:SnackbarMessage>
-                    </materialDesign:Snackbar>
-                </StackPanel>
-                <StackPanel>
-                    <materialDesign:Snackbar
-                        x:Name="SnackbarMessage2"
-                        HorizontalAlignment="Stretch"
-                        Background="DimGray"
-                        Foreground="White"
-                        IsActive="{Binding ActiveProfile.HasUnidentifiedPanelSource}">
-                        <materialDesign:SnackbarMessage>
-                            <StackPanel
-                                Width="800"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Orientation="Horizontal">
-                                <TextBlock Margin="250,0,0,0" VerticalAlignment="Center">Please identify all source panel locations to enable Start Pop Out</TextBlock>
-                            </StackPanel>
-                        </materialDesign:SnackbarMessage>
-                    </materialDesign:Snackbar>
-                </StackPanel>
-                <StackPanel>
-                    <materialDesign:Snackbar
-                        x:Name="SnackbarMessage3"
-                        HorizontalAlignment="Stretch"
-                        Background="DimGray"
-                        Foreground="White"
-                        IsActive="{Binding ActiveProfile.IsDisabledStartPopOut}">
-                        <materialDesign:SnackbarMessage>
-                            <StackPanel
-                                Width="800"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Orientation="Horizontal">
-                                <TextBlock Margin="250,0,0,0" VerticalAlignment="Center">Pop out in progress. Please wait and do not move your mouse.</TextBlock>
-                            </StackPanel>
-                        </materialDesign:SnackbarMessage>
-                    </materialDesign:Snackbar>
-                </StackPanel>
-            </Grid>
-        </StackPanel>-->
-
     </DockPanel>
 </UserControl>

@@ -5,128 +5,60 @@
     xmlns:appUserControl="clr-namespace:MSFSPopoutPanelManager.MainApp.AppUserControl"
     xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodel="clr-namespace:MSFSPopoutPanelManager.MainApp.ViewModel"
     Width="Auto"
     Height="Auto"
     d:DataContext="{d:DesignInstance viewmodel:ProfileCardListViewModel}"
     mc:Ignorable="d">
-    <UserControl.Resources>
-        <DataTrigger
-            x:Key="TriggerIsDisabledAppInput"
-            Binding="{Binding ActiveProfile.IsDisabledStartPopOut}"
-            Value="True">
-            <d:DataTrigger.DataContext>
-                <x:Type Type="viewmodel:ProfileCardListViewModel" />
-            </d:DataTrigger.DataContext>
-            <Setter Property="FrameworkElement.Opacity" Value="0.5" />
-            <Setter Property="FrameworkElement.IsHitTestVisible" Value="False" />
-        </DataTrigger>
-    </UserControl.Resources>
-    <DockPanel
-        HorizontalAlignment="Stretch"
-        VerticalAlignment="Stretch"
-        Background="#334055">
-        <DockPanel.Style>
-            <Style>
-                <Style.Triggers>
-                    <StaticResource ResourceKey="TriggerIsDisabledAppInput" />
-                </Style.Triggers>
-            </Style>
-        </DockPanel.Style>
-        <!--<appUserControl:ProfileCardEmpty Visibility="{c:Binding 'ProfileData.Profiles.Count == 0'}" />-->
-        <appUserControl:ProfileCard Padding="10" Visibility="{c:Binding 'ProfileData.Profiles.Count > 0'}" />
-        <!--<DockPanel Width="62">
-            <Button
-                Width="{StaticResource ButtonSize}"
-                Height="{StaticResource ButtonSize}"
-                Margin="6,0,0,0"
-                Command="{Binding PreviousProfileCommand}"
-                IsEnabled="{c:Binding 'ProfileData.Profiles.Count > 1'}"
-                Style="{StaticResource MaterialDesignFloatingActionDarkButton}"
-                ToolTip="Previous aircraft profile">
+    <Grid Background="#334055">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <appUserControl:ProfileCardEmpty
+            Grid.Row="0"
+            Height="Auto"
+            Padding="10"
+            Visibility="{c:Binding 'ProfileData.Profiles.Count == 0'}" />
+        <appUserControl:ProfileCard
+            Grid.Row="0"
+            Height="Auto"
+            Padding="10"
+            Visibility="{c:Binding 'ProfileData.Profiles.Count > 0'}" />
+        <DockPanel
+            Grid.Row="1"
+            HorizontalAlignment="Stretch"
+            Background="#333333">
+            <TextBlock
+                DockPanel.Dock="Top"
+                Style="{StaticResource TextBlockLabel}"
+                TextAlignment="Center"
+                Visibility="{c:Binding 'ActiveProfile.IsEditingPanelSource'}">
+                Please complete editing of source panel locations by clicking
                 <materialDesign:PackIcon
-                    Width="{StaticResource IconSize}"
-                    Height="{StaticResource IconSize}"
-                    Kind="ChevronLeft" />
-            </Button>
-        </DockPanel>-->
-        <!--<DockPanel Width="62" Margin="-5,10,0,0">
-            <StackPanel Orientation="Vertical">
-                <Button
-                    Width="{StaticResource ButtonSize}"
-                    Height="{StaticResource ButtonSize}"
-                    Command="{Binding AddProfileCommand}"
-                    Style="{StaticResource MaterialDesignFloatingActionDarkButton}"
-                    ToolTip="Add a new aircraft profile">
-                    <materialDesign:PackIcon
-                        Width="18"
-                        Height="18"
-                        Kind="FilePlusOutline" />
-                </Button>
-                <materialDesign:PopupBox
-                    x:Name="PopupBoxFinder"
-                    Margin="16,16,0,0"
-                    materialDesign:ElevationAssist.Elevation="Dp0"
-                    IsEnabled="{c:Binding 'ProfileData.Profiles.Count > 1'}"
-                    PlacementMode="LeftAndAlignMiddles"
-                    PopupHorizontalOffset="-10"
-                    PopupUniformCornerRadius="4"
-                    Style="{StaticResource MaterialDesignPopupBox}">
-                    <materialDesign:PopupBox.ToggleContent>
-                        <Button
-                            Width="{StaticResource ButtonSize}"
-                            Height="{StaticResource ButtonSize}"
-                            Margin="0"
-                            Padding="0"
-                            Click="BtnPopupBoxFinder_Click"
-                            Style="{StaticResource MaterialDesignFloatingActionDarkButton}"
-                            ToolTip="Find an aircraft profile">
-                            <materialDesign:PackIcon
-                                Width="{StaticResource IconSize}"
-                                Height="{StaticResource IconSize}"
-                                Foreground="White"
-                                Kind="Magnify" />
-                        </Button>
-                    </materialDesign:PopupBox.ToggleContent>
-                    <dotNetKitControls:AutoCompleteComboBox
-                        x:Name="ComboBoxSearchProfile"
-                        Width="250"
-                        Margin="5,0,5,0"
-                        Padding="5,0,5,0"
-                        materialDesign:ComboBoxAssist.MaxLength="20"
-                        materialDesign:HintAssist.Hint="Search Profile"
-                        materialDesign:HintAssist.HintOpacity="0.3"
-                        DisplayMemberPath="Name"
-                        Foreground="White"
-                        ItemsSource="{Binding ProfileData.Profiles}"
-                        MaxDropDownHeight="400"
-                        SelectedItem="{Binding SearchProfileSelectedItem}"
-                        SelectedValuePath="Id"
-                        Style="{StaticResource MaterialDesignComboBox}"
-                        TextSearch.TextPath="Name">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="SelectionChanged">
-                                <i:InvokeCommandAction Command="{Binding SearchProfileSelectedCommand}" />
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                    </dotNetKitControls:AutoCompleteComboBox>
-                </materialDesign:PopupBox>
-                <Button
-                    Width="{StaticResource ButtonSize}"
-                    Height="{StaticResource ButtonSize}"
-                    Margin="0,170,0,0"
-                    Command="{Binding NextProfileCommand}"
-                    DockPanel.Dock="Top"
-                    IsEnabled="{c:Binding 'ProfileData.Profiles.Count > 1'}"
-                    Style="{StaticResource MaterialDesignFloatingActionDarkButton}"
-                    ToolTip="Next aircraft profile">
-                    <materialDesign:PackIcon
-                        Width="{StaticResource IconSize}"
-                        Height="{StaticResource IconSize}"
-                        Kind="ChevronRight" />
-                </Button>
-            </StackPanel>
-        </DockPanel>-->
-    </DockPanel>
+                    Width="12"
+                    Height="12"
+                    Margin="0,0,0,-2"
+                    Padding="0"
+                    Foreground="LightGreen"
+                    Kind="CrosshairsGps" />
+                to enable Start Pop Out
+            </TextBlock>
+            <TextBlock
+                DockPanel.Dock="Top"
+                Style="{StaticResource TextBlockLabel}"
+                TextAlignment="Center"
+                Visibility="{c:Binding '!ActiveProfile.IsEditingPanelSource and ActiveProfile.HasUnidentifiedPanelSource'}">
+                Please identify all source panel locations to enable Start Pop Out
+            </TextBlock>
+            <TextBlock
+                Style="{StaticResource TextBlockLabel}"
+                TextAlignment="Center"
+                Visibility="{c:Binding 'ActiveProfile.IsDisabledStartPopOut'}">
+                Pop out in progress. Please wait and do not move your mouse.
+            </TextBlock>
+        </DockPanel>
+    </Grid>
 </UserControl>

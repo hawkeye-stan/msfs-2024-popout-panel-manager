@@ -34,32 +34,6 @@ namespace MSFSPopoutPanelManager.Orchestration
             ProfileData.DeleteActiveProfile();
         }
 
-        public void MoveToNextProfile()
-        {
-            // Reset current profile
-            ProfileData.ResetActiveProfile();
-
-            var newProfileIndex = ProfileData.Profiles.IndexOf(ProfileData.ActiveProfile) + 1;
-
-            if (newProfileIndex >= ProfileData.Profiles.Count)
-                newProfileIndex = 0;
-
-            ProfileData.SetActiveProfile(newProfileIndex);
-        }
-
-        public void MoveToPreviousProfile()
-        {
-            // Reset current profile
-            ProfileData.ResetActiveProfile();
-
-            var newProfileIndex = ProfileData.Profiles.IndexOf(ProfileData.ActiveProfile) - 1;
-
-            if (newProfileIndex < 0)
-                newProfileIndex = ProfileData.Profiles.Count - 1;
-
-            ProfileData.SetActiveProfile(newProfileIndex);
-        }
-
         public void ChangeProfile(UserProfile profile)
         {
             if (ProfileData != null)

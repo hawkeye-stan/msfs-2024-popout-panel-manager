@@ -6,6 +6,7 @@
 
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <converter:KeystrokeBindingsConverter x:Key="KeystrokeBindingsConverter" />
+    <converter:InverseBooleanOrConverter x:Key="InverseBooleanOrConverter" />
 
     <Style
         x:Key="AppWindowHeaderButton"
@@ -53,204 +54,10 @@
         <Setter Property="Foreground" Value="White" />
         <Setter Property="KeyboardNavigation.AcceptsReturn" Value="False" />
         <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="12" />
     </Style>
 
-    <Style x:Key="ToggleButton" TargetType="{x:Type ToggleButton}">
-        <Setter Property="Background" Value="{DynamicResource MaterialDesign.Brush.Primary}" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
-        <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
-        <Setter Property="Padding" Value="0,1,0,0" />
-        <Setter Property="Margin" Value="4,0,4,0" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ToggleButton}">
-                    <ControlTemplate.Resources>
-                        <SineEase x:Key="RippleEasingFunction" EasingMode="EaseInOut" />
-                        <Storyboard x:Key="ShowRipple">
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource RippleEasingFunction}"
-                                Storyboard.TargetName="RippleThumb"
-                                Storyboard.TargetProperty="Opacity"
-                                To="0.26"
-                                Duration="0" />
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource RippleEasingFunction}"
-                                Storyboard.TargetName="RippleThumb"
-                                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
-                                From="1"
-                                To="2.5"
-                                Duration="0:0:0.2" />
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource RippleEasingFunction}"
-                                Storyboard.TargetName="RippleThumb"
-                                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
-                                From="1"
-                                To="2.5"
-                                Duration="0:0:0.2" />
-                        </Storyboard>
-                        <Storyboard x:Key="HideRipple">
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource RippleEasingFunction}"
-                                Storyboard.TargetName="RippleThumb"
-                                Storyboard.TargetProperty="Opacity"
-                                To="0"
-                                Duration="0:0:0.3" />
-                        </Storyboard>
-                    </ControlTemplate.Resources>
-                    <Viewbox Width="{TemplateBinding Width}">
-                        <Grid>
-                            <Rectangle
-                                x:Name="Track"
-                                Width="40"
-                                Height="15"
-                                Margin="4.211,5,4.211,0"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Top"
-                                Fill="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(materialDesign:ToggleButtonAssist.SwitchTrackOffBackground)}"
-                                Opacity="0.26"
-                                RadiusX="7.5"
-                                RadiusY="7.5"
-                                Stroke="{x:Null}" />
-                            <Grid
-                                x:Name="ThumbHolder"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Top">
-                                <Ellipse
-                                    x:Name="RippleThumb"
-                                    Width="25"
-                                    Height="25"
-                                    Margin="0"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Fill="{DynamicResource MaterialDesign.Brush.Primary.Light}"
-                                    IsHitTestVisible="False"
-                                    Opacity="0.26"
-                                    RenderTransformOrigin="0.5,0.5">
-                                    <Ellipse.RenderTransform>
-                                        <ScaleTransform ScaleX="1" ScaleY="1" />
-                                    </Ellipse.RenderTransform>
-                                </Ellipse>
-                                <AdornerDecorator CacheMode="{Binding RelativeSource={RelativeSource Self}, Path=(materialDesign:ShadowAssist.CacheMode)}">
-                                    <Ellipse
-                                        x:Name="Thumb"
-                                        Width="25"
-                                        Height="25"
-                                        Margin="0,0,0,0"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Effect="{DynamicResource MaterialDesignShadowDepth1}"
-                                        Fill="#FFFAFAFA"
-                                        RenderTransformOrigin="0.5,0.5"
-                                        Stroke="{x:Null}" />
-                                </AdornerDecorator>
-                                <ContentPresenter
-                                    x:Name="ContentPresenter"
-                                    Margin="{TemplateBinding Padding}"
-                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                    Content="{TemplateBinding Content}"
-                                    ContentTemplate="{TemplateBinding ContentTemplate}"
-                                    FlowDirection="LeftToRight" />
-                                <Grid.RenderTransform>
-                                    <TranslateTransform X="0" Y="0" />
-                                </Grid.RenderTransform>
-                            </Grid>
-                        </Grid>
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="CheckStates">
-                                <VisualStateGroup.Transitions>
-                                    <VisualTransition From="*" To="Checked">
-                                        <Storyboard>
-                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ThumbHolder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)">
-                                                <EasingDoubleKeyFrame KeyTime="0" Value="0" />
-                                                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="23.5">
-                                                    <EasingDoubleKeyFrame.EasingFunction>
-                                                        <QuadraticEase EasingMode="EaseOut" />
-                                                    </EasingDoubleKeyFrame.EasingFunction>
-                                                </EasingDoubleKeyFrame>
-                                            </DoubleAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualTransition>
-                                    <VisualTransition From="Checked" To="Unchecked">
-                                        <Storyboard>
-                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ThumbHolder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)">
-                                                <EasingDoubleKeyFrame KeyTime="0" Value="23.5" />
-                                                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="0">
-                                                    <EasingDoubleKeyFrame.EasingFunction>
-                                                        <QuadraticEase EasingMode="EaseOut" />
-                                                    </EasingDoubleKeyFrame.EasingFunction>
-                                                </EasingDoubleKeyFrame>
-                                            </DoubleAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualTransition>
-                                </VisualStateGroup.Transitions>
-                                <VisualState x:Name="Checked">
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="ThumbHolder"
-                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
-                                            To="23.5"
-                                            Duration="0" />
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Unchecked">
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="ThumbHolder"
-                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
-                                            To="0"
-                                            Duration="0" />
-                                    </Storyboard>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
-                    </Viewbox>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsChecked" Value="True">
-                            <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary.Foreground}" />
-                            <Setter TargetName="Thumb" Property="Fill" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Background}" />
-                            <Setter TargetName="Track" Property="Fill" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(materialDesign:ToggleButtonAssist.SwitchTrackOnBackground)}" />
-                        </Trigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsChecked" Value="True" />
-                                <Condition Property="materialDesign:ToggleButtonAssist.HasOnContent" Value="True" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="ContentPresenter" Property="Content" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(materialDesign:ToggleButtonAssist.OnContent)}" />
-                            <Setter TargetName="ContentPresenter" Property="ContentTemplate" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(materialDesign:ToggleButtonAssist.OnContentTemplate)}" />
-                        </MultiTrigger>
-                        <Trigger Property="IsChecked" Value="False">
-                            <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.Primary}" />
-                            <!--  Need to set Foreground to Background here instead of hardcoded PrimaryHueMidBrush  -->
-                        </Trigger>
-                        <Trigger Property="Button.IsDefaulted" Value="true" />
-                        <Trigger Property="IsMouseOver" Value="true" />
-                        <Trigger Property="IsPressed" Value="true">
-                            <Trigger.EnterActions>
-                                <BeginStoryboard Storyboard="{StaticResource ShowRipple}" />
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard Storyboard="{StaticResource HideRipple}" />
-                            </Trigger.ExitActions>
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="false">
-                            <Setter TargetName="Thumb" Property="Fill" Value="#BDBDBD" />
-                            <Setter TargetName="Track" Property="Fill">
-                                <Setter.Value>
-                                    <SolidColorBrush Opacity=".12" Color="White" />
-                                </Setter.Value>
-                            </Setter>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="Validation.ErrorTemplate" Value="{StaticResource MaterialDesignValidationErrorTemplate}" />
-        <Setter Property="Width" Value="26" />
-        <Setter Property="materialDesign:ToggleButtonAssist.SwitchTrackOffBackground" Value="White" />
-        <Setter Property="materialDesign:ToggleButtonAssist.SwitchTrackOnBackground" Value="{DynamicResource MaterialDesign.Brush.Primary.Light}" />
-    </Style>
+
 
     <Style
         x:Key="TextBlockHeading"
@@ -266,6 +73,7 @@
         x:Key="TextBlockLabel"
         BasedOn="{StaticResource MaterialDesignTextBlock}"
         TargetType="TextBlock">
+        <Setter Property="Foreground" Value="White" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="VerticalAlignment" Value="Center" />
@@ -340,6 +148,34 @@
         <Setter Property="Stretch" Value="Fill" />
         <Setter Property="Stroke" Value="Gray" />
         <Setter Property="X2" Value="1" />
+    </Style>
+
+    <!--  Logic styles  -->
+    <Style x:Key="DisableWhenFullScreen" TargetType="StackPanel">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding DataItem.FullScreen}" Value="True">
+                <Setter Property="Opacity" Value="0.5" />
+                <Setter Property="IsEnabled" Value="False" />
+                <Setter Property="IsHitTestVisible" Value="False" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding DataItem.FullScreen}" Value="False">
+                <Setter Property="IsEnabled" Value="True" />
+                <Setter Property="IsHitTestVisible" Value="True" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="DisableWhenIsNotFloatingPanel" TargetType="StackPanel">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding DataItem.FloatingPanel.IsEnabled}" Value="True">
+                <Setter Property="IsEnabled" Value="True" />
+                <Setter Property="IsHitTestVisible" Value="True" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding DataItem.FloatingPanel.IsEnabled}" Value="False">
+                <Setter Property="Opacity" Value="0.5" />
+                <Setter Property="IsEnabled" Value="False" />
+                <Setter Property="IsHitTestVisible" Value="False" />
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 
 </ResourceDictionary>

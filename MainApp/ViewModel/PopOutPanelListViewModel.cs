@@ -2,10 +2,5 @@
 
 namespace MSFSPopoutPanelManager.MainApp.ViewModel
 {
-    public class PopOutPanelListViewModel : BaseViewModel
-    {
-        public PopOutPanelListViewModel(SharedStorage sharedStorage) : base(sharedStorage)
-        {
-        }
-    }
+    public class PopOutPanelListViewModel(SharedStorage sharedStorage) : BaseViewModel(sharedStorage);
 }

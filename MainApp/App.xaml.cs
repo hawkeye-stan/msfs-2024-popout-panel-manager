@@ -66,7 +66,7 @@ namespace MSFSPopoutPanelManager.MainApp
                         services.AddSingleton(s => new OrchestratorUiHelper(SharedStorage, s.GetRequiredService<PanelSourceOrchestrator>(), s.GetRequiredService<PanelPopOutOrchestrator>()));
                         services.AddSingleton(s => new ApplicationViewModel(SharedStorage, s.GetRequiredService<AppOrchestrator>()));
                         services.AddSingleton(s => new HelpViewModel(SharedStorage, s.GetRequiredService<HelpOrchestrator>()));
-                        services.AddSingleton(s => new ProfileCardListViewModel(SharedStorage, s.GetRequiredService<ProfileOrchestrator>(), s.GetRequiredService<PanelSourceOrchestrator>()));
+                        services.AddSingleton(s => new ProfileCardListViewModel(SharedStorage));
                         services.AddSingleton(s => new ProfileCardViewModel(SharedStorage, s.GetRequiredService<ProfileOrchestrator>(), s.GetRequiredService<PanelSourceOrchestrator>(), s.GetRequiredService<PanelConfigurationOrchestrator>(), s.GetRequiredService<PanelPopOutOrchestrator>()));
                         services.AddSingleton(s => new TrayIconViewModel(SharedStorage, s.GetRequiredService<AppOrchestrator>(), s.GetRequiredService<PanelPopOutOrchestrator>()));
                         services.AddSingleton(s => new PreferenceDrawerViewModel(SharedStorage, s.GetRequiredService<KeyboardOrchestrator>()));

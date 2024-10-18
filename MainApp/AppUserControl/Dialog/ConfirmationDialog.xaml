@@ -8,7 +8,6 @@
     xmlns:viewModel="clr-namespace:MSFSPopoutPanelManager.MainApp.ViewModel"
     xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
     Width="400"
-    MinHeight="170"
     d:DataContext="{d:DesignInstance viewModel:ConfirmationViewModel}"
     mc:Ignorable="d">
     <StackPanel>
@@ -17,41 +16,37 @@
             materialDesign:ElevationAssist.Elevation="Dp4"
             Mode="PrimaryDark">
             <StackPanel
-                Margin="24,0,0,0"
+                Margin="15,0,0,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center">
-                <TextBlock Text="{Binding Title}" />
+                <TextBlock Style="{StaticResource TextBlockHeading}" Text="{Binding Title}" />
             </StackPanel>
         </materialDesign:ColorZone>
-        <StackPanel
-            MinHeight="40"
-            Margin="24,24,24,16"
-            Orientation="Vertical">
+        <StackPanel Margin="15,15,15,15">
             <TextBlock
+                MinHeight="40"
                 VerticalAlignment="Top"
-                Text="{Binding Content}"
-                TextWrapping="Wrap" />
-        </StackPanel>
-        <StackPanel
-            Margin="24,12,24,8"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Center"
-            Orientation="Horizontal">
-            <Button
-                Command="{x:Static wpf:DialogHost.CloseDialogCommand}"
-                CommandParameter="CONFIRM"
-                KeyboardNavigation.AcceptsReturn="False"
-                Style="{StaticResource MaterialDesignOutlinedButton}">
-                <TextBlock Text="{Binding ConfirmButtonText}" />
-            </Button>
-            <Button
-                Margin="12,0,0,0"
-                Command="{x:Static wpf:DialogHost.CloseDialogCommand}"
-                CommandParameter="CANCEL"
-                IsCancel="True"
-                Style="{StaticResource MaterialDesignOutlinedButton}">
-                CANCEL
-            </Button>
+                Style="{StaticResource TextBlockLabel}"
+                Text="{Binding Content}" />
+            <StackPanel
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Orientation="Horizontal">
+                <Button
+                    Command="{x:Static wpf:DialogHost.CloseDialogCommand}"
+                    CommandParameter="CONFIRM"
+                    Style="{StaticResource FlatButton}">
+                    <TextBlock Text="{Binding ConfirmButtonText}" />
+                </Button>
+                <Button
+                    Margin="12,0,0,0"
+                    Command="{x:Static wpf:DialogHost.CloseDialogCommand}"
+                    CommandParameter="CANCEL"
+                    IsCancel="True"
+                    Style="{StaticResource FlatButton}">
+                    CANCEL
+                </Button>
+            </StackPanel>
         </StackPanel>
     </StackPanel>
 </UserControl>

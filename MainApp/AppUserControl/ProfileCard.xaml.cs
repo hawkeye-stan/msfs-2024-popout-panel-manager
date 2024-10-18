@@ -22,7 +22,15 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl
                 return;
 
             _viewModel = App.AppHost.Services.GetRequiredService<ProfileCardViewModel>();
-            Loaded += (_, _) => { DataContext = _viewModel; };
+            Loaded += (_, _) =>
+            {
+                DataContext = _viewModel;
+                _viewModel.OnProfileSelected += (_, _) =>
+                {
+                    PopupBoxFinder.StaysOpen = false;
+                    PopupBoxFinder.IsPopupOpen = false;
+                };
+            };
 
 #if LOCAL || DEBUG
             //this.WrapPanelSwitchWindow.Visibility = Visibility.Visible;
@@ -47,27 +55,18 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl
 
             ToggleButtonEditProfileTitle.IsChecked = false;
             Keyboard.ClearFocus();
-            //FocusManager.SetFocusedElement(FocusManager.GetFocusScope(RootCard), RootCard);
         }
 
-        private void IncludeInGamePanel_TargetUpdated(object sender, DataTransferEventArgs e)
+        private void BtnPopupBoxFinder_Click(object sender, RoutedEventArgs e)
         {
-            _viewModel.IncludeInGamePanelUpdatedCommand?.Execute(null);
-        }
+            PopupBoxFinder.IsPopupOpen = !PopupBoxFinder.IsPopupOpen;
+            PopupBoxFinder.StaysOpen = PopupBoxFinder.IsPopupOpen;
 
-        private void AddRefocusDisplay_TargetUpdated(object sender, DataTransferEventArgs e)
-        {
-            _viewModel.RefocusDisplayUpdatedCommand?.Execute(null);
-        }
-
-        private void AddNumPad_TargetUpdated(object sender, DataTransferEventArgs e)
-        {
-            _viewModel.AddNumPadUpdatedCommand?.Execute(null);
-        }
-
-        private void AddSwitchWindow_TargetUpdated(object sender, DataTransferEventArgs e)
-        {
-            _viewModel.AddSwitchWindowUpdatedCommand?.Execute(null);
+            if (PopupBoxFinder.IsPopupOpen)
+            {
+                ComboBoxSearchProfile.Text = null;
+                ComboBoxSearchProfile.Focus();
+            }
         }
     }
 }

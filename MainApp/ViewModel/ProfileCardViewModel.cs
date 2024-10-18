@@ -7,6 +7,7 @@ using Prism.Commands;
 using System.Linq;
 using System.Windows.Input;
 using MSFSPopoutPanelManager.MainApp.AppUserControl.Dialog;
+using System;
 
 namespace MSFSPopoutPanelManager.MainApp.ViewModel
 {
@@ -17,7 +18,11 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
         private readonly PanelConfigurationOrchestrator _panelConfigurationOrchestrator;
         private readonly PanelPopOutOrchestrator _panelPopOutOrchestrator;
 
+        public ICommand AddProfileCommand { get; }
+
         public ICommand DeleteProfileCommand { get; }
+
+        public ICommand SearchProfileSelectedCommand { get; set; }
 
         public ICommand ToggleAircraftBindingCommand { get; }
 
@@ -42,6 +47,12 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
         public ICommand RefocusDisplayRefreshedCommand { get; }
 
         public DelegateCommand<string> RefocusDisplaySelectionUpdatedCommand { get; }
+        
+        public UserProfile SearchProfileSelectedItem { get; set; }
+        
+        public int ProfileTransitionIndex { get; set; }
+
+        public event EventHandler OnProfileSelected;
 
         public ProfileCardViewModel(SharedStorage sharedStorage, ProfileOrchestrator profileOrchestrator, PanelSourceOrchestrator panelSourceOrchestrator, PanelConfigurationOrchestrator panelConfigurationOrchestrator, PanelPopOutOrchestrator panelPopOutOrchestrator) : base(sharedStorage)
         {
@@ -49,6 +60,10 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
             _panelSourceOrchestrator = panelSourceOrchestrator;
             _panelConfigurationOrchestrator = panelConfigurationOrchestrator;
             _panelPopOutOrchestrator = panelPopOutOrchestrator;
+
+            AddProfileCommand = new DelegateCommand(OnAddProfile);
+            SearchProfileSelectedCommand = new DelegateCommand(OnSearchProfileSelected);
+            ProfileTransitionIndex = 0;
 
             DeleteProfileCommand = new DelegateCommand(OnDeleteProfile);
 
@@ -102,6 +117,15 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
             RefocusDisplaySelectionUpdatedCommand = new DelegateCommand<string>(RefocusDisplaySelectionUpdated);
         }
 
+        private async void OnAddProfile()
+        {
+            var dialog = new AddProfileDialog();
+            var result = await DialogHost.Show(dialog, ROOT_DIALOG_HOST, null, dialog.ClosingEventHandler, null);
+
+            if (result != null && result.ToString() == "ADD")
+                UpdateProfileTransitionIndex();
+        }
+
         private async void OnDeleteProfile()
         {
             var result = await DialogHost.Show(new ConfirmationDialog("WARNING! Are you sure you want to delete the profile?", "Delete"), "RootDialog");
@@ -112,6 +136,22 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                 _panelConfigurationOrchestrator.EndConfiguration();
                 _profileOrchestrator.DeleteActiveProfile();
             }
+        }
+
+        private void OnSearchProfileSelected()
+        {
+            if (SearchProfileSelectedItem == null)
+                return;
+
+            _profileOrchestrator.ChangeProfile(SearchProfileSelectedItem);
+            UpdateProfileTransitionIndex();
+
+            OnProfileSelected?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void UpdateProfileTransitionIndex()
+        {
+            ProfileTransitionIndex = ProfileTransitionIndex == 1 ? 0 : 1;
         }
 
         private void OnEditAircraftBinding()

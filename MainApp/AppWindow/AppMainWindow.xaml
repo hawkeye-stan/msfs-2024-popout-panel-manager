@@ -9,7 +9,7 @@
     xmlns:viewmodel="clr-namespace:MSFSPopoutPanelManager.MainApp.ViewModel"
     Title="MSFS 2024 POP OUT PANEL MANAGER"
     MinWidth="1000"
-    MinHeight="570"
+    MinHeight="620"
     MaxWidth="1000"
     MaxHeight="2160"
     d:DataContext="{d:DesignInstance Type=viewmodel:ApplicationViewModel}"
