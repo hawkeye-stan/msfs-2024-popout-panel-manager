@@ -38,13 +38,11 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-
     <DockPanel
         Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}, Path=ActualHeight}"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch">
         <Grid
-            Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type StackPanel}}, Path=ActualHeight}"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Background="Transparent"
