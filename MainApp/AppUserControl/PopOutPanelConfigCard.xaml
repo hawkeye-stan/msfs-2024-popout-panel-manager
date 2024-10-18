@@ -62,45 +62,57 @@
                         </StackPanel>
 
                         <!--  Panel name text box  -->
-                        <TextBox
-                            x:Name="TxtBoxPanelName"
-                            Width="150"
-                            Margin="8,0,0,0"
+                        <StackPanel
+                            Width="157"
                             VerticalAlignment="Center"
-                            HorizontalContentAlignment="Left"
-                            materialDesign:HintAssist.FloatingScale="1"
-                            materialDesign:HintAssist.Hint="Panel Name"
-                            GotFocus="TextBox_GotFocus"
-                            IsEnabled="{Binding DataItem.IsCustomPopOut}"
-                            KeyDown="TextBox_KeyDown"
-                            SourceUpdated="Data_SourceUpdated"
-                            Style="{StaticResource FloatingHintTextBox}"
-                            Text="{Binding DataItem.PanelName, Mode=TwoWay, NotifyOnSourceUpdated=True}" />
-
+                            Orientation="Vertical"
+                            Style="{StaticResource DisableWhenFullScreen}">
+                            <TextBlock
+                                Margin="6,2,0,0"
+                                Style="{StaticResource TextBlockLabel}"
+                                TextAlignment="Left"
+                                ToolTip="Set this panel to be always on top">
+                                Panel Name
+                            </TextBlock>
+                            <TextBox
+                                x:Name="TxtBoxPanelName"
+                                Width="150"
+                                Height="18"
+                                Margin="0,-3,0,0"
+                                Padding="1,0,1,0"
+                                GotFocus="TextBox_GotFocus"
+                                IsEnabled="{Binding DataItem.IsCustomPopOut}"
+                                KeyDown="TextBox_KeyDown"
+                                MouseLeftButtonUp="TextBox_GotFocus"
+                                SourceUpdated="Data_SourceUpdated"
+                                Style="{StaticResource MaterialDesignTextBox}"
+                                Text="{Binding DataItem.PanelName, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                TextAlignment="Left" />
+                        </StackPanel>
 
                         <!--  Panel configurations  -->
                         <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
                             <StackPanel x:Name="StackPanelAdjustment" Orientation="Horizontal">
                                 <popOutPanelCard:PanelConfigField
-                                    Margin="20,0,0,0"
+                                    Margin="10,0,0,0"
                                     BindingPath="Top"
                                     DataItem="{Binding DataItem}"
                                     IsEnabled="{c:Binding '!DataItem.IsRefocusDisplay'}"
                                     SourceUpdated="Data_SourceUpdated" />
                                 <popOutPanelCard:PanelConfigField
-                                    Margin="20,0,0,0"
+                                    Margin="10,0,0,0"
                                     BindingPath="Left"
                                     DataItem="{Binding DataItem}"
                                     IsEnabled="{c:Binding '!DataItem.IsRefocusDisplay'}"
                                     SourceUpdated="Data_SourceUpdated" />
                                 <popOutPanelCard:PanelConfigField
-                                    Margin="20,0,0,0"
+                                    Margin="10,0,0,0"
                                     BindingPath="Width"
                                     DataItem="{Binding DataItem}"
                                     IsEnabled="{c:Binding '!DataItem.IsRefocusDisplay'}"
                                     SourceUpdated="Data_SourceUpdated" />
                                 <popOutPanelCard:PanelConfigField
-                                    Margin="20,0,0,0"
+                                    Margin="10,0,0,0"
                                     BindingPath="Height"
                                     DataItem="{Binding DataItem}"
                                     IsEnabled="{c:Binding '!DataItem.IsRefocusDisplay'}"
@@ -126,6 +138,7 @@
                                 on Top</TextBlock>
                             <ToggleButton
                                 x:Name="TglBtnAlwaysOnTop"
+                                materialDesign:HintAssist.Hint="Always on Top"
                                 IsChecked="{Binding DataItem.AlwaysOnTop, Mode=TwoWay, NotifyOnSourceUpdated=True}"
                                 SourceUpdated="Data_SourceUpdated"
                                 Style="{StaticResource ToggleButton}" />

@@ -41,7 +41,7 @@
 
         <ScrollViewer
             Width="775"
-            Height="555"
+            Height="610"
             VerticalScrollBarVisibility="Auto">
             <StackPanel Height="Auto" Margin="0,-4,0,0">
                 <!--  General Settings  -->

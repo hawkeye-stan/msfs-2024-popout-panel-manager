@@ -162,7 +162,7 @@
         <Setter Property="Orientation" Value="Vertical" />
     </Style>
     <Style TargetType="Line">
-        <Setter Property="Margin" Value="0,5,0,5" />
+        <Setter Property="Margin" Value="0,1,0,5" />
         <Setter Property="Stretch" Value="Fill" />
         <Setter Property="Stroke" Value="Gray" />
         <Setter Property="X2" Value="1" />
@@ -195,5 +195,4 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
-
 </ResourceDictionary>

@@ -33,110 +33,132 @@
         </Style>
     </UserControl.Resources>
     <StackPanel IsEnabled="{c:Binding '!DataItem.FullScreen'}" Orientation="Horizontal">
-        <TextBox
-            x:Name="TxtBoxData"
-            Width="40"
-            Margin="0"
-            materialDesign:HintAssist.Hint="{Binding BindingPath}"
-            PreviewTextInput="TxtBox_NumbersOnly"
-            SourceUpdated="Data_SourceUpdated"
-            TextChanged="TxtBox_NumbersOnlyTextChanged" />
-        <materialDesign:PopupBox
-            x:Name="PopupBoxAdjustment"
-            Padding="5"
-            PlacementMode="RightAndAlignMiddles"
-            PopupHorizontalOffset="-20"
-            PopupUniformCornerRadius="10"
-            StaysOpen="True">
-            <materialDesign:PopupBox.ToggleContent>
-                <Button
-                    Width="{StaticResource UpDownButtonSize}"
-                    Height="{StaticResource UpDownButtonSize}"
-                    Margin="-4,12,0,0"
-                    Click="BtnPopupBoxOpen_Click"
-                    Style="{StaticResource IconButton}">
-                    <materialDesign:PackIcon
-                        Width="{StaticResource UpDownIconSize}"
-                        Height="{StaticResource UpDownIconSize}"
-                        Foreground="White"
-                        Kind="ArrowUpDown" />
-                </Button>
-            </materialDesign:PopupBox.ToggleContent>
-            <StackPanel
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Orientation="Horizontal">
-                <StackPanel Orientation="Vertical">
-                    <StackPanel Orientation="Horizontal">
-                        <Label
-                            Width="60"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            Content="1 pixel" />
-                        <Button
-                            CommandParameter="1"
-                            Style="{StaticResource BtnPlusMinus}"
-                            ToolTip="Add 1 pixel">
-                            <materialDesign:PackIcon
-                                Width="{StaticResource UpDownIconSize}"
-                                Height="{StaticResource UpDownIconSize}"
-                                Kind="Plus" />
-                        </Button>
-                        <Button
-                            CommandParameter="-1"
-                            Style="{StaticResource BtnPlusMinus}"
-                            ToolTip="Subtract 1 pixel">
-                            <materialDesign:PackIcon
-                                Width="{StaticResource UpDownIconSize}"
-                                Height="{StaticResource UpDownIconSize}"
-                                Kind="Minus" />
-                        </Button>
+        <StackPanel
+            Width="50"
+            Orientation="Vertical"
+            Style="{StaticResource DisableWhenFullScreen}">
+            <TextBlock
+                Margin="0,2,0,0"
+                Style="{StaticResource TextBlockLabel}"
+                Text="{Binding BindingPath}"
+                TextAlignment="Center"
+                ToolTip="Set this panel to be always on top" />
+            <TextBox
+                x:Name="TxtBoxData"
+                Width="45"
+                Height="18"
+                Margin="0,-3,0,0"
+                Padding="1,0,1,0"
+                GotFocus="TextBox_GotFocus"
+                KeyDown="TextBox_KeyDown"
+                PreviewTextInput="TxtBox_NumbersOnly"
+                SourceUpdated="Data_SourceUpdated"
+                Style="{StaticResource MaterialDesignTextBox}"
+                TextAlignment="Center"
+                TextChanged="TxtBox_NumbersOnlyTextChanged" />
+        </StackPanel>
+        <StackPanel
+            HorizontalAlignment="Center"
+            VerticalAlignment="Bottom"
+            KeyboardNavigation.TabNavigation="None">
+            <materialDesign:PopupBox
+                x:Name="PopupBoxAdjustment"
+                Padding="5"
+                PlacementMode="RightAndAlignMiddles"
+                PopupHorizontalOffset="-15"
+                PopupUniformCornerRadius="10"
+                PopupVerticalOffset="-10"
+                StaysOpen="True">
+                <materialDesign:PopupBox.ToggleContent>
+                    <Button
+                        Width="{StaticResource UpDownButtonSize}"
+                        Height="{StaticResource UpDownButtonSize}"
+                        Margin="-4,16,0,0"
+                        Click="BtnPopupBoxOpen_Click"
+                        Style="{StaticResource IconButton}">
+                        <materialDesign:PackIcon
+                            Width="{StaticResource UpDownIconSize}"
+                            Height="{StaticResource UpDownIconSize}"
+                            Foreground="White"
+                            Kind="ArrowUpDown" />
+                    </Button>
+                </materialDesign:PopupBox.ToggleContent>
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal">
+                            <Label
+                                Width="60"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Content="1 pixel" />
+                            <Button
+                                CommandParameter="1"
+                                Style="{StaticResource BtnPlusMinus}"
+                                ToolTip="Add 1 pixel">
+                                <materialDesign:PackIcon
+                                    Width="{StaticResource UpDownIconSize}"
+                                    Height="{StaticResource UpDownIconSize}"
+                                    Kind="Plus" />
+                            </Button>
+                            <Button
+                                CommandParameter="-1"
+                                Style="{StaticResource BtnPlusMinus}"
+                                ToolTip="Subtract 1 pixel">
+                                <materialDesign:PackIcon
+                                    Width="{StaticResource UpDownIconSize}"
+                                    Height="{StaticResource UpDownIconSize}"
+                                    Kind="Minus" />
+                            </Button>
+                        </StackPanel>
+                        <Separator
+                            Height="2"
+                            Margin="0"
+                            Padding="0" />
+                        <StackPanel Orientation="Horizontal">
+                            <Label
+                                Width="60"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Content="10 pixels" />
+                            <Button
+                                CommandParameter="10"
+                                Style="{StaticResource BtnPlusMinus}"
+                                ToolTip="Add 10 pixels">
+                                <materialDesign:PackIcon
+                                    Width="{StaticResource UpDownIconSize}"
+                                    Height="{StaticResource UpDownIconSize}"
+                                    Kind="Plus" />
+                            </Button>
+                            <Button
+                                CommandParameter="-10"
+                                Style="{StaticResource BtnPlusMinus}"
+                                ToolTip="Subtract 10 pixels">
+                                <materialDesign:PackIcon
+                                    Width="{StaticResource UpDownIconSize}"
+                                    Height="{StaticResource UpDownIconSize}"
+                                    Kind="Minus" />
+                            </Button>
+                        </StackPanel>
                     </StackPanel>
-                    <Separator
-                        Height="2"
-                        Margin="0"
-                        Padding="0" />
-                    <StackPanel Orientation="Horizontal">
-                        <Label
-                            Width="60"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Content="10 pixels" />
-                        <Button
-                            CommandParameter="10"
-                            Style="{StaticResource BtnPlusMinus}"
-                            ToolTip="Add 10 pixels">
-                            <materialDesign:PackIcon
-                                Width="{StaticResource UpDownIconSize}"
-                                Height="{StaticResource UpDownIconSize}"
-                                Kind="Plus" />
-                        </Button>
-                        <Button
-                            CommandParameter="-10"
-                            Style="{StaticResource BtnPlusMinus}"
-                            ToolTip="Subtract 10 pixels">
-                            <materialDesign:PackIcon
-                                Width="{StaticResource UpDownIconSize}"
-                                Height="{StaticResource UpDownIconSize}"
-                                Kind="Minus" />
-                        </Button>
-                    </StackPanel>
+                    <Button
+                        Width="{StaticResource UpDownButtonSize}"
+                        Height="{StaticResource UpDownButtonSize}"
+                        Margin="5,0,0,0"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Click="BtnPopupBoxClose_Click"
+                        Style="{StaticResource MaterialDesignIconForegroundButton}">
+                        <materialDesign:PackIcon
+                            Width="{StaticResource UpDownIconSize}"
+                            Height="{StaticResource UpDownIconSize}"
+                            Kind="CloseBoxOutline" />
+                    </Button>
                 </StackPanel>
-                <Button
-                    Width="{StaticResource UpDownButtonSize}"
-                    Height="{StaticResource UpDownButtonSize}"
-                    Margin="5,0,0,0"
-                    HorizontalContentAlignment="Center"
-                    VerticalContentAlignment="Center"
-                    Click="BtnPopupBoxClose_Click"
-                    Style="{StaticResource MaterialDesignIconForegroundButton}">
-                    <materialDesign:PackIcon
-                        Width="{StaticResource UpDownIconSize}"
-                        Height="{StaticResource UpDownIconSize}"
-                        Kind="CloseBoxOutline" />
-                </Button>
-            </StackPanel>
-        </materialDesign:PopupBox>
+            </materialDesign:PopupBox>
+        </StackPanel>
     </StackPanel>
 </UserControl>
 

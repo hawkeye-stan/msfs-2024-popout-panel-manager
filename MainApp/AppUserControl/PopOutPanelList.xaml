@@ -25,6 +25,8 @@
             PopOutPanelDataTemplate="{StaticResource PopOutPanelDataTemplate}" />
     </UserControl.Resources>
     <ScrollViewer
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
         materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True"
         HorizontalScrollBarVisibility="Hidden"
         VerticalScrollBarVisibility="Auto">
@@ -33,7 +35,6 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch">
             <ListView
-                Height="Auto"
                 Margin="16,0,0,0"
                 Padding="0"
                 HorizontalAlignment="Left"
