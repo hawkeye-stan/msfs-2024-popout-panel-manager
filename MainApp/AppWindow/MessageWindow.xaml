@@ -29,7 +29,7 @@
                 <TextBlock
                     Padding="10,5,10,5"
                     HorizontalAlignment="Stretch"
-                    Style="{StaticResource MaterialDesignBody1TextBlock}">
+                    Style="{StaticResource TextBlockLabel}">
                     MSFS 2024 POP OUT PANEL MANAGER
                 </TextBlock>
             </WrapPanel>

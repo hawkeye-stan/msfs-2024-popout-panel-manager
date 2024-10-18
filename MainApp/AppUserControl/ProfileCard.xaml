@@ -17,7 +17,6 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <system:Double x:Key="IconSize">22</system:Double>
-        <system:Double x:Key="ButtonSize">28</system:Double>
         <Style
             x:Key="TxtBlockDisableWhenLocked"
             BasedOn="{StaticResource TextBlockLabel}"
@@ -34,29 +33,6 @@
             TargetType="TextBlock">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding DataContext.ProfileData.ActiveProfile.IsLocked, RelativeSource={RelativeSource AncestorType=UserControl, Mode=FindAncestor}}" Value="True">
-                    <Setter Property="Foreground" Value="DimGray" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-        <Style
-            x:Key="TxtBlockDisableWhenLockedOrPanelSourceEdit"
-            BasedOn="{StaticResource TextBlockLabel}"
-            TargetType="TextBlock">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding ActiveProfile.IsLocked}" Value="True">
-                    <Setter Property="Foreground" Value="DimGray" />
-                </DataTrigger>
-                <DataTrigger Binding="{Binding ActiveProfile.IsEditingPanelSource}" Value="True">
-                    <Setter Property="Foreground" Value="DimGray" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-        <Style
-            x:Key="CmbBoxDisableWhenLocked"
-            BasedOn="{StaticResource MaterialDesignComboBox}"
-            TargetType="ComboBox">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding ActiveProfile.IsLocked}" Value="True">
                     <Setter Property="Foreground" Value="DimGray" />
                 </DataTrigger>
             </Style.Triggers>
@@ -86,7 +62,7 @@
                 Mode="PrimaryDark">
                 <StackPanel Height="44" Margin="16,6,8,0">
                     <DockPanel>
-                        <StackPanel Width="812" Orientation="Horizontal">
+                        <StackPanel Width="810" Orientation="Horizontal">
                             <TextBox
                                 x:Name="TxtBoxProfileTitle"
                                 Margin="8,0,0,0"
@@ -128,11 +104,10 @@
                                     Kind="Pencil" />
                             </ToggleButton>
                         </StackPanel>
-
                         <materialDesign:PopupBox
                             x:Name="PopupBoxFinder"
                             Margin="10,0,8,0"
-                            materialDesign:ElevationAssist.Elevation="Dp0"
+                            Padding="0"
                             IsEnabled="{c:Binding 'ProfileData.Profiles.Count > 1'}"
                             PlacementMode="LeftAndAlignMiddles"
                             PopupHorizontalOffset="-8"
@@ -150,15 +125,15 @@
                             <controls:AutoCompleteComboBox
                                 x:Name="ComboBoxSearchProfile"
                                 Width="250"
-                                Height="28"
-                                Margin="5,0"
+                                Height="42"
+                                Margin="0"
                                 Padding="5,0"
                                 materialDesign:ComboBoxAssist.MaxLength="20"
                                 materialDesign:HintAssist.Hint="Search Profile"
-                                materialDesign:HintAssist.HintOpacity="0.5"
+                                materialDesign:HintAssist.HintOpacity="1"
+                                Background="#007ac1"
                                 DisplayMemberPath="Name"
                                 FontSize="12"
-                                Foreground="White"
                                 ItemsSource="{Binding ProfileData.Profiles}"
                                 MaxDropDownHeight="500"
                                 SelectedItem="{Binding SearchProfileSelectedItem}"
@@ -172,7 +147,6 @@
                                 </b:Interaction.Triggers>
                             </controls:AutoCompleteComboBox>
                         </materialDesign:PopupBox>
-
                         <Button
                             Margin="0"
                             Command="{Binding AddProfileCommand}"
@@ -194,12 +168,15 @@
             <DockPanel Grid.Row="1">
                 <Expander Style="{DynamicResource CustomMaterialDesignExpander}">
                     <Expander.Header>
-                        <DockPanel Width="878">
+                        <DockPanel Width="876">
                             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
-                                <TextBlock Margin="0,0,10,0" Style="{StaticResource TextBlockBody}">
+                                <TextBlock
+                                    Margin="0,0,10,0"
+                                    FontSize="14"
+                                    Style="{StaticResource TextBlockBody}">
                                     Active Aircraft:
                                 </TextBlock>
-                                <TextBlock Text="{c:Binding 'FlightSimData.AircraftName == null ? &quot;Aircraft binding information is currently unavailable&quot; : FlightSimData.AircraftName'}">
+                                <TextBlock FontSize="14" Text="{c:Binding 'FlightSimData.AircraftName == null ? &quot;Aircraft binding information is currently unavailable&quot; : FlightSimData.AircraftName'}">
                                     <TextBlock.Style>
                                         <Style BasedOn="{StaticResource TextBlockBody}" TargetType="{x:Type TextBlock}">
                                             <Style.Triggers>
@@ -234,7 +211,10 @@
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel DockPanel.Dock="Right">
-                                <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center">
+                                <TextBlock
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    FontSize="14">
                                     <TextBlock.Style>
                                         <Style BasedOn="{StaticResource TextBlockBody}" TargetType="{x:Type TextBlock}">
                                             <Style.Triggers>
@@ -259,7 +239,6 @@
                             <ToggleButton IsChecked="{Binding ActiveProfile.ProfileSetting.PowerOnRequiredForColdStart, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
                             <TextBlock Style="{StaticResource TextBlockLabel}" ToolTip="During cold start, Pop Out Manager will first turn on power and avionics for the aircraft in order &#x0a;to pop out the instrumentation panels. After pop out is completed, Pop Out Manager will then &#x0a;turn off aircraft power and avionics to put the aircraft back to cold and dark state.">Power on is required to pop out panels on cold start (for G1000 based aircraft ONLY if needed)</TextBlock>
                         </DockPanel>
-
                         <WrapPanel Margin="0,8,0,0">
                             <ToggleButton
                                 Command="{Binding IncludeInGamePanelUpdatedCommand}"
@@ -269,7 +248,6 @@
                                 Style="{StaticResource ToggleButton}" />
                             <TextBlock Style="{StaticResource TxtBlockDisableWhenLocked}" ToolTip="Add in-game menu bar panels such as VFR Map, Checklist, ATC, etc. to profile to enable panel size and location management and touch support">Include in-game menu bar panels for pop out management and touch screen support</TextBlock>
                         </WrapPanel>
-
                         <StackPanel Margin="0,8,0,0" Orientation="Vertical">
                             <WrapPanel>
                                 <ToggleButton
@@ -325,7 +303,6 @@
                                 </Button>
                             </WrapPanel>
                         </StackPanel>
-
                         <WrapPanel Margin="0,8,0,0">
                             <ToggleButton
                                 Command="{Binding AddNumPadUpdatedCommand}"
@@ -335,7 +312,6 @@
                                 Style="{StaticResource ToggleButton}" />
                             <TextBlock Style="{StaticResource TxtBlockDisableWhenLocked}" ToolTip="Add a virtual keyboard NumPad to the game that has MSFS focused before sending key command">Add a virtual keyboard NumPad</TextBlock>
                         </WrapPanel>
-
                         <WrapPanel Name="WrapPanelSwitchWindow" Margin="0,8,0,0">
                             <ToggleButton
                                 Command="{Binding AddSwitchWindowUpdatedCommand}"
@@ -345,15 +321,17 @@
                                 Style="{StaticResource ToggleButton}" />
                             <TextBlock Style="{StaticResource TxtBlockDisableWhenLocked}" ToolTip="Add a switch window command bar to the game">Add a switch window command bar</TextBlock>
                         </WrapPanel>
-
                     </StackPanel>
                 </Expander>
             </DockPanel>
 
             <StackPanel Grid.Row="2" Background="#444444">
-                <StackPanel Margin="24,8,0,4" Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Pop Out Panels" />
-                    <StackPanel Margin="712,0,0,0" Orientation="Horizontal">
+                <StackPanel Margin="24,2,0,0" Orientation="Horizontal">
+                    <TextBlock
+                        FontSize="14"
+                        Style="{StaticResource TextBlockBody}"
+                        Text="Pop Out Panels" />
+                    <StackPanel Margin="723,0,0,0" Orientation="Horizontal">
                         <ToggleButton
                             materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon Kind=CrosshairsGps}"
                             Command="{Binding ToggleEditPanelSourceCommand}"

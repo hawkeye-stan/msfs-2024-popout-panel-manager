@@ -5,20 +5,18 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Width="Auto"
-    Height="Auto"
     mc:Ignorable="d">
     <StackPanel>
         <StackPanel HorizontalAlignment="Right" Orientation="Vertical">
             <materialDesign:PackIcon
                 Width="30"
                 Height="30"
-                Margin="0,0,54,0"
+                Margin="0,-5,56,0"
                 HorizontalAlignment="Right"
                 Kind="ArrowUpBoldOutline" />
             <TextBlock
                 Width="80"
-                Margin="0,5,24,0"
+                Margin="0,5,30,0"
                 FontSize="16"
                 Foreground="gray"
                 TextAlignment="Center"
@@ -27,18 +25,19 @@
             </TextBlock>
         </StackPanel>
         <TextBlock
-            Margin="0,35,0,0"
+            Margin="0,60,0,0"
             HorizontalAlignment="Center"
-            FontSize="24"
+            FontSize="20"
             Foreground="gray">
             Add pop out panels to aircraft profile
         </TextBlock>
         <TextBlock
-            HorizontalAlignment="Center"
+            Width="500"
             FontSize="16"
             Foreground="gray"
+            TextAlignment="Center"
             TextWrapping="Wrap">
-            Identifying instrumentation source panel location in the game.<LineBreak />
-            You must be in cockpit view to start this process.</TextBlock>
+            You must be in cockpit view to start this process.
+        </TextBlock>
     </StackPanel>
 </UserControl>

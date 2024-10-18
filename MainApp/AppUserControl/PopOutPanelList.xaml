@@ -13,7 +13,16 @@
     d:DataContext="{d:DesignInstance viewModel:PopOutPanelListViewModel}"
     mc:Ignorable="d">
     <UserControl.Resources>
-        <appUserControl:DummyConverter x:Key="DummyConverter" />
+        <DataTemplate x:Key="PopOutPanelDataTemplate">
+            <StackPanel Margin="2,3">
+                <appUserControl:PopOutPanelConfigCard Height="Auto" DataItem="{Binding ''}" />
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="EmptyDataTemplate" />
+        <appUserControl:PopOutPanelDataTemplateSelector
+            x:Key="PopOutPanelDataTemplateSelector"
+            EmptyDataTemplate="{StaticResource EmptyDataTemplate}"
+            PopOutPanelDataTemplate="{StaticResource PopOutPanelDataTemplate}" />
     </UserControl.Resources>
     <ScrollViewer
         materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True"
@@ -34,7 +43,7 @@
                 Visibility="{c:Binding 'ActiveProfile.IsEditingPanelSource'}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <appUserControl:PopOutPanelSourceCard Height="Auto" DataItem="{Binding '', Converter={StaticResource DummyConverter}}" />
+                        <appUserControl:PopOutPanelSourceCard Height="Auto" DataItem="{Binding ''}" />
                     </DataTemplate>
                 </ListView.ItemTemplate>
                 <ListView.ItemContainerStyle>
@@ -69,37 +78,10 @@
                 dd:DragDrop.IsDropTarget="True"
                 dd:DragDrop.UseDefaultEffectDataTemplate="True"
                 DockPanel.Dock="Top"
+                ItemContainerStyle="{StaticResource CustomListViewItem}"
+                ItemTemplateSelector="{StaticResource PopOutPanelDataTemplateSelector}"
                 ItemsSource="{Binding ActiveProfile.PanelConfigs, Mode=TwoWay}"
-                Visibility="{c:Binding !ActiveProfile.IsEditingPanelSource}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <appUserControl:PopOutPanelConfigCard Height="Auto" DataItem="{Binding '', Converter={StaticResource DummyConverter}}" />
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="BorderBrush" Value="Transparent" />
-                        <Setter Property="VerticalContentAlignment" Value="Center" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ListViewItem">
-                                    <Border
-                                        Name="Border"
-                                        Background="{TemplateBinding Background}"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="{TemplateBinding BorderThickness}">
-                                        <ContentPresenter
-                                            Margin="{TemplateBinding Padding}"
-                                            Content="{TemplateBinding Content}"
-                                            ContentTemplate="{TemplateBinding ContentTemplate}" />
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListView.ItemContainerStyle>
-            </ListView>
+                Visibility="{c:Binding !ActiveProfile.IsEditingPanelSource}" />
         </DockPanel>
     </ScrollViewer>
 </UserControl>

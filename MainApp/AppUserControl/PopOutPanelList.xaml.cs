@@ -1,6 +1,6 @@
-﻿using System;
-using System.Globalization;
-using System.Windows.Data;
+﻿using System.Windows.Controls;
+using System.Windows;
+using MSFSPopoutPanelManager.DomainModel.Profile;
 
 namespace MSFSPopoutPanelManager.MainApp.AppUserControl
 {
@@ -11,17 +11,21 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl
             InitializeComponent();
         }
     }
-
-    public class DummyConverter : IValueConverter
+    
+    public class PopOutPanelDataTemplateSelector : DataTemplateSelector
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return value;
-        }
+        public DataTemplate PopOutPanelDataTemplate { get; set; }
+        public DataTemplate EmptyDataTemplate { get; set; }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            return value;
+            if (container is not FrameworkElement element || item is not PanelConfig panelConfig) 
+                return null;
+
+            if (panelConfig.PanelType != PanelType.RefocusDisplay)
+                return element.FindResource("PopOutPanelDataTemplate") as DataTemplate;
+                
+            return element.FindResource("EmptyDataTemplate") as DataTemplate;
         }
     }
 }

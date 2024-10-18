@@ -19,7 +19,7 @@
             <Style.Triggers>
                 <DataTrigger Binding="{Binding ActiveProfile.IsLocked}" Value="True">
                     <Setter Property="IsHitTestVisible" Value="False" />
-                    <Setter Property="Opacity" Value="0.8" />
+                    <Setter Property="Opacity" Value="0.7" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ActiveProfile.IsLocked}" Value="False">
                     <Setter Property="IsHitTestVisible" Value="True" />
@@ -108,7 +108,12 @@
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal">
+
+                    <StackPanel Width="260" Visibility="{c:Binding '!DataItem.IsBuiltInPopOut and !DataItem.IsCustomPopOut'}" />
+                    <StackPanel
+                        Width="260"
+                        Orientation="Horizontal"
+                        Visibility="{c:Binding 'DataItem.IsBuiltInPopOut or DataItem.IsCustomPopOut'}">
                         <StackPanel
                             Width="65"
                             Orientation="Vertical"
@@ -191,8 +196,7 @@
                             Command="{Binding MoveResizePanelCommand}"
                             IsChecked="{Binding DataItem.IsEditingPanel, Mode=TwoWay}"
                             Style="{StaticResource IconToggleButton}"
-                            ToolTip="Use keyboard commands to edit panel size &#x0a;and location. Please see help for more info."
-                            Visibility="{c:Binding '!DataItem.IsRefocusDisplay'}">
+                            ToolTip="Use keyboard commands to edit panel size &#x0a;and location. Please see help for more info.">
                             <materialDesign:PackIcon Kind="MoveResize" />
                         </ToggleButton>
 
@@ -202,7 +206,8 @@
                             Command="{Binding TouchEnabledCommand}"
                             IsChecked="{Binding DataItem.TouchEnabled, Mode=TwoWay}"
                             Style="{StaticResource IconToggleButton}"
-                            ToolTip="Toggle panel touch capability">
+                            ToolTip="Toggle panel touch capability"
+                            Visibility="{c:Binding 'DataItem.IsBuiltInPopOut or DataItem.IsCustomPopOut'}">
                             <materialDesign:PackIcon Kind="HandBackRightOffOutline" />
                         </ToggleButton>
 

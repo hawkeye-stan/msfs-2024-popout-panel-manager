@@ -1,12 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using MSFSPopoutPanelManager.DomainModel.Profile;
 using MSFSPopoutPanelManager.MainApp.ViewModel;
 using System;
 using System.ComponentModel;
-using System.Globalization;
 using System.Windows;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
 using System.Windows.Input;
 
 namespace MSFSPopoutPanelManager.MainApp.AppUserControl

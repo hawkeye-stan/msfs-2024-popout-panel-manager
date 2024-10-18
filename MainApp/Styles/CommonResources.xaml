@@ -34,6 +34,9 @@
             <Trigger Property="IsChecked" Value="False">
                 <Setter Property="Foreground" Value="White" />
             </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#505050" />
+            </Trigger>
         </Style.Triggers>
     </Style>
 
@@ -57,8 +60,6 @@
         <Setter Property="FontSize" Value="12" />
     </Style>
 
-
-
     <Style
         x:Key="TextBlockHeading"
         BasedOn="{StaticResource MaterialDesignTextBlock}"
@@ -69,6 +70,7 @@
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="Bold" />
     </Style>
+
     <Style
         x:Key="TextBlockLabel"
         BasedOn="{StaticResource MaterialDesignTextBlock}"
@@ -90,8 +92,6 @@
         <Setter Property="Margin" Value="0" />
     </Style>
 
-
-
     <Style
         x:Key="FloatingHintTextBox"
         BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}"
@@ -105,6 +105,7 @@
         <Setter Property="materialDesign:HintAssist.FloatingScale" Value="0.8" />
         <Setter Property="materialDesign:HintAssist.HelperTextFontSize" Value="12" />
     </Style>
+
     <Style
         x:Key="FloatingHintTextBoxReadOnly"
         BasedOn="{StaticResource FloatingHintTextBox}"
@@ -122,6 +123,23 @@
         <Setter Property="Height" Value="20" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="CustomListViewItem" TargetType="ListViewItem">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="2,0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListViewItem}">
+                    <ContentPresenter />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <!--  Preferences and Help  -->
