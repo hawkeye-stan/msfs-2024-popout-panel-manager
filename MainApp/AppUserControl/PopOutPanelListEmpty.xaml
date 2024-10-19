@@ -11,33 +11,31 @@
             <materialDesign:PackIcon
                 Width="30"
                 Height="30"
-                Margin="0,-5,56,0"
+                Margin="0,-5,52,0"
                 HorizontalAlignment="Right"
                 Kind="ArrowUpBoldOutline" />
             <TextBlock
-                Width="80"
-                Margin="0,5,30,0"
-                FontSize="16"
-                Foreground="gray"
+                Width="120"
+                Margin="0,5,10,0"
+                FontSize="14"
                 TextAlignment="Center"
                 TextWrapping="Wrap">
                 Click here to add
             </TextBlock>
         </StackPanel>
         <TextBlock
-            Margin="0,60,0,0"
+            Margin="0,90,0,0"
             HorizontalAlignment="Center"
-            FontSize="20"
-            Foreground="gray">
+            FontSize="20">
             Add pop out panels to aircraft profile
         </TextBlock>
         <TextBlock
             Width="500"
             FontSize="16"
-            Foreground="gray"
+            FontStyle="Italic"
             TextAlignment="Center"
             TextWrapping="Wrap">
-            You must be in cockpit view to start this process.
+            You must be in cockpit view to start this process
         </TextBlock>
     </StackPanel>
 </UserControl>

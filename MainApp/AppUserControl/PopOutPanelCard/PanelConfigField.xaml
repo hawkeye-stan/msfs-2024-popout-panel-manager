@@ -53,7 +53,7 @@
                 KeyDown="TextBox_KeyDown"
                 PreviewTextInput="TxtBox_NumbersOnly"
                 SourceUpdated="Data_SourceUpdated"
-                Style="{StaticResource MaterialDesignTextBox}"
+                Style="{StaticResource FloatingHintOutlineTextBox}"
                 TextAlignment="Center"
                 TextChanged="TxtBox_NumbersOnlyTextChanged" />
         </StackPanel>

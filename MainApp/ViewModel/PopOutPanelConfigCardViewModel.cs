@@ -89,7 +89,7 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 
         private async void OnDeletePanel()
         {
-            var result = await DialogHost.Show(new ConfirmationDialog("Are you sure you want to delete the panel?", "Delete"), "RootDialog");
+            var result = await DialogHost.Show(new ConfirmationDialog("Are you sure you want to delete this panel?", "Delete"), "RootDialog");
 
             if (result != null && result.Equals("CONFIRM"))
                 _panelSourceOrchestrator.RemovePanelSource(DataItem);

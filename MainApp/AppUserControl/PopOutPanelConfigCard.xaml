@@ -96,7 +96,7 @@
                                 KeyDown="TextBox_KeyDown"
                                 MouseLeftButtonUp="TextBox_GotFocus"
                                 SourceUpdated="Data_SourceUpdated"
-                                Style="{StaticResource MaterialDesignTextBox}"
+                                Style="{StaticResource FloatingHintOutlineTextBox}"
                                 Text="{Binding DataItem.PanelName, Mode=TwoWay, NotifyOnSourceUpdated=True}"
                                 TextAlignment="Left" />
                         </StackPanel>

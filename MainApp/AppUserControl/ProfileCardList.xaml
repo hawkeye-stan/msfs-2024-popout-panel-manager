@@ -30,7 +30,8 @@
         <DockPanel
             Grid.Row="1"
             HorizontalAlignment="Stretch"
-            Background="#333333">
+            Background="#333333"
+            Visibility="{c:Binding 'ProfileData.Profiles.Count > 0'}">
             <TextBlock
                 DockPanel.Dock="Top"
                 Style="{StaticResource TextBlockLabel}"

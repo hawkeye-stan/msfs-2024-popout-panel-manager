@@ -50,8 +50,6 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
         
         public UserProfile SearchProfileSelectedItem { get; set; }
         
-        public int ProfileTransitionIndex { get; set; }
-
         public event EventHandler OnProfileSelected;
 
         public ProfileCardViewModel(SharedStorage sharedStorage, ProfileOrchestrator profileOrchestrator, PanelSourceOrchestrator panelSourceOrchestrator, PanelConfigurationOrchestrator panelConfigurationOrchestrator, PanelPopOutOrchestrator panelPopOutOrchestrator) : base(sharedStorage)
@@ -63,7 +61,6 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 
             AddProfileCommand = new DelegateCommand(OnAddProfile);
             SearchProfileSelectedCommand = new DelegateCommand(OnSearchProfileSelected);
-            ProfileTransitionIndex = 0;
 
             DeleteProfileCommand = new DelegateCommand(OnDeleteProfile);
 
@@ -120,15 +117,12 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
         private async void OnAddProfile()
         {
             var dialog = new AddProfileDialog();
-            var result = await DialogHost.Show(dialog, ROOT_DIALOG_HOST, null, dialog.ClosingEventHandler, null);
-
-            if (result != null && result.ToString() == "ADD")
-                UpdateProfileTransitionIndex();
+            await DialogHost.Show(dialog, ROOT_DIALOG_HOST, null, dialog.ClosingEventHandler, null);
         }
 
         private async void OnDeleteProfile()
         {
-            var result = await DialogHost.Show(new ConfirmationDialog("WARNING! Are you sure you want to delete the profile?", "Delete"), "RootDialog");
+            var result = await DialogHost.Show(new ConfirmationDialog("WARNING! Are you sure you want to delete this profile?", "Delete"), "RootDialog");
 
             if (result != null && result.Equals("CONFIRM"))
             {
@@ -144,14 +138,8 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                 return;
 
             _profileOrchestrator.ChangeProfile(SearchProfileSelectedItem);
-            UpdateProfileTransitionIndex();
 
             OnProfileSelected?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void UpdateProfileTransitionIndex()
-        {
-            ProfileTransitionIndex = ProfileTransitionIndex == 1 ? 0 : 1;
         }
 
         private void OnEditAircraftBinding()
