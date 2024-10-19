@@ -10,7 +10,7 @@
     mc:Ignorable="d">
     <Grid>
         <StackPanel Orientation="Vertical">
-            <WrapPanel Margin="80,0,0,0">
+            <WrapPanel Margin="0,10,0,0">
                 <GroupBox
                     Margin="0"
                     Padding="5,0"
@@ -60,13 +60,13 @@
                         <TextBox
                             materialDesign:HintAssist.Hint="Targeted FPS"
                             PreviewTextInput="TxtBox_NumbersOnly"
-                            Style="{StaticResource FloatingHintTextBox}"
+                            Style="{StaticResource FloatingHintOutlineTextBox}"
                             Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.TargetedFps, Mode=TwoWay}" />
                         <TextBox
                             materialDesign:HintAssist.Hint="FPS Tolerance"
                             materialDesign:TextFieldAssist.SuffixText="%"
                             PreviewTextInput="TxtBox_NumbersOnly"
-                            Style="{StaticResource FloatingHintTextBox}"
+                            Style="{StaticResource FloatingHintOutlineTextBox}"
                             Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.FpsTolerance, Mode=TwoWay}" />
                         <DockPanel Margin="20,0,0,0" VerticalAlignment="Center">
                             <ToggleButton IsChecked="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.PauseWhenMsfsLoseFocus, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
@@ -85,18 +85,18 @@
                         <TextBox
                             materialDesign:HintAssist.Hint="TLOD Minimum"
                             PreviewTextInput="TxtBox_NumbersOnly"
-                            Style="{StaticResource FloatingHintTextBox}"
+                            Style="{StaticResource FloatingHintOutlineTextBox}"
                             Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.TlodMin, Mode=TwoWay}" />
                         <TextBox
                             materialDesign:HintAssist.Hint="TLOD Maximum"
                             PreviewTextInput="TxtBox_NumbersOnly"
-                            Style="{StaticResource FloatingHintTextBox}"
+                            Style="{StaticResource FloatingHintOutlineTextBox}"
                             Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.TlodMax, Mode=TwoWay}" />
                         <TextBox
                             materialDesign:HintAssist.Hint="TLOD Base Alt"
                             materialDesign:TextFieldAssist.SuffixText="ft"
                             PreviewTextInput="TxtBox_NumbersOnly"
-                            Style="{StaticResource FloatingHintTextBox}"
+                            Style="{StaticResource FloatingHintOutlineTextBox}"
                             Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.AltTlodBase, Mode=TwoWay}" />
                         <DockPanel Margin="20,0,0,0" VerticalAlignment="Center">
                             <ToggleButton IsChecked="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.TlodMinOnGround, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
@@ -111,24 +111,24 @@
                         <TextBox
                             materialDesign:HintAssist.Hint="OLOD at Base Alt"
                             PreviewTextInput="TxtBox_NumbersOnly"
-                            Style="{StaticResource FloatingHintTextBox}"
+                            Style="{StaticResource FloatingHintOutlineTextBox}"
                             Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.OlodBase, Mode=TwoWay}" />
                         <TextBox
                             materialDesign:HintAssist.Hint="OLOD at Top Alt"
                             PreviewTextInput="TxtBox_NumbersOnly"
-                            Style="{StaticResource FloatingHintTextBox}"
+                            Style="{StaticResource FloatingHintOutlineTextBox}"
                             Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.OlodTop, Mode=TwoWay}" />
                         <TextBox
                             materialDesign:HintAssist.Hint="OLOD Base Alt"
                             materialDesign:TextFieldAssist.SuffixText="ft"
                             PreviewTextInput="TxtBox_NumbersOnly"
-                            Style="{StaticResource FloatingHintTextBox}"
+                            Style="{StaticResource FloatingHintOutlineTextBox}"
                             Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.AltOlodBase, Mode=TwoWay}" />
                         <TextBox
                             materialDesign:HintAssist.Hint="OLOD Top Alt"
                             materialDesign:TextFieldAssist.SuffixText="ft"
                             PreviewTextInput="TxtBox_NumbersOnly"
-                            Style="{StaticResource FloatingHintTextBox}"
+                            Style="{StaticResource FloatingHintOutlineTextBox}"
                             Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.AltOlodTop, Mode=TwoWay}" />
                     </StackPanel>
                 </StackPanel>
@@ -139,7 +139,7 @@
                         <TextBox
                             materialDesign:HintAssist.Hint="TLOD to adjust"
                             PreviewTextInput="TxtBox_NumbersOnly"
-                            Style="{StaticResource FloatingHintTextBox}"
+                            Style="{StaticResource FloatingHintOutlineTextBox}"
                             Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.CloudRecoveryTlod, Mode=TwoWay}" />
                         <DockPanel Margin="20,0,0,0" VerticalAlignment="Center">
                             <ToggleButton IsChecked="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.DecreaseCloudQuality, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
@@ -162,12 +162,12 @@
                             <TextBox
                                 materialDesign:HintAssist.Hint="TLOD"
                                 PreviewTextInput="TxtBox_NumbersOnly"
-                                Style="{StaticResource FloatingHintTextBox}"
+                                Style="{StaticResource FloatingHintOutlineTextBox}"
                                 Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.ResetTlod, Mode=TwoWay}" />
                             <TextBox
                                 materialDesign:HintAssist.Hint="OLOD"
                                 PreviewTextInput="TxtBox_NumbersOnly"
-                                Style="{StaticResource FloatingHintTextBox}"
+                                Style="{StaticResource FloatingHintOutlineTextBox}"
                                 Text="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.ResetOlod, Mode=TwoWay}" />
                         </StackPanel>
                     </DockPanel>

@@ -135,11 +135,26 @@
     </Style>
 
     <Style
+        x:Key="FloatingHintOutlineTextBox"
+        BasedOn="{StaticResource MaterialDesignOutlinedTextBox}"
+        TargetType="TextBox">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Padding" Value="5,0,5,2" />
+        <Setter Property="Width" Value="100" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Margin" Value="0,5,15,0" />
+        <Setter Property="VerticalContentAlignment" Value="Bottom" />
+        <Setter Property="materialDesign:HintAssist.FloatingScale" Value="0.8" />
+    </Style>
+
+    <Style
         x:Key="FloatingHintTextBoxReadOnly"
         BasedOn="{StaticResource FloatingHintTextBox}"
         TargetType="TextBox">
         <Setter Property="IsHitTestVisible" Value="False" />
         <Setter Property="IsReadOnly" Value="True" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
     </Style>
 
     <Style
@@ -186,7 +201,7 @@
     </Style>
     <Style x:Key="SectionHeader" TargetType="StackPanel">
         <Setter Property="Width" Value="Auto" />
-        <Setter Property="Margin" Value="0,0,20,15" />
+        <Setter Property="Margin" Value="0,0,20,10" />
         <Setter Property="Orientation" Value="Vertical" />
     </Style>
     <Style TargetType="Line">

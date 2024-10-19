@@ -42,7 +42,7 @@
                         <TextBlock Style="{StaticResource TextBlockHeading}">Keyboard Commands</TextBlock>
                         <Line />
                         <StackPanel>
-                            <TextBlock Margin="0,0,0,20" Style="{StaticResource TextBlockLabel}">
+                            <TextBlock Margin="0,0,0,10" Style="{StaticResource TextBlockLabel}">
                                 To configure a pop out panel, first click the move and resize icon
                                 <materialDesign:PackIcon Kind="MoveResize" />
                                 for the panel and the icon will turn green. You can then use keyboard commands below to adjust panel configuration. After adjustment is completed, just click the icon
@@ -101,7 +101,7 @@
                             NavigateUri="Getting Started"
                             RequestNavigate="Hyperlink_RequestNavigate"
                             Style="{StaticResource MaterialDesignBody2Hyperlink}">
-                            <TextBlock Text="Getting Started" />
+                            <Label Style="{StaticResource Label}">Getting Started</Label>
                         </Hyperlink>
                     </TextBlock>
                     <TextBlock Margin="0,10,0,0">
@@ -109,7 +109,7 @@
                             NavigateUri="User Guide"
                             RequestNavigate="Hyperlink_RequestNavigate"
                             Style="{StaticResource MaterialDesignBody2Hyperlink}">
-                            <TextBlock Text="User Guide" />
+                            <Label Style="{StaticResource Label}">User Guide</Label>
                         </Hyperlink>
                     </TextBlock>
                 </StackPanel>
@@ -125,7 +125,7 @@
                             NavigateUri="Download VCC Library"
                             RequestNavigate="Hyperlink_RequestNavigate"
                             Style="{StaticResource MaterialDesignBody2Hyperlink}">
-                            <TextBlock Text="Download VC++ Library that is required by SimConnect to establish connection to MSFS" />
+                            <Label Style="{StaticResource Label}">Download VC++ Library that is required by SimConnect to establish connection to MSFS</Label>
                         </Hyperlink>
                     </TextBlock>
                 </StackPanel>
@@ -142,30 +142,28 @@
                             RequestNavigate="Hyperlink_RequestNavigate"
                             Style="{StaticResource MaterialDesignBody2Hyperlink}">
                             <WrapPanel>
-
                                 <WrapPanel Margin="0">
+                                    <Label Content="Version" Style="{StaticResource Label}" />
                                     <Label
-                                        Margin="0"
+                                        Margin="0,0,0,0"
                                         Padding="0"
-                                        Content="Version" />
-                                    <Label
-                                        Margin="5,0,0,0"
-                                        Padding="0"
-                                        Content="{Binding ApplicationVersion}" />
+                                        Content="{Binding ApplicationVersion}"
+                                        Style="{StaticResource Label}" />
                                 </WrapPanel>
                             </WrapPanel>
                         </Hyperlink>
                     </TextBlock>
-                    <TextBlock Margin="0,10,0,0">
+                    <TextBlock Margin="0,0,0,0">
                         <Hyperlink
                             NavigateUri="License"
                             RequestNavigate="Hyperlink_RequestNavigate"
                             Style="{StaticResource MaterialDesignBody2Hyperlink}">
-                            <TextBlock Text="Public Release License" />
+                            <Label Style="{StaticResource Label}">Public Release License</Label>
                         </Hyperlink>
                     </TextBlock>
-                    <TextBlock Margin="0,10,0,0">
-                        © 2024 Stanley Kwok. All rights reserved.
+                    <TextBlock Margin="0,0,0,0" Style="{StaticResource TextBlockLabel}">
+                        <Label Style="{StaticResource Label}">© 2024 Stanley Kwok. All rights reserved.</Label>
+
                     </TextBlock>
                 </StackPanel>
             </StackPanel>
