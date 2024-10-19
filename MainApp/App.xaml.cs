@@ -75,14 +75,12 @@ namespace MSFSPopoutPanelManager.MainApp
                         services.AddTransient(_ => new PopOutPanelListViewModel(SharedStorage));
                         services.AddTransient(s => new PopOutPanelConfigCardViewModel(SharedStorage, s.GetRequiredService<PanelSourceOrchestrator>(), s.GetRequiredService<PanelConfigurationOrchestrator>()));
                         services.AddTransient(s => new PopOutPanelSourceCardViewModel(SharedStorage, s.GetRequiredService<PanelSourceOrchestrator>(), s.GetRequiredService<PanelConfigurationOrchestrator>()));
-                        services.AddTransient(s => new PopOutPanelSourceLegacyCardViewModel(SharedStorage, s.GetRequiredService<PanelSourceOrchestrator>(), s.GetRequiredService<PanelConfigurationOrchestrator>()));
                         services.AddTransient(s => new PanelConfigFieldViewModel(SharedStorage, s.GetRequiredService<PanelConfigurationOrchestrator>()));
                         services.AddTransient(_ => new PanelCoorOverlayViewModel(SharedStorage));
 
                         services.AddTransient(s => new MessageWindowViewModel(SharedStorage, s.GetRequiredService<PanelSourceOrchestrator>(), s.GetRequiredService<PanelPopOutOrchestrator>()));
                         services.AddTransient(_ => new NumPadViewModel(SharedStorage));
                         services.AddTransient(_ => new SwitchWindowViewModel(SharedStorage));
-
                     }).Build();
 
                 await AppHost!.StartAsync();
