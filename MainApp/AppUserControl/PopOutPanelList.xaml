@@ -15,7 +15,7 @@
     <UserControl.Resources>
         <DataTemplate x:Key="PopOutPanelDataTemplate">
             <StackPanel Margin="2,3">
-                <appUserControl:PopOutPanelConfigCard Height="Auto" DataItem="{Binding ''}" />
+                <appUserControl:PopOutPanelConfigCard DataItem="{Binding ''}" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="EmptyDataTemplate" />
@@ -35,47 +35,27 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch">
             <ListView
-                Margin="16,0,0,0"
-                Padding="0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Stretch"
+                Height="Auto"
+                Margin="5,0,5,0"
+                dd:DragDrop.IsDragSource="{c:Binding !ActiveProfile.IsLocked}"
+                dd:DragDrop.IsDropTarget="True"
+                dd:DragDrop.UseDefaultEffectDataTemplate="True"
                 DockPanel.Dock="Top"
+                ItemContainerStyle="{StaticResource CustomListViewItem}"
                 ItemsSource="{Binding ActiveProfile.PanelConfigs, Mode=TwoWay}"
-                Visibility="{c:Binding 'ActiveProfile.IsEditingPanelSource'}">
+                Visibility="{c:Binding ActiveProfile.IsEditingPanelSource}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <appUserControl:PopOutPanelSourceCard Height="Auto" DataItem="{Binding ''}" />
+                        <StackPanel Margin="2,3">
+                            <appUserControl:PopOutPanelSourceCard Height="Auto" DataItem="{Binding ''}" />
+                        </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="BorderBrush" Value="Transparent" />
-                        <Setter Property="VerticalContentAlignment" Value="Center" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ListViewItem">
-                                    <Border
-                                        Name="Border"
-                                        Background="{TemplateBinding Background}"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="{TemplateBinding BorderThickness}">
-                                        <ContentPresenter
-                                            Margin="{TemplateBinding Padding}"
-                                            Content="{TemplateBinding Content}"
-                                            ContentTemplate="{TemplateBinding ContentTemplate}" />
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListView.ItemContainerStyle>
             </ListView>
             <ListView
                 Height="Auto"
                 Margin="5,0,5,0"
-                Padding="0"
-                dd:DragDrop.IsDragSource="{c:Binding '!ActiveProfile.IsLocked'}"
+                dd:DragDrop.IsDragSource="{c:Binding !ActiveProfile.IsLocked}"
                 dd:DragDrop.IsDropTarget="True"
                 dd:DragDrop.UseDefaultEffectDataTemplate="True"
                 DockPanel.Dock="Top"

@@ -201,6 +201,7 @@
                                     materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon Kind=AirplaneMinus,
                                                                                                           Size={StaticResource IconSize}}"
                                     Command="{Binding ToggleAircraftBindingCommand}"
+                                    Foreground="White"
                                     IsChecked="{Binding ProfileData.IsAircraftBoundToProfile, Mode=OneWay}"
                                     Style="{StaticResource IconToggleButton}"
                                     ToolTip="Toggle aircraft binding to profile"

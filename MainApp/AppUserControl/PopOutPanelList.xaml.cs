@@ -15,6 +15,7 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl
     public class PopOutPanelDataTemplateSelector : DataTemplateSelector
     {
         public DataTemplate PopOutPanelDataTemplate { get; set; }
+        
         public DataTemplate EmptyDataTemplate { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
@@ -24,7 +25,7 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl
 
             if (panelConfig.PanelType != PanelType.RefocusDisplay)
                 return element.FindResource("PopOutPanelDataTemplate") as DataTemplate;
-                
+            
             return element.FindResource("EmptyDataTemplate") as DataTemplate;
         }
     }

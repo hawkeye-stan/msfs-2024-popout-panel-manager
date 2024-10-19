@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:popOutPanelCard="clr-namespace:MSFSPopoutPanelManager.MainApp.AppUserControl.PopOutPanelCard"
     xmlns:viewModel="clr-namespace:MSFSPopoutPanelManager.MainApp.ViewModel"
-    MinHeight="60"
+    MinHeight="61"
     d:DataContext="{d:DesignInstance Type=viewModel:PopOutPanelConfigCardViewModel}"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -71,7 +71,7 @@
                                 Margin="6,2,0,0"
                                 Style="{StaticResource TextBlockLabel}"
                                 TextAlignment="Left"
-                                ToolTip="Set this panel to be always on top">
+                                ToolTip="Set the name of panel">
                                 Panel Name
                             </TextBlock>
                             <TextBox
