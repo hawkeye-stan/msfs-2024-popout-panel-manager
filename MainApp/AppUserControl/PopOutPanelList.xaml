@@ -18,11 +18,20 @@
                 <appUserControl:PopOutPanelConfigCard DataItem="{Binding ''}" />
             </StackPanel>
         </DataTemplate>
+        <DataTemplate x:Key="EditPopOutPanelSourceTemplate">
+            <StackPanel Margin="2,3">
+                <appUserControl:PopOutPanelSourceCard DataItem="{Binding ''}" />
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate x:Key="EmptyDataTemplate" />
         <appUserControl:PopOutPanelDataTemplateSelector
             x:Key="PopOutPanelDataTemplateSelector"
             EmptyDataTemplate="{StaticResource EmptyDataTemplate}"
             PopOutPanelDataTemplate="{StaticResource PopOutPanelDataTemplate}" />
+        <appUserControl:EditPopOutPanelSourceTemplateSelector
+            x:Key="EditPopOutPanelSourceTemplateSelector"
+            EditPopOutPanelSourceTemplate="{StaticResource EditPopOutPanelSourceTemplate}"
+            EmptyDataTemplate="{StaticResource EmptyDataTemplate}" />
     </UserControl.Resources>
     <ScrollViewer
         HorizontalAlignment="Stretch"
@@ -42,16 +51,9 @@
                 dd:DragDrop.UseDefaultEffectDataTemplate="True"
                 DockPanel.Dock="Top"
                 ItemContainerStyle="{StaticResource CustomListViewItem}"
+                ItemTemplateSelector="{StaticResource EditPopOutPanelSourceTemplateSelector}"
                 ItemsSource="{Binding ActiveProfile.PanelConfigs, Mode=TwoWay}"
-                Visibility="{c:Binding ActiveProfile.IsEditingPanelSource}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Margin="2,3">
-                            <appUserControl:PopOutPanelSourceCard Height="Auto" DataItem="{Binding ''}" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                Visibility="{c:Binding ActiveProfile.IsEditingPanelSource}" />
             <ListView
                 Height="Auto"
                 Margin="5,0,5,0"

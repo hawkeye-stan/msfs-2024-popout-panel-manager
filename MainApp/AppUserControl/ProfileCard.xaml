@@ -60,7 +60,7 @@
                 Mode="PrimaryDark">
                 <StackPanel Height="44" Margin="16,6,8,0">
                     <DockPanel>
-                        <StackPanel Width="810" Orientation="Horizontal">
+                        <StackPanel Width="815" Orientation="Horizontal">
                             <TextBox
                                 x:Name="TxtBoxProfileTitle"
                                 Margin="8,0,0,0"
@@ -166,7 +166,7 @@
             <DockPanel Grid.Row="1">
                 <Expander Style="{DynamicResource CustomMaterialDesignExpander}">
                     <Expander.Header>
-                        <DockPanel Width="876">
+                        <DockPanel Width="880" Height="26">
                             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
                                 <TextBlock
                                     Margin="0,0,10,0"
@@ -197,7 +197,10 @@
                                     </TextBlock.Style>
                                 </TextBlock>
                                 <ToggleButton
+                                    Width="26"
+                                    Height="26"
                                     Margin="10,0,0,0"
+                                    VerticalAlignment="Center"
                                     materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon Kind=AirplaneMinus,
                                                                                                           Size={StaticResource IconSize}}"
                                     Command="{Binding ToggleAircraftBindingCommand}"
@@ -209,7 +212,7 @@
                                     <materialDesign:PackIcon Kind="AirplanePlus" />
                                 </ToggleButton>
                             </StackPanel>
-                            <StackPanel DockPanel.Dock="Right">
+                            <StackPanel VerticalAlignment="Center" DockPanel.Dock="Right">
                                 <TextBlock
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Center"
@@ -348,7 +351,7 @@
                             <materialDesign:PackIcon Kind="PlusThick" />
                         </Button>
                         <ToggleButton
-                            Margin="8,0,0,0"
+                            Margin="6,0,0,0"
                             materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon Kind=LockOutline}"
                             Command="{Binding ToggleLockProfileCommand}"
                             IsChecked="{Binding ActiveProfile.IsLocked, Mode=TwoWay}"

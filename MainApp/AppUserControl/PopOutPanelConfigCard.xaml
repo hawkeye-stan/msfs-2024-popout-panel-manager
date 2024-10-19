@@ -45,11 +45,22 @@
             materialDesign:ExpanderAssist.HorizontalHeaderPadding="10,0,10,0"
             Style="{StaticResource CustomExpander}">
             <Expander.Header>
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                <StackPanel
+                    Height="52"
+                    Margin="0,7,0,0"
+                    Orientation="Horizontal">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="157" />
+                            <ColumnDefinition Width="312" />
+                            <ColumnDefinition Width="260" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
                         <!--  Drag panel handle  -->
                         <StackPanel
-                            Width="24"
+                            Grid.Column="0"
                             Height="52"
                             Margin="0">
                             <materialDesign:PackIcon
@@ -63,7 +74,7 @@
 
                         <!--  Panel name text box  -->
                         <StackPanel
-                            Width="157"
+                            Grid.Column="1"
                             VerticalAlignment="Center"
                             Orientation="Vertical"
                             Style="{StaticResource DisableWhenFullScreen}">
@@ -91,7 +102,10 @@
                         </StackPanel>
 
                         <!--  Panel configurations  -->
-                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                        <StackPanel
+                            Grid.Column="2"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
                             <StackPanel x:Name="StackPanelAdjustment" Orientation="Horizontal">
                                 <popOutPanelCard:PanelConfigField
                                     Margin="10,0,0,0"
@@ -119,120 +133,113 @@
                                     SourceUpdated="Data_SourceUpdated" />
                             </StackPanel>
                         </StackPanel>
-                    </StackPanel>
-
-                    <StackPanel Width="260" Visibility="{c:Binding '!DataItem.IsBuiltInPopOut and !DataItem.IsCustomPopOut'}" />
-                    <StackPanel
-                        Width="260"
-                        Orientation="Horizontal"
-                        Visibility="{c:Binding 'DataItem.IsBuiltInPopOut or DataItem.IsCustomPopOut'}">
                         <StackPanel
-                            Width="65"
-                            Orientation="Vertical"
-                            Style="{StaticResource DisableWhenFullScreen}">
-                            <TextBlock
-                                Style="{StaticResource TextBlockLabel}"
-                                TextAlignment="Center"
-                                ToolTip="Set this panel to be always on top">
-                                Always<LineBreak />
-                                on Top</TextBlock>
-                            <ToggleButton
-                                x:Name="TglBtnAlwaysOnTop"
-                                materialDesign:HintAssist.Hint="Always on Top"
-                                IsChecked="{Binding DataItem.AlwaysOnTop, Mode=TwoWay, NotifyOnSourceUpdated=True}"
-                                SourceUpdated="Data_SourceUpdated"
-                                Style="{StaticResource ToggleButton}" />
-                        </StackPanel>
-                        <StackPanel
-                            Width="65"
-                            Orientation="Vertical"
-                            Style="{StaticResource DisableWhenFullScreen}">
-                            <TextBlock
-                                Style="{StaticResource TextBlockLabel}"
-                                TextAlignment="Center"
-                                ToolTip="Hide the title bar for this panel">
-                                Hide<LineBreak />
-                                Title Bar</TextBlock>
-                            <ToggleButton
-                                x:Name="TglBtnHideTitlebar"
-                                IsChecked="{Binding DataItem.HideTitlebar, Mode=TwoWay, NotifyOnSourceUpdated=True}"
-                                SourceUpdated="Data_SourceUpdated"
-                                Style="{StaticResource ToggleButton}" />
-                        </StackPanel>
-                        <StackPanel Width="65" Orientation="Vertical">
-                            <TextBlock
-                                Style="{StaticResource TextBlockLabel}"
-                                TextAlignment="Center"
-                                ToolTip="Expand this panel into full screen (emulate keystroke Alt-Enter)">
-                                Full<LineBreak />
-                                Screen</TextBlock>
-                            <ToggleButton
-                                x:Name="TglBtnFullScreen"
-                                IsChecked="{Binding DataItem.FullScreen, Mode=TwoWay, NotifyOnSourceUpdated=True}"
-                                SourceUpdated="Data_SourceUpdated"
-                                Style="{StaticResource ToggleButton}" />
-                        </StackPanel>
-                        <StackPanel Width="65" Orientation="Vertical">
-                            <TextBlock
-                                Style="{StaticResource TextBlockLabel}"
-                                TextAlignment="Center"
-                                ToolTip="Automatic game refocus when clicking this panel or when using touch on this panel">
-                                Auto Game<LineBreak />
-                                Refocus</TextBlock>
-                            <ToggleButton
-                                x:Name="TglBtnAutoGameRefocus"
-                                IsChecked="{Binding DataItem.AutoGameRefocus, Mode=TwoWay, NotifyOnSourceUpdated=True}"
-                                SourceUpdated="Data_SourceUpdated"
-                                Style="{StaticResource ToggleButton}" />
-                        </StackPanel>
-                    </StackPanel>
-
-                    <!--<StackPanel
-                        Width="440"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Visibility="{c:Binding 'DataItem.IsCustomPopOut and DataItem.PanelSource.X == null'}">
-                        <Label HorizontalAlignment="Center">Please identify panel source</Label>
-                    </StackPanel>-->
-
-                    <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
-                        <Border
-                            Width="1"
-                            Height="48"
-                            Margin="5,0,5,0"
-                            Background="Gray"
-                            BorderBrush="gray"
-                            BorderThickness="1,0,0,0" />
-                        <ToggleButton
-                            Margin="6,0,0,0"
-                            materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon Kind=MoveResize}"
-                            Command="{Binding MoveResizePanelCommand}"
-                            IsChecked="{Binding DataItem.IsEditingPanel, Mode=TwoWay}"
-                            Style="{StaticResource IconToggleButton}"
-                            ToolTip="Use keyboard commands to edit panel size &#x0a;and location. Please see help for more info.">
-                            <materialDesign:PackIcon Kind="MoveResize" />
-                        </ToggleButton>
-
-                        <ToggleButton
-                            Margin="14,0,0,0"
-                            materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon Kind=HandBackRightOutline}"
-                            Command="{Binding TouchEnabledCommand}"
-                            IsChecked="{Binding DataItem.TouchEnabled, Mode=TwoWay}"
-                            Style="{StaticResource IconToggleButton}"
-                            ToolTip="Toggle panel touch capability"
+                            Grid.Column="3"
+                            Margin="0,-7,0,0"
+                            Orientation="Horizontal"
                             Visibility="{c:Binding 'DataItem.IsBuiltInPopOut or DataItem.IsCustomPopOut'}">
-                            <materialDesign:PackIcon Kind="HandBackRightOffOutline" />
-                        </ToggleButton>
+                            <StackPanel
+                                Width="65"
+                                Orientation="Vertical"
+                                Style="{StaticResource DisableWhenFullScreen}">
+                                <TextBlock
+                                    Style="{StaticResource TextBlockLabel}"
+                                    TextAlignment="Center"
+                                    ToolTip="Set this panel to be always on top">
+                                    Always<LineBreak />
+                                    on Top</TextBlock>
+                                <ToggleButton
+                                    x:Name="TglBtnAlwaysOnTop"
+                                    materialDesign:HintAssist.Hint="Always on Top"
+                                    IsChecked="{Binding DataItem.AlwaysOnTop, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                    SourceUpdated="Data_SourceUpdated"
+                                    Style="{StaticResource ToggleButton}" />
+                            </StackPanel>
+                            <StackPanel
+                                Width="65"
+                                Orientation="Vertical"
+                                Style="{StaticResource DisableWhenFullScreen}">
+                                <TextBlock
+                                    Style="{StaticResource TextBlockLabel}"
+                                    TextAlignment="Center"
+                                    ToolTip="Hide the title bar for this panel">
+                                    Hide<LineBreak />
+                                    Title Bar</TextBlock>
+                                <ToggleButton
+                                    x:Name="TglBtnHideTitlebar"
+                                    IsChecked="{Binding DataItem.HideTitlebar, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                    SourceUpdated="Data_SourceUpdated"
+                                    Style="{StaticResource ToggleButton}" />
+                            </StackPanel>
+                            <StackPanel Width="65" Orientation="Vertical">
+                                <TextBlock
+                                    Style="{StaticResource TextBlockLabel}"
+                                    TextAlignment="Center"
+                                    ToolTip="Expand this panel into full screen (emulate keystroke Alt-Enter)">
+                                    Full<LineBreak />
+                                    Screen</TextBlock>
+                                <ToggleButton
+                                    x:Name="TglBtnFullScreen"
+                                    IsChecked="{Binding DataItem.FullScreen, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                    SourceUpdated="Data_SourceUpdated"
+                                    Style="{StaticResource ToggleButton}" />
+                            </StackPanel>
+                            <StackPanel Width="65" Orientation="Vertical">
+                                <TextBlock
+                                    Style="{StaticResource TextBlockLabel}"
+                                    TextAlignment="Center"
+                                    ToolTip="Automatic game refocus when clicking this panel or when using touch on this panel">
+                                    Auto Game<LineBreak />
+                                    Refocus</TextBlock>
+                                <ToggleButton
+                                    x:Name="TglBtnAutoGameRefocus"
+                                    IsChecked="{Binding DataItem.AutoGameRefocus, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                    SourceUpdated="Data_SourceUpdated"
+                                    Style="{StaticResource ToggleButton}" />
+                            </StackPanel>
+                        </StackPanel>
 
-                        <Button
+                        <!--  Panel icon buttons  -->
+                        <StackPanel
+                            Grid.Column="4"
                             Margin="10,0,0,0"
-                            Command="{Binding DeletePanelCommand}"
-                            Style="{StaticResource IconButton}"
-                            ToolTip="Delete panel"
-                            Visibility="{c:Binding 'DataItem.IsDeletablePanel'}">
-                            <materialDesign:PackIcon Kind="DeleteOutline" />
-                        </Button>
-                    </StackPanel>
+                            Orientation="Horizontal">
+                            <Border
+                                Width="1"
+                                Height="48"
+                                Margin="3,0,3,0"
+                                Background="Gray"
+                                BorderBrush="gray"
+                                BorderThickness="1,0,0,0" />
+                            <ToggleButton
+                                Margin="6,0,0,0"
+                                materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon Kind=MoveResize}"
+                                Command="{Binding MoveResizePanelCommand}"
+                                IsChecked="{Binding DataItem.IsEditingPanel, Mode=TwoWay}"
+                                Style="{StaticResource IconToggleButton}"
+                                ToolTip="Use keyboard commands to edit panel size &#x0a;and location. Please see help for more info.">
+                                <materialDesign:PackIcon Kind="MoveResize" />
+                            </ToggleButton>
+                            <ToggleButton
+                                Margin="14,0,0,0"
+                                materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon Kind=HandBackRightOutline}"
+                                Command="{Binding TouchEnabledCommand}"
+                                IsChecked="{Binding DataItem.TouchEnabled, Mode=TwoWay}"
+                                Style="{StaticResource IconToggleButton}"
+                                ToolTip="Toggle panel touch capability"
+                                Visibility="{c:Binding 'DataItem.IsBuiltInPopOut or DataItem.IsCustomPopOut'}">
+                                <materialDesign:PackIcon Kind="HandBackRightOffOutline" />
+                            </ToggleButton>
+                            <Button
+                                Margin="10,0,0,0"
+                                Command="{Binding DeletePanelCommand}"
+                                Style="{StaticResource IconButton}"
+                                ToolTip="Delete panel"
+                                Visibility="{c:Binding 'DataItem.IsDeletablePanel'}">
+                                <materialDesign:PackIcon Kind="DeleteOutline" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
                 </StackPanel>
             </Expander.Header>
             <StackPanel

@@ -43,13 +43,21 @@
             BorderThickness="1"
             Style="{StaticResource PopOutPanelExpander}">
             <Expander.Header>
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel Margin="0,7,0,0" Orientation="Horizontal">
+                <StackPanel
+                    Height="52"
+                    Margin="0,7,0,0"
+                    Orientation="Horizontal">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="157" />
+                            <ColumnDefinition Width="220" />
+                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition Width="240" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
                         <!--  Drag panel handle  -->
-                        <StackPanel
-                            Width="24"
-                            Height="52"
-                            Margin="0">
+                        <StackPanel Grid.Column="0" Margin="0">
                             <materialDesign:PackIcon
                                 x:Name="IconDrag"
                                 Width="22"
@@ -58,10 +66,9 @@
                                 Kind="Menu"
                                 Opacity="0.5" />
                         </StackPanel>
-
                         <!--  Panel name text box  -->
                         <StackPanel
-                            Width="157"
+                            Grid.Column="1"
                             VerticalAlignment="Center"
                             Orientation="Vertical"
                             Style="{StaticResource DisableWhenFullScreen}">
@@ -87,10 +94,9 @@
                                 Text="{Binding DataItem.PanelName, Mode=TwoWay, NotifyOnSourceUpdated=True}"
                                 TextAlignment="Left" />
                         </StackPanel>
-
                         <StackPanel
-                            Width="85"
-                            Margin="150,0,0,0"
+                            Grid.Column="2"
+                            HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             Orientation="Vertical"
                             Style="{StaticResource DisableWhenFullScreen}">
@@ -98,7 +104,7 @@
                                 Margin="6,2,0,0"
                                 Style="{StaticResource TextBlockLabel}"
                                 TextAlignment="Center">
-                                Panel Src Left
+                                Panel Source Left
                             </TextBlock>
                             <TextBox
                                 Width="85"
@@ -118,10 +124,9 @@
                                 TextAlignment="Center"
                                 Visibility="{Binding DataItem.IsCustomPopOut}" />
                         </StackPanel>
-
                         <StackPanel
-                            Width="85"
-                            Margin="30,0,0,0"
+                            Grid.Column="3"
+                            HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Orientation="Vertical"
                             Style="{StaticResource DisableWhenFullScreen}">
@@ -129,7 +134,7 @@
                                 Margin="6,2,0,0"
                                 Style="{StaticResource TextBlockLabel}"
                                 TextAlignment="Center">
-                                Panel Src Top
+                                Panel Source Top
                             </TextBlock>
                             <TextBox
                                 Width="85"
@@ -149,41 +154,42 @@
                                 TextAlignment="Center"
                                 Visibility="{Binding DataItem.IsCustomPopOut}" />
                         </StackPanel>
-
-
-
                         <StackPanel
-                            Width="263"
+                            Grid.Column="4"
                             Margin="0,-3,0,0"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Visibility="{c:Binding 'DataItem.IsCustomPopOut'}">
                             <popOutPanelCard:PanelTargetField />
                         </StackPanel>
+                        <StackPanel
+                            Grid.Column="5"
+                            Margin="16,0,0,0"
+                            VerticalAlignment="Center">
+                            <!--  For New panel  -->
+                            <Button
+                                x:Name="BtnIdentifySourcePanel"
+                                Width="80"
+                                Margin="2,0,0,0"
+                                VerticalAlignment="Center"
+                                Command="{Binding AddPanelSourceLocationCommand}"
+                                Content="Identify"
+                                Style="{StaticResource FlatButton}"
+                                ToolTip="Identify source aircraft instrumentation panel location"
+                                Visibility="{c:Binding 'DataItem.IsCustomPopOut and DataItem.PanelSource.X == null'}" />
 
-                        <!--  New panel  -->
-                        <Button
-                            x:Name="BtnIdentifySourcePanel"
-                            Width="80"
-                            Margin="2,0,0,0"
-                            VerticalAlignment="Center"
-                            Command="{Binding AddPanelSourceLocationCommand}"
-                            Content="Identify"
-                            Style="{StaticResource FlatButton}"
-                            ToolTip="Identify source aircraft instrumentation panel location"
-                            Visibility="{c:Binding 'DataItem.IsCustomPopOut and DataItem.PanelSource.X == null'}" />
-
-                        <!--  Existing Panel  -->
-                        <materialDesign:PackIcon
-                            x:Name="BtnShowSourcePanel"
-                            Width="{StaticResource IconSize}"
-                            Height="{StaticResource IconSize}"
-                            Margin="31,0,0,0"
-                            VerticalAlignment="Center"
-                            Foreground="{Binding DataItem.PanelSource.Color}"
-                            Kind="Crosshairs"
-                            Visibility="{c:Binding 'DataItem.IsDeletablePanel and DataItem.PanelSource.X != null'}" />
-                    </StackPanel>
+                            <!--  For Existing Panel  -->
+                            <materialDesign:PackIcon
+                                x:Name="BtnShowSourcePanel"
+                                Width="{StaticResource IconSize}"
+                                Height="{StaticResource IconSize}"
+                                Margin="31,0,0,0"
+                                VerticalAlignment="Center"
+                                Foreground="{Binding DataItem.PanelSource.Color}"
+                                Kind="Crosshairs"
+                                Visibility="{c:Binding 'DataItem.IsDeletablePanel and DataItem.PanelSource.X != null'}" />
+                        </StackPanel>
+                    </Grid>
                 </StackPanel>
             </Expander.Header>
         </Expander>
