@@ -122,7 +122,7 @@
                                 Style="{StaticResource MaterialDesignTextBox}"
                                 Text="{Binding DataItem.PanelSource.X, Converter={StaticResource StringEmptyConverter}, ConverterParameter='N/A'}"
                                 TextAlignment="Center"
-                                Visibility="{Binding DataItem.IsCustomPopOut}" />
+                                Visibility="{c:Binding DataItem.IsCustomPopOut}" />
                         </StackPanel>
                         <StackPanel
                             Grid.Column="3"
@@ -152,14 +152,14 @@
                                 Style="{StaticResource MaterialDesignTextBox}"
                                 Text="{Binding DataItem.PanelSource.Y, Converter={StaticResource StringEmptyConverter}, ConverterParameter='N/A'}"
                                 TextAlignment="Center"
-                                Visibility="{Binding DataItem.IsCustomPopOut}" />
+                                Visibility="{c:Binding DataItem.IsCustomPopOut}" />
                         </StackPanel>
                         <StackPanel
                             Grid.Column="4"
                             Margin="0,-3,0,0"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            Visibility="{c:Binding 'DataItem.IsCustomPopOut'}">
+                            Visibility="{c:Binding DataItem.IsCustomPopOut}">
                             <popOutPanelCard:PanelTargetField />
                         </StackPanel>
                         <StackPanel

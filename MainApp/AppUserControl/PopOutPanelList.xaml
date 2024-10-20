@@ -15,12 +15,12 @@
     <UserControl.Resources>
         <DataTemplate x:Key="PopOutPanelDataTemplate">
             <StackPanel Margin="2,3">
-                <appUserControl:PopOutPanelConfigCard DataItem="{Binding ''}" />
+                <appUserControl:PopOutPanelConfigCard DataItem="{Binding}" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="EditPopOutPanelSourceTemplate">
             <StackPanel Margin="2,3">
-                <appUserControl:PopOutPanelSourceCard DataItem="{Binding ''}" />
+                <appUserControl:PopOutPanelSourceCard DataItem="{Binding}" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="EmptyDataTemplate" />

@@ -266,9 +266,7 @@
                                 Orientation="Horizontal"
                                 Visibility="{Binding ActiveProfile.ProfileSetting.RefocusOnDisplay.IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                                 <WrapPanel Orientation="Vertical" Visibility="{Binding ActiveProfile.ProfileSetting.RefocusOnDisplay.IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                                    <ItemsControl
-                                        Margin="0"
-                                        ItemsSource="{Binding ActiveProfile.ProfileSetting.RefocusOnDisplay.Monitors, Mode=TwoWay}">
+                                    <ItemsControl Margin="0" ItemsSource="{Binding ActiveProfile.ProfileSetting.RefocusOnDisplay.Monitors, Mode=TwoWay}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate DataType="{x:Type domain:MonitorInfo}">
                                                 <WrapPanel Margin="0,0,0,4" Orientation="Horizontal">

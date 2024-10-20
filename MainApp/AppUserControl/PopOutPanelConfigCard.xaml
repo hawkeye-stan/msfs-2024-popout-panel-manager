@@ -111,25 +111,21 @@
                                     Margin="5,0,0,0"
                                     BindingPath="Top"
                                     DataItem="{Binding DataItem}"
-                                    IsEnabled="{c:Binding '!DataItem.IsRefocusDisplay'}"
                                     SourceUpdated="Data_SourceUpdated" />
                                 <popOutPanelCard:PanelConfigField
                                     Margin="5,0,0,0"
                                     BindingPath="Left"
                                     DataItem="{Binding DataItem}"
-                                    IsEnabled="{c:Binding '!DataItem.IsRefocusDisplay'}"
                                     SourceUpdated="Data_SourceUpdated" />
                                 <popOutPanelCard:PanelConfigField
                                     Margin="5,0,0,0"
                                     BindingPath="Width"
                                     DataItem="{Binding DataItem}"
-                                    IsEnabled="{c:Binding '!DataItem.IsRefocusDisplay'}"
                                     SourceUpdated="Data_SourceUpdated" />
                                 <popOutPanelCard:PanelConfigField
                                     Margin="5,0,0,0"
                                     BindingPath="Height"
                                     DataItem="{Binding DataItem}"
-                                    IsEnabled="{c:Binding '!DataItem.IsRefocusDisplay'}"
                                     SourceUpdated="Data_SourceUpdated" />
                             </StackPanel>
                         </StackPanel>
