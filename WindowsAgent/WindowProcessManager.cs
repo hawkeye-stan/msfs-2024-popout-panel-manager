@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 
 namespace MSFSPopoutPanelManager.WindowsAgent
 {
     public class WindowProcessManager
     {
+
+        public static WindowProcess AppProcess { get; private set; }
+
+        public static WindowProcess SimulatorProcess { get; private set; }
+
         public static string GetApplicationVersion()
         {
             var assembly = Assembly.GetEntryAssembly();
@@ -30,35 +36,34 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             throw new ApplicationException("Unable to get application version number.");
         }
 
-        public static WindowProcess SimulatorProcess { get; private set; }
+        
 
         public static void GetSimulatorProcess()
         {
             SimulatorProcess = GetWindowProcess("FlightSimulator");
         }
 
-        public static WindowProcess GetApplicationProcess()
+        public static void SetApplicationProcess()
         {
-            return GetWindowProcess("MSFS2024PopoutPanelManager");
+            AppProcess = GetWindowProcess("MSFS2024PopoutPanelManager");
         }
 
         private static WindowProcess GetWindowProcess(string processName)
         {
-            foreach (var process in Process.GetProcesses())
-            {
-                if (process.ProcessName == processName)
-                {
-                    return new WindowProcess()
-                    {
-                        ProcessId = process.Id,
-                        ProcessName = process.ProcessName,
-                        Handle = process.MainWindowHandle,
-                        Modules = process.Modules
-                    };
-                }
-            }
+            var processes = Process.GetProcesses().Where(p => p.ProcessName == processName);
 
-            return null;
+            var process = processes.FirstOrDefault();
+
+            if (process == null)
+                return null;
+
+            return new WindowProcess()
+            {
+                ProcessId = process.Id,
+                ProcessName = process.ProcessName,
+                Handle = process.MainWindowHandle,
+                Modules = process.Modules
+            };
         }
     }
 

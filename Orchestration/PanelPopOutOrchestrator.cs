@@ -233,7 +233,7 @@ namespace MSFSPopoutPanelManager.Orchestration
                 StatusMessageWriter.WriteMessageWithNewLine("Popping out Panels", StatusMessageType.Info);
 
                 // Save current application location to restore it after pop out
-                var appLocation = WindowActionManager.GetWindowRectangle(WindowProcessManager.GetApplicationProcess().Handle);
+                var appLocation = WindowActionManager.GetWindowRectangle(WindowProcessManager.AppProcess.Handle);
 
                 // Resetting camera to default first
                 _flightSimOrchestrator.ResetCameraView();
@@ -260,7 +260,7 @@ namespace MSFSPopoutPanelManager.Orchestration
                 }
 
                 // Restore current application location
-                WindowActionManager.MoveWindow(WindowProcessManager.GetApplicationProcess().Handle, appLocation);
+                WindowActionManager.MoveWindow(WindowProcessManager.AppProcess.Handle, appLocation);
             });
         }
 
@@ -519,7 +519,10 @@ namespace MSFSPopoutPanelManager.Orchestration
                 switch (AppSetting.PopOutSetting.AfterPopOutCameraView.CameraView)
                 {
                     case AfterPopOutCameraViewType.CockpitCenterView:
-                        WorkflowStepWithMessage.Execute("Resetting camera view", () =>ResetCockpitView(AppSetting.GeneralSetting.TurboMode), true);
+                        WorkflowStepWithMessage.Execute("Resetting camera view", ResetToPilotView);
+
+                        // This does not seem to work anymore
+                        // WorkflowStepWithMessage.Execute("Resetting camera view", () => ResetCockpitView(AppSetting.GeneralSetting.TurboMode), true);
                         break;
                     case AfterPopOutCameraViewType.CustomCameraView:
                         WorkflowStepWithMessage.Execute("Resetting camera view", () => ResetCockpitView(AppSetting.GeneralSetting.TurboMode), true);
@@ -546,6 +549,12 @@ namespace MSFSPopoutPanelManager.Orchestration
                     break;
             }
         }
+
+        private void ResetToPilotView()
+        {
+            _flightSimOrchestrator.SetFixedCamera(CameraType.Cockpit, 0);
+        }
+
         private bool LoadCustomView(string keyBinding, bool isTurboMode, bool ignoreError)
         {
             _flightSimOrchestrator.ResetCameraView();

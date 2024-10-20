@@ -43,7 +43,7 @@ namespace MSFSPopoutPanelManager.MainApp.AppWindow
 
             // Try to fix always on to click through. This won't work for application's title bar since mouseEnter won't be triggered. 
             // This is super tricky to trick POPM process is MSFS process to avoid Windows OS focus stealing
-            MouseEnter += (_, _) =>WindowActionManager.SetWindowFocus(WindowProcessManager.GetApplicationProcess().Handle);
+            MouseEnter += (_, _) =>WindowActionManager.SetWindowFocus(WindowProcessManager.AppProcess.Handle);
         }
 
         private void AppWindow_Closing(object sender, CancelEventArgs e)

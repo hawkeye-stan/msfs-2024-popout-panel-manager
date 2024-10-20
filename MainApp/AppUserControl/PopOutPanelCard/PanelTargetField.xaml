@@ -31,7 +31,7 @@
             </TextBlock>
 
             <TextBox
-                Width="85"
+                Width="140"
                 Height="18"
                 Margin="0,-3,0,0"
                 Padding="1,0,1,0"

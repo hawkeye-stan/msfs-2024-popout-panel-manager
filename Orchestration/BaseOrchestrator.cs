@@ -27,6 +27,12 @@ namespace MSFSPopoutPanelManager.Orchestration
             }
 
             WindowActionManager.CloseAllPopOuts();
+
+            WindowEventManager.UnhookWinEvent();
+            
+            InputHookManager.EndMouseHook();
+            
+            InputHookManager.EndKeyboardHook();
         }
     }
 }

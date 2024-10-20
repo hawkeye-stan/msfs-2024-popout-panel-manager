@@ -50,8 +50,8 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="24" />
-                            <ColumnDefinition Width="157" />
-                            <ColumnDefinition Width="220" />
+                            <ColumnDefinition Width="189" />
+                            <ColumnDefinition Width="188" />
                             <ColumnDefinition Width="140" />
                             <ColumnDefinition Width="240" />
                             <ColumnDefinition Width="*" />
@@ -81,10 +81,10 @@
                             </TextBlock>
                             <TextBox
                                 x:Name="TxtBoxPanelName"
-                                Width="150"
+                                Width="180"
                                 Height="18"
                                 Margin="0,-3,0,0"
-                                Padding="1,0,1,0"
+                                Padding="4,0,4,0"
                                 GotFocus="TextBox_GotFocus"
                                 IsEnabled="{Binding DataItem.IsCustomPopOut}"
                                 KeyDown="TextBox_KeyDown"
@@ -101,7 +101,7 @@
                             Orientation="Vertical"
                             Style="{StaticResource DisableWhenFullScreen}">
                             <TextBlock
-                                Margin="6,2,0,0"
+                                Margin="6,5,0,0"
                                 Style="{StaticResource TextBlockLabel}"
                                 TextAlignment="Center">
                                 Panel Source Left
@@ -131,7 +131,7 @@
                             Orientation="Vertical"
                             Style="{StaticResource DisableWhenFullScreen}">
                             <TextBlock
-                                Margin="6,2,0,0"
+                                Margin="6,5,0,0"
                                 Style="{StaticResource TextBlockLabel}"
                                 TextAlignment="Center">
                                 Panel Source Top

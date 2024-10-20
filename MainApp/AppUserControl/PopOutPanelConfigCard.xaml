@@ -52,8 +52,8 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="24" />
-                            <ColumnDefinition Width="157" />
-                            <ColumnDefinition Width="312" />
+                            <ColumnDefinition Width="189" />
+                            <ColumnDefinition Width="280" />
                             <ColumnDefinition Width="260" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
@@ -87,10 +87,10 @@
                             </TextBlock>
                             <TextBox
                                 x:Name="TxtBoxPanelName"
-                                Width="150"
+                                Width="180"
                                 Height="18"
                                 Margin="0,-3,0,0"
-                                Padding="1,0,1,0"
+                                Padding="4,0,4,0"
                                 GotFocus="TextBox_GotFocus"
                                 IsEnabled="{Binding DataItem.IsCustomPopOut}"
                                 KeyDown="TextBox_KeyDown"
@@ -108,25 +108,25 @@
                             Orientation="Horizontal">
                             <StackPanel x:Name="StackPanelAdjustment" Orientation="Horizontal">
                                 <popOutPanelCard:PanelConfigField
-                                    Margin="10,0,0,0"
+                                    Margin="5,0,0,0"
                                     BindingPath="Top"
                                     DataItem="{Binding DataItem}"
                                     IsEnabled="{c:Binding '!DataItem.IsRefocusDisplay'}"
                                     SourceUpdated="Data_SourceUpdated" />
                                 <popOutPanelCard:PanelConfigField
-                                    Margin="10,0,0,0"
+                                    Margin="5,0,0,0"
                                     BindingPath="Left"
                                     DataItem="{Binding DataItem}"
                                     IsEnabled="{c:Binding '!DataItem.IsRefocusDisplay'}"
                                     SourceUpdated="Data_SourceUpdated" />
                                 <popOutPanelCard:PanelConfigField
-                                    Margin="10,0,0,0"
+                                    Margin="5,0,0,0"
                                     BindingPath="Width"
                                     DataItem="{Binding DataItem}"
                                     IsEnabled="{c:Binding '!DataItem.IsRefocusDisplay'}"
                                     SourceUpdated="Data_SourceUpdated" />
                                 <popOutPanelCard:PanelConfigField
-                                    Margin="10,0,0,0"
+                                    Margin="5,0,0,0"
                                     BindingPath="Height"
                                     DataItem="{Binding DataItem}"
                                     IsEnabled="{c:Binding '!DataItem.IsRefocusDisplay'}"

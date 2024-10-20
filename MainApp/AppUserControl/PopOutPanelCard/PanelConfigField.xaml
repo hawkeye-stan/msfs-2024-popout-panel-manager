@@ -34,7 +34,7 @@
     </UserControl.Resources>
     <StackPanel IsEnabled="{c:Binding '!DataItem.FullScreen'}" Orientation="Horizontal">
         <StackPanel
-            Width="50"
+            Width="47"
             Orientation="Vertical"
             Style="{StaticResource DisableWhenFullScreen}">
             <TextBlock
@@ -67,13 +67,13 @@
                 PlacementMode="RightAndAlignMiddles"
                 PopupHorizontalOffset="-15"
                 PopupUniformCornerRadius="10"
-                PopupVerticalOffset="-10"
+                PopupVerticalOffset="-20"
                 StaysOpen="True">
                 <materialDesign:PopupBox.ToggleContent>
                     <Button
                         Width="{StaticResource UpDownButtonSize}"
                         Height="{StaticResource UpDownButtonSize}"
-                        Margin="-4,16,0,0"
+                        Margin="-3,0,0,0"
                         Click="BtnPopupBoxOpen_Click"
                         Style="{StaticResource IconButton}">
                         <materialDesign:PackIcon

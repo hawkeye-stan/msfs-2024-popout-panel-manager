@@ -284,7 +284,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
         public static bool IsPointInsideAppWindow(Point point)
         {
-            var appHandle = WindowProcessManager.GetApplicationProcess().Handle;
+            var appHandle = WindowProcessManager.AppProcess.Handle;
 
             if (appHandle == IntPtr.Zero)
                 return true;

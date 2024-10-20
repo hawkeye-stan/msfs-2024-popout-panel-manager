@@ -97,6 +97,8 @@ namespace MSFSPopoutPanelManager.MainApp
                 messageWindow.Show();
 
                 base.OnStartup(e);
+
+                WindowProcessManager.SetApplicationProcess();
             }
         }
 
@@ -171,9 +173,6 @@ namespace MSFSPopoutPanelManager.MainApp
             {
                 SetProcessDPIAware();
             }
-
-            var process = WindowProcessManager.GetApplicationProcess();
-            GetProcessDpiAwareness(process.Handle, out _);
         }
 
         [DllImport("User32.dll")]
@@ -184,8 +183,5 @@ namespace MSFSPopoutPanelManager.MainApp
 
         [DllImport("User32.dll")]
         internal static extern bool SetProcessDPIAware();
-
-        [DllImport("SHCore.dll", SetLastError = true)]
-        internal static extern void GetProcessDpiAwareness(IntPtr hProcess, out ProcessDpiAwareness awareness);
     }
 }

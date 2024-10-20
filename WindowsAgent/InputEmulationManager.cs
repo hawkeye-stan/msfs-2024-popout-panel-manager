@@ -97,33 +97,6 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             }
         }
 
-        public static void SaveCustomView(string keyBinding)
-        {
-            Debug.WriteLine("Saving custom view...");
-
-            if (WindowProcessManager.SimulatorProcess == null)
-                return;
-
-            var hWnd = WindowProcessManager.SimulatorProcess.Handle;
-            var customViewKey = (uint)(Convert.ToInt32(keyBinding) + KEY_0);
-
-            PInvoke.SetForegroundWindow(hWnd);
-            Thread.Sleep(200);
-
-            PInvoke.SetFocus(hWnd);
-            Thread.Sleep(300);
-
-            // Set view using Ctrl-Alt-0
-            PInvoke.keybd_event(Convert.ToByte(VK_LCONTROL), 0, KEYEVENTF_KEYDOWN, 0);
-            PInvoke.keybd_event(Convert.ToByte(VK_LMENU), 0, KEYEVENTF_KEYDOWN, 0);
-            PInvoke.keybd_event(Convert.ToByte(customViewKey), 0, KEYEVENTF_KEYDOWN, 0);
-            Thread.Sleep(200);
-            PInvoke.keybd_event(Convert.ToByte(customViewKey), 0, KEYEVENTF_KEYUP, 0);
-            PInvoke.keybd_event(Convert.ToByte(VK_LMENU), 0, KEYEVENTF_KEYUP, 0);
-            PInvoke.keybd_event(Convert.ToByte(VK_LCONTROL), 0, KEYEVENTF_KEYUP, 0);
-            Thread.Sleep(200);
-        }
-
         public static void LoadCustomView(string keyBinding)
         {
             Debug.WriteLine("Loading custom view...");
@@ -233,7 +206,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
         private static void MoveAppWindowFromLeftClickPoint(int x, int y)
         {
-            var appHandle = WindowProcessManager.GetApplicationProcess().Handle;
+            var appHandle = WindowProcessManager.AppProcess.Handle;
             var applicationRectangle = WindowActionManager.GetWindowRectangle(appHandle);
 
             if (IsPointWithinRectangle(x, y, applicationRectangle))
