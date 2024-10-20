@@ -7,7 +7,7 @@ namespace MSFSPopoutPanelManager.Shared
         public static bool Execute(string message, Func<bool> function, bool isSubTask = false)
         {
             if (isSubTask)
-                message = "          - " + message;
+                message = "    - " + message;
 
             StatusMessageWriter.WriteMessage(message, StatusMessageType.Info);
             StatusMessageWriter.WriteExecutingStatusMessage();
@@ -20,17 +20,15 @@ namespace MSFSPopoutPanelManager.Shared
                 StatusMessageWriter.WriteOkStatusMessage();
                 return true;
             }
-            else
-            {
-                StatusMessageWriter.WriteFailureStatusMessage();
-                return false;
-            }
+           
+            StatusMessageWriter.WriteFailureStatusMessage();
+            return false;
         }
 
         public static void Execute(string message, Action function, bool isSubTask = false)
         {
             if (isSubTask)
-                message = "          - " + message;
+                message = "    - " + message;
 
             StatusMessageWriter.WriteMessage(message, StatusMessageType.Info);
             StatusMessageWriter.WriteExecutingStatusMessage();
