@@ -47,7 +47,7 @@
                 x:Name="TxtBoxData"
                 Width="45"
                 Height="18"
-                Margin="0,-3,0,0"
+                Margin="0,-2,0,0"
                 Padding="1,0,1,0"
                 GotFocus="TextBox_GotFocus"
                 KeyDown="TextBox_KeyDown"

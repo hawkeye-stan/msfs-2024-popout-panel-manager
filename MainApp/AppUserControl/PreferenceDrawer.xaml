@@ -91,13 +91,13 @@
                         <Line />
                         <DockPanel>
                             <ComboBox
-                                Width="180"
+                                Width="170"
                                 HorizontalAlignment="Left"
                                 SelectedValue="{Binding AppSettingData.ApplicationSetting.GeneralSetting.UseApplicationDataPath, Mode=TwoWay}"
                                 SelectedValuePath="Tag"
                                 Style="{StaticResource PreferenceComboBox}">
-                                <ComboBoxItem Content="Documents folder (Default)" Tag="False" />
                                 <ComboBoxItem Content="AppData Roaming folder" Tag="True" />
+                                <ComboBoxItem Content="Documents folder" Tag="False" />
                             </ComboBox>
                             <TextBlock Margin="20,5,0,0" FontSize="12">
                                 <Hyperlink

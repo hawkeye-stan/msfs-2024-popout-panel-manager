@@ -261,14 +261,13 @@
                                 <TextBlock Style="{StaticResource TxtBlockDisableWhenLocked}" ToolTip="Automatically set focus back to game window after a period of inactivity after touching the designated monitor. This is overcome a bug in MSFS where NVIDIA frame generation does not work when focus is not in the game window.">Enable entire monitor display to have game refocus function when touch</TextBlock>
                             </WrapPanel>
                             <WrapPanel
-                                Margin="36,0,0,0"
+                                Margin="30,0,0,0"
                                 IsHitTestVisible="{c:Binding !ActiveProfile.IsLocked}"
                                 Orientation="Horizontal"
                                 Visibility="{Binding ActiveProfile.ProfileSetting.RefocusOnDisplay.IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                                 <WrapPanel Orientation="Vertical" Visibility="{Binding ActiveProfile.ProfileSetting.RefocusOnDisplay.IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                                     <ItemsControl
                                         Margin="0"
-                                        Padding="8"
                                         ItemsSource="{Binding ActiveProfile.ProfileSetting.RefocusOnDisplay.Monitors, Mode=TwoWay}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate DataType="{x:Type domain:MonitorInfo}">
@@ -298,7 +297,7 @@
                                     </ItemsControl>
                                 </WrapPanel>
                                 <Button
-                                    Margin="1,0,0,0"
+                                    Margin="10,0,0,0"
                                     Command="{Binding RefocusDisplayRefreshedCommand}"
                                     Style="{StaticResource Button}">
                                     Refresh Display List

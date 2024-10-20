@@ -34,7 +34,7 @@ namespace MSFSPopoutPanelManager.DomainModel.Setting
 
         public bool TurboMode { get; set; } = false;
 
-        public bool UseApplicationDataPath { get; set; } = false;
+        public bool UseApplicationDataPath { get; set; } = true;
 
         [JsonIgnore, IgnorePropertyChanged]
         public bool AutoStart

@@ -144,7 +144,6 @@
         <Setter Property="Height" Value="30" />
         <Setter Property="Margin" Value="0,5,15,0" />
         <Setter Property="VerticalContentAlignment" Value="Bottom" />
-        <Setter Property="materialDesign:HintAssist.FloatingScale" Value="0.8" />
     </Style>
 
     <Style
