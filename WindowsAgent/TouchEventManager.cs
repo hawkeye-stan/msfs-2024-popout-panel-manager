@@ -18,7 +18,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         private static bool _isDragged;
         private static int _refocusedTaskIndex;
 
-        private static object _lock = new();
+        private static readonly object Lock = new();
 
         private const int PANEL_MENUBAR_HEIGHT = 31;
         private const uint TOUCH_FLAG = 0xFF515700;
@@ -113,7 +113,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                         if (panelConfig.PanelType == PanelType.RefocusDisplay)
                             return 1;
 
-                        lock (_lock)
+                        lock (Lock)
                         {
                             _isTouchDownCompleted = false;
                             _isTouchUpCompleted = false;
@@ -126,7 +126,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                             
                             PInvoke.mouse_event(MOUSEEVENTF_LEFTDOWN, info.pt.X, info.pt.Y, 0, 0);
                             Thread.Sleep(ApplicationSetting.TouchSetting.TouchDownUpDelay + 25);
-                            lock (_lock)
+                            lock (Lock)
                             {
                                 _isTouchDownCompleted = true;
                             }
@@ -139,7 +139,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                     {
                         Task.Run(() =>
                         {
-                            lock (_lock)
+                            lock (Lock)
                             {
                                 _isTouchDownCompleted = true;
                                 _isDragged = false;
@@ -176,7 +176,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
                             PInvoke.mouse_event(MOUSEEVENTF_LEFTUP, info.pt.X, info.pt.Y, 0, 0);
 
-                            lock (_lock)
+                            lock (Lock)
                             {
                                 _isDragged = false;
                                 _isTouchDownCompleted = true;
@@ -205,7 +205,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                 case WM_MOUSEMOVE:
                     if (!_isTouchDownCompleted)
                     {
-                        lock (_lock)
+                        lock (Lock)
                         {
                             _isDragged = true;
                         }

@@ -13,7 +13,6 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         private const uint KEYEVENTF_KEYDOWN = 0x0;
         private const uint KEYEVENTF_KEYUP = 0x2;
         private const uint VK_LMENU = 0xA4;
-        private const uint VK_LCONTROL = 0xA2;
         private const uint VK_ENT = 0x0D;
         private const uint KEY_0 = 0x30;
 

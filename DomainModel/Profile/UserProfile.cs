@@ -33,7 +33,7 @@ namespace MSFSPopoutPanelManager.DomainModel.Profile
 
                             if (arg is PropertyChangedExtendedEventArgs changedArg)
                             {
-                                if (changedArg.ObjectName == QualifyFullName.Of(nameof(MSFSPopoutPanelManager.DomainModel.Profile.FloatingPanel)) &&
+                                if (changedArg.ObjectName == QualifyFullName.Of(nameof(FloatingPanel)) &&
                                     changedArg.PropertyName == nameof(FloatingPanel.IsEnabled))
                                 {
                                     if(PanelConfigs.Any(x => x.FloatingPanel.IsEnabled))

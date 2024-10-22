@@ -1,7 +1,6 @@
 ﻿using MSFSPopoutPanelManager.DomainModel.Setting;
 using MSFSPopoutPanelManager.Shared;
 using System;
-using System.Collections.Specialized;
 
 namespace MSFSPopoutPanelManager.Orchestration
 {

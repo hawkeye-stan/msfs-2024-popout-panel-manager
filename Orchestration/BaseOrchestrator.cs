@@ -1,6 +1,5 @@
 ﻿using MSFSPopoutPanelManager.Shared;
 using MSFSPopoutPanelManager.WindowsAgent;
-using System.Reflection.Metadata.Ecma335;
 using System;
 
 namespace MSFSPopoutPanelManager.Orchestration

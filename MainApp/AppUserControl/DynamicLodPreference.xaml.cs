@@ -1,5 +1,4 @@
-﻿using MSFSPopoutPanelManager.MainApp.ViewModel;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,7 +19,6 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl
             Loaded += (_, _) =>
             {
                 InitializeComponent();
-                var dataContext = DataContext as ApplicationViewModel;
             };
         }
 
@@ -29,9 +27,7 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl
             e.Handled = !(int.TryParse(e.Text, out _) || (e.Text.Trim() == "-"));
         }
     }
-
-  
-
+    
     public class AglValidationRule : ValidationRule
     {
         private const int MIN = -2000;

@@ -9,7 +9,7 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
         private static readonly float[] FpsStatistic = new float[FPS_LEN];
         private static int _fpsIndex = -1;
         private static int _avgFps;
-        private static int _ignoreFpsSpikeCount = 0;
+        private static int _ignoreFpsSpikeCount;
 
         public static int GetAverageFps(int newValue)
         {

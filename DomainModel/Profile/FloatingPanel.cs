@@ -1,5 +1,4 @@
-﻿using System;
-using MSFSPopoutPanelManager.Shared;
+﻿using MSFSPopoutPanelManager.Shared;
 using Newtonsoft.Json;
 
 namespace MSFSPopoutPanelManager.DomainModel.Profile

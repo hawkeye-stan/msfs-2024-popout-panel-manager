@@ -25,7 +25,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                 {
                     PInvoke.GetCursorPos(out var point);
 
-                    // Disable left clicking if user is touching the title bar area or the borders (with 5 extra pixels for margin of error)
+                    // Disable left-clicking if user is touching the title bar area or the borders (with 5 extra pixels for margin of error)
                     // Title bar
                     if (point.Y - panelConfig.Top < (panelConfig.HideTitlebar ? 5 : 50))
                         return;

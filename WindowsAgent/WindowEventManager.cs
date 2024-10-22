@@ -12,7 +12,6 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         private static PInvoke.WinEventProc _winEvent;      // keep this as static to prevent garbage collect or the app will crash
         private static IntPtr _winEventHook;
         private static int? _prevShowWinCmd;
-        private static IntPtr _lastObjectStateChangeHwnd = IntPtr.Zero;
         
         public static UserProfile ActiveProfile { private get; set; }
 
