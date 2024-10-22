@@ -70,7 +70,7 @@ namespace MSFSPopoutPanelManager.MainApp.AppWindow
                     SystemTrayIcon.Tray.Visibility = Visibility.Hidden;
                     ShowInTaskbar = true;
 
-                    // Fix always on top status once app is minimize and then restore
+                    // Fix always on top status once app is minimized and then restore
                     if (_viewModel.AppSettingData.ApplicationSetting.GeneralSetting.AlwaysOnTop)
                         WindowActionManager.ApplyAlwaysOnTop(_viewModel.ApplicationHandle, PanelType.PopOutManager, true);
                     break;

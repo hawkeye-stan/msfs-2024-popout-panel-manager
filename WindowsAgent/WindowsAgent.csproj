@@ -2,8 +2,8 @@
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
     <AssemblyName>WindowsAgent</AssemblyName>
-    <PackageId>MSFS 2024 Popout Panel Manager WindowsAgent</PackageId>
-    <Product>MSFS 2024 Popout Panel Manager WindowsAgent</Product>
+    <PackageId>MSFS Pop Out Panel Manager 2024 WindowsAgent</PackageId>
+    <Product>MSFS Pop Out Panel Manager 2024 WindowsAgent</Product>
     <Authors>Stanley Kwok</Authors>
     <Company>Stanley Kwok</Company>
     <Copyright>Stanley Kwok 2024</Copyright>

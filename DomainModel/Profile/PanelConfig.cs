@@ -67,10 +67,9 @@ namespace MSFSPopoutPanelManager.DomainModel.Profile
 
         [JsonIgnore]
         public bool IsEditingPanel { get; set; }
-
-
+        
         [JsonIgnore]
-        public bool HasPanelSource => PanelType == PanelType.BuiltInPopout || (PanelType == PanelType.CustomPopout && PanelSource != null && PanelSource.X != null);
+        public bool HasPanelSource => PanelType == PanelType.BuiltInPopout || (PanelType == PanelType.CustomPopout && PanelSource is { X: not null });
 
         [JsonIgnore]
         public bool? IsPopOutSuccess

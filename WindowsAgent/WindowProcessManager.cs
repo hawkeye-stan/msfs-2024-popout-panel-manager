@@ -45,7 +45,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
         public static void SetApplicationProcess()
         {
-            AppProcess = GetWindowProcess("MSFS2024PopoutPanelManager");
+            AppProcess = GetWindowProcess("MSFS Pop Out Panel Manager 2024");
         }
 
         private static WindowProcess GetWindowProcess(string processName)

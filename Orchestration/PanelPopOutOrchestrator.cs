@@ -196,7 +196,7 @@ namespace MSFSPopoutPanelManager.Orchestration
                 _flightSimOrchestrator.TurnOnActivePause();
 
                 // Reset all custom pop out panel handles
-                ActiveProfile.PanelConfigs.Where(p => p.PanelType == PanelType.CustomPopout).ToList().ForEach(p => p.PanelHandle = IntPtr.Zero);
+                ActiveProfile.PanelConfigs.Where(p => p.PanelType == PanelType.CustomPopout).ToList().ForEach(p => p.PanelHandle = IntPtr.MaxValue);
             });
         }
 
@@ -398,7 +398,7 @@ namespace MSFSPopoutPanelManager.Orchestration
         
         private void TryPopOutCustomPanel(PanelConfig panelConfig, List<IntPtr> builtInPanelHandles, int index, bool isTurbo)
         {
-            var newHandle = IntPtr.Zero;
+            var newHandle = IntPtr.MaxValue;
 
             // Try to pop out 5 times before failure with 1/2 second wait in between
             var count = 0;
@@ -420,7 +420,7 @@ namespace MSFSPopoutPanelManager.Orchestration
             }
             while (count < 5);
             
-            if (newHandle == IntPtr.Zero)
+            if (newHandle == IntPtr.MaxValue)
             {
                 panelConfig.PanelHandle = IntPtr.Zero;
                 return;

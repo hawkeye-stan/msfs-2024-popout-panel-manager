@@ -230,7 +230,7 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
         private void InitializeSimConnect()
         {
             Debug.WriteLine("Trying to start simConnect");
-            _simConnect = new SimConnect("MSFS 2024 Pop Out Panel Manager", Process.GetCurrentProcess().MainWindowHandle, WM_USER_SIMCONNECT, null, 0);
+            _simConnect = new SimConnect("MSFS Pop Out Panel Manager 2024", Process.GetCurrentProcess().MainWindowHandle, WM_USER_SIMCONNECT, null, 0);
             Debug.WriteLine("SimConnect started");
 
             _connectionTimer.Enabled = false;

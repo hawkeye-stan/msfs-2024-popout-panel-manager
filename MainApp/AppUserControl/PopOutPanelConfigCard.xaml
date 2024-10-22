@@ -24,7 +24,7 @@
                 <DataTrigger Binding="{Binding ActiveProfile.IsLocked}" Value="False">
                     <Setter Property="IsHitTestVisible" Value="True" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding DataItem.IsPopOutSuccess}" Value="{x:Null}">
+                <DataTrigger Binding="{c:Binding DataItem.IsPopOutSuccess}" Value="{x:Null}">
                     <Setter Property="BorderBrush" Value="Gray" />
                     <Setter Property="BorderThickness" Value="1" />
                 </DataTrigger>

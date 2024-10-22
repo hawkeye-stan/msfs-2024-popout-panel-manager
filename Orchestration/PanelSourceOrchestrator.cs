@@ -14,9 +14,6 @@ namespace MSFSPopoutPanelManager.Orchestration
         private readonly FlightSimOrchestrator _flightSimOrchestrator;
         private bool _isEditingPanelSourceLock;
 
-        public event EventHandler OnStatusMessageStarted;
-        public event EventHandler OnStatusMessageEnded;
-
         public PanelSourceOrchestrator(SharedStorage sharedStorage, FlightSimOrchestrator flightSimOrchestrator) : base(sharedStorage)
         {
             _flightSimOrchestrator = flightSimOrchestrator;
@@ -31,7 +28,6 @@ namespace MSFSPopoutPanelManager.Orchestration
         private UserProfile ActiveProfile => ProfileData?.ActiveProfile;
 
         public event EventHandler<PanelConfig> OnOverlayShowed;
-        public event EventHandler<PanelConfig> OnNonEditOverlayShowed;
         public event EventHandler<PanelConfig> OnOverlayRemoved;
 
         public void StartPanelSelectionEvent()

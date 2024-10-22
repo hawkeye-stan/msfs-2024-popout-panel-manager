@@ -2,8 +2,8 @@
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
     <AssemblyName>Orchestration</AssemblyName>
-    <PackageId>MSFS 2024 Popout Panel Manager Orchestration</PackageId>
-    <Product>MSFS 2024 Popout Panel Manager Orchestration</Product>
+    <PackageId>MSFS Pop Out Panel Manager 2024 Orchestration</PackageId>
+    <Product>MSFS Pop Out Panel Manager 2024 Orchestration</Product>
     <Authors>Stanley Kwok</Authors>
     <Company>Stanley Kwok</Company>
     <Copyright>Stanley Kwok 2024</Copyright>

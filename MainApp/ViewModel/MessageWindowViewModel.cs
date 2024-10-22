@@ -62,18 +62,6 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                 WindowWidth = WINDOW_WIDTH_POPOUT_MESSAGE;
                 WindowHeight = WINDOW_HEIGHT_POPOUT_MESSAGE;
             };
-            panelSourceOrchestrator.OnStatusMessageStarted += (_, _) =>
-            {
-                IsVisible = true;
-                WindowWidth = WINDOW_WIDTH_REGULAR_MESSAGE;
-                WindowHeight = WINDOW_HEIGHT_REGULAR_MESSAGE;
-            };
-            panelSourceOrchestrator.OnStatusMessageEnded += (_, _) =>
-            {
-                IsVisible = false;
-                WindowWidth = WINDOW_WIDTH_REGULAR_MESSAGE;
-                WindowHeight = WINDOW_HEIGHT_REGULAR_MESSAGE;
-            };
 
             StatusMessageWriter.OnStatusMessage += (_, e) =>
             {

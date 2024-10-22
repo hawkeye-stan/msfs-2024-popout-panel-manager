@@ -7,7 +7,7 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodel="clr-namespace:MSFSPopoutPanelManager.MainApp.ViewModel"
-    Title="MSFS 2024 POP OUT PANEL MANAGER"
+    Title="MSFS POP OUT PANEL MANAGER 2024"
     MinWidth="1000"
     MinHeight="607"
     MaxWidth="1000"
@@ -57,7 +57,7 @@
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                    Text="MSFS 2024 POP OUT PANEL MANAGER" />
+                                    Text="MSFS POP OUT PANEL MANAGER 2024" />
                             </DockPanel>
                             <DockPanel Grid.Column="2">
                                 <Button

@@ -28,7 +28,7 @@ namespace MSFSPopoutPanelManager.Shared
             errorLogAppender.ActivateOptions();
         }
 
-        public static bool UseApplicationDataPath { get; set; } = false;
+        public static bool UseApplicationDataPath { get; set; } = true;
 
         public static void WriteLog(string message, StatusMessageType messageType)
         {

@@ -19,9 +19,6 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
             panelSourceOrchestrator.OnOverlayShowed -= HandleShowOverlay;
             panelSourceOrchestrator.OnOverlayShowed += HandleShowOverlay;
 
-            panelSourceOrchestrator.OnNonEditOverlayShowed -= HandleShowNonEditOverlay;
-            panelSourceOrchestrator.OnNonEditOverlayShowed += HandleShowNonEditOverlay;
-
             panelSourceOrchestrator.OnOverlayRemoved -= HandleRemoveOverlay;
             panelSourceOrchestrator.OnOverlayRemoved += HandleRemoveOverlay;
 
@@ -41,11 +38,6 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
         private void HandleShowOverlay(object sender, PanelConfig panelConfig)
         {
             ShowOverlay(panelConfig);
-        }
-
-        private void HandleShowNonEditOverlay(object sender, PanelConfig panelConfig)
-        {
-            ShowOverlay(panelConfig, true);
         }
 
         private void HandleRemoveOverlay(object sender, PanelConfig panelConfig)

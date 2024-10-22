@@ -2,7 +2,7 @@
 
 In this tutorial, you'll be adding 3 pop out panels for the aircraft TBM 930. Two of the panels is display only (PFD and MFD) and the third is a touch screen pop out (GTC 580).
 
-To get started, launch MSFS 2024 Pop Out Panel Manager and then start MSFS. When you are at the main menu select TBM 930 as your aircraft and start a flight session. Back to Pop Out Panel Manager, you should see the following screen and you can click the Add Profile button to add your first aircraft profile. 
+To get started, launch MSFS Pop Out Panel Manager 2024 and then start MSFS. When you are at the main menu select TBM 930 as your aircraft and start a flight session. Back to Pop Out Panel Manager, you should see the following screen and you can click the Add Profile button to add your first aircraft profile. 
 
 <br />
 <p align="center">

@@ -1,5 +1,7 @@
 ﻿using MSFSPopoutPanelManager.Shared;
 using MSFSPopoutPanelManager.WindowsAgent;
+using System.Reflection.Metadata.Ecma335;
+using System;
 
 namespace MSFSPopoutPanelManager.Orchestration
 {
@@ -24,6 +26,8 @@ namespace MSFSPopoutPanelManager.Orchestration
             {
                 if (panelConfig.FloatingPanel.IsEnabled && !panelConfig.IsFloating)
                     panelConfig.IsFloating = true;
+
+                panelConfig.PanelHandle = IntPtr.MaxValue;
             }
 
             WindowActionManager.CloseAllPopOuts();

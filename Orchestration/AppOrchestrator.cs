@@ -75,13 +75,15 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         private void CheckForAutoUpdate()
         {
+            var autoUpdateUrl = "https://raw.githubusercontent.com/hawkeye-stan/msfs-2024-popout-panel-manager/master/autoupdate.xml";
+
             var jsonPath = Path.Combine(Path.Combine(FileIo.GetUserDataFilePath(AppSettingData.ApplicationSetting.GeneralSetting.UseApplicationDataPath), "autoupdate.json"));
             AutoUpdater.PersistenceProvider = new JsonFilePersistenceProvider(jsonPath);
             AutoUpdater.Synchronous = true;
-            AutoUpdater.AppTitle = "MSFS 2024 Pop Out Panel Manager";
+            AutoUpdater.AppTitle = "MSFS Pop Out Panel Manager 2024";
             AutoUpdater.RunUpdateAsAdmin = false;
             AutoUpdater.UpdateFormSize = new System.Drawing.Size(1024, 660);
-            AutoUpdater.Start(AppSettingData.ApplicationSetting.SystemSetting.AutoUpdaterUrl);
+            AutoUpdater.Start(autoUpdateUrl);
         }
     }
 }

@@ -2,8 +2,8 @@
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
     <AssemblyName>SimConnectAgent</AssemblyName>
-    <PackageId>MSFS 2024 Popout Panel Manager SimConnectAgent</PackageId>
-    <Product>MSFS 2024 Popout Panel Manager SimConnectAgent</Product>
+    <PackageId>MSFS Pop Out Panel Manager 2024 SimConnectAgent</PackageId>
+    <Product>MSFS Pop Out Panel Manager 2024 SimConnectAgent</Product>
     <Authors>Stanley Kwok</Authors>
     <Company>Stanley Kwok</Company>
     <Copyright>Stanley Kwok 2024</Copyright>

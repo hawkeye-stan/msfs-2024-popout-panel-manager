@@ -2,8 +2,8 @@
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
     <AssemblyName>Shared</AssemblyName>
-    <PackageId>MSFS 2024 Popout Panel Manager Shared</PackageId>
-    <Product>MSFS 2024 Popout Panel Manager Shared</Product>
+    <PackageId>MSFS Pop Out Panel Manager 2024 Shared</PackageId>
+    <Product>MSFS Pop Out Panel Manager 2024 Shared</Product>
     <Authors>Stanley Kwok</Authors>
     <Company>Stanley Kwok</Company>
     <Copyright>Stanley Kwok 2024</Copyright>

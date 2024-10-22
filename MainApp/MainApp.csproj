@@ -3,9 +3,9 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <AssemblyName>MSFS2024PopoutPanelManager</AssemblyName>
-    <PackageId>MSFS 2024 Popout Panel Manager</PackageId>
-    <Product>MSFS 2024 Popout Panel Manager</Product>
+    <AssemblyName>MSFS Pop Out Panel Manager 2024</AssemblyName>
+    <PackageId>MSFS Pop Out Panel Manager 2024</PackageId>
+    <Product>MSFS Pop Out Panel Manager 2024</Product>
     <Authors>Stanley Kwok</Authors>
     <Company>Stanley Kwok</Company>
     <Copyright>Stanley Kwok 2024</Copyright>
@@ -43,15 +43,16 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" PrivateAssets="All" />
     <PackageReference Include="CalcBinding" Version="2.5.2" />
-    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.0" />
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
     <PackageReference Include="MaterialDesignThemes" Version="5.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
     <PackageReference Include="Prism.Core" Version="9.0.537" />
-    <PackageReference Include="log4net" Version="3.0.1" />
+    <PackageReference Include="log4net" Version="3.0.2" />
     <PackageReference Include="InputSimulatorCore" Version="1.0.5" />
     <PackageReference Include="WindowsHook" Version="1.0.1" />
   </ItemGroup>
