@@ -134,7 +134,6 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                     }
                     return 1;
                 case WM_LBUTTONUP:
-
                     if (panelConfig.PanelType == PanelType.RefocusDisplay)
                     {
                         Task.Run(() =>
@@ -154,10 +153,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                                 Thread.Sleep(Convert.ToInt32(ApplicationSetting.RefocusSetting.RefocusGameWindow.Delay * 1000));
 
                                 if (currentRefocusIndex == _refocusedTaskIndex)
-                                {
-                                    var rect = WindowActionManager.GetWindowRectangle(WindowProcessManager.SimulatorProcess.Handle);
-                                    InputEmulationManager.LeftClick(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
-                                }
+                                    WindowActionManager.RefocusMsfsGameWindow();
                             }
                         });
                     }
@@ -191,12 +187,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                                 Thread.Sleep(Convert.ToInt32(ApplicationSetting.RefocusSetting.RefocusGameWindow.Delay * 1000));
 
                                 if (currentRefocusIndex == _refocusedTaskIndex)
-                                {
-                                    PInvoke.SetForegroundWindow(WindowProcessManager.SimulatorProcess.Handle);
-
-                                    var rect = WindowActionManager.GetWindowRectangle(WindowProcessManager.SimulatorProcess.Handle);
-                                    PInvoke.SetCursorPos(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
-                                }
+                                    WindowActionManager.RefocusMsfsGameWindow();
                             }
                         });
                     }

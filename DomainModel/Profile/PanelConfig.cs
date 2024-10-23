@@ -97,36 +97,15 @@ namespace MSFSPopoutPanelManager.DomainModel.Profile
                                         && PanelType != PanelType.SwitchWindow;
 
         [JsonIgnore]
-        public bool IsTouchEnablePanel => PanelType != PanelType.RefocusDisplay 
-                                          && PanelType != PanelType.NumPadWindow
-                                          && PanelType != PanelType.SwitchWindow;
+        public bool IsPopoutPanel => PanelType is PanelType.CustomPopout or PanelType.NumPadWindow or PanelType.SwitchWindow;
+
+        [JsonIgnore]
+        public bool IsFloatablePanel => PanelType is PanelType.CustomPopout or PanelType.BuiltInPopout;
 
         [JsonIgnore]
         public bool IsCustomPopOut => PanelType == PanelType.CustomPopout;
-
-
+        
         [JsonIgnore] 
         public bool IsBuiltInPopOut => PanelType == PanelType.BuiltInPopout;
-
-        [JsonIgnore] 
-        public bool IsRefocusDisplay => PanelType == PanelType.RefocusDisplay;
-
-        [JsonIgnore]
-        public bool IsNumPadWindow => PanelType == PanelType.NumPadWindow;
-
-        [JsonIgnore]
-        public bool IsSwitchWindow => PanelType == PanelType.SwitchWindow;
-
-        [JsonIgnore]
-        public string PanelSourceCoordinateText
-        {
-            get
-            {
-                if (PanelSource == null || PanelSource.X == null || PanelSource.Y == null)
-                    return "top: N/A, left: N/A";
-
-                return $"Left: {PanelSource.X} / Top: {PanelSource.Y}";
-            }
-        }
     }
 }

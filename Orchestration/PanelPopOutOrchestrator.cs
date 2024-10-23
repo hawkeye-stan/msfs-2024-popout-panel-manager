@@ -228,6 +228,9 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         private async Task StepPopOutPanels(List<IntPtr> builtInPanelHandles)
         {
+            if (!ActiveProfile.PanelConfigs.Any(p => p.IsPopoutPanel))
+                return;
+
             await Task.Run(() =>
             {
                 StatusMessageWriter.WriteMessageWithNewLine("Popping out Panels", StatusMessageType.Info);
