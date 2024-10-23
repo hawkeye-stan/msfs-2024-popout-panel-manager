@@ -61,7 +61,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
                     PInvoke.GetCursorPos(out var point);
 
-                    // Disable left clicking if user is touching the title bar area
+                    // Disable left-clicking if user is touching the title bar area
                     if (point.Y - panelConfig.Top > (panelConfig.HideTitlebar ? 5 : 31))
                     {
                         var prevWinEventClickLock = ++_winEventClickLock;

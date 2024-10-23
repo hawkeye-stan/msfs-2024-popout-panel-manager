@@ -90,7 +90,6 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpWindowText, int nMaxCount);
-
         public static string GetWindowText(IntPtr hWnd)
         {
             try
@@ -101,12 +100,10 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             }
             catch { return string.Empty; }
         }
-
-
+        
         [DllImport("user32.dll", SetLastError = true)]
         public static extern bool MoveWindow(IntPtr hWnd, int x, int y, int width, int height, bool repaint);
         
-
         [DllImport("user32.dll", SetLastError = true)]
         public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);
 
@@ -166,14 +163,13 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         public delegate bool CallBack(IntPtr hWnd, int lParam);
 
         public delegate void WinEventProc(IntPtr hWinEventHook, uint iEvent, IntPtr hWnd, int idObject, int idChild, int dwEventThread, int dwmsEventTime);
-
-
+        
         [DllImport("dwmapi.dll", SetLastError = true)]
         public static extern int DwmGetWindowAttribute(IntPtr hWnd, int dwAttribute, out RECT pvAttribute, int cbAttribute);
 
         [DllImport("dwmapi.dll", PreserveSig = true)]
         public static extern int DwmSetWindowAttribute(IntPtr hWnd, DwmWindowAttribute attr, ref int attrValue, int attrSize);
-
+        
         public static Rectangle GetWindowRectShadow(IntPtr handle)
         {
             var excludeShadow = GetWindowRectangleDwm(handle);
