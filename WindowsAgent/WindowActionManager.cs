@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Windows.Forms;
 
 namespace MSFSPopoutPanelManager.WindowsAgent
 {
@@ -276,7 +275,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         {
             var monitors = new List<MonitorInfo>();
 
-            foreach (var screen in Screen.AllScreens)
+            foreach (var screen in System.Windows.Forms.Screen.AllScreens)
                 monitors.Add(new MonitorInfo { Name = screen.DeviceName.Substring(screen.DeviceName.LastIndexOf("\\", StringComparison.Ordinal) + 1), X = screen.Bounds.X, Y = screen.Bounds.Y, Width = screen.Bounds.Width, Height = screen.Bounds.Height });
             
             return monitors;
@@ -318,6 +317,23 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
             var rect = GetWindowRectangle(WindowProcessManager.SimulatorProcess.Handle);
             InputEmulationManager.LeftClick(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
+        }
+
+        public static void SetHostMonitor(PanelConfig panelConfig)
+        {
+            foreach (var screen in System.Windows.Forms.Screen.AllScreens)
+            {
+                if (screen.Bounds.IntersectsWith(new Rectangle(panelConfig.Left, panelConfig.Top, panelConfig.Width, panelConfig.Height)))
+                    panelConfig.FullScreenMonitorInfo = 
+                        new MonitorInfo
+                        {
+                            Name = screen.DeviceName.Substring(screen.DeviceName.LastIndexOf("\\", StringComparison.Ordinal) + 1),
+                            X = screen.Bounds.X, 
+                            Y = screen.Bounds.Y, 
+                            Width = screen.Bounds.Width,
+                            Height = screen.Bounds.Height
+                        };
+            }
         }
     }
 }

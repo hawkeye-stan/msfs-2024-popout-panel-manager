@@ -497,6 +497,9 @@ namespace MSFSPopoutPanelManager.Orchestration
                 Thread.Sleep(500);
                 InputEmulationManager.ToggleFullScreenPanel(panel.PanelHandle);
                 Thread.Sleep(250);
+
+                if(panel.TouchEnabled)
+                    WindowActionManager.SetHostMonitor(panel);      // Set full screen coordinate for touch
             }
 
             if (panel.FloatingPanel.IsEnabled && panel.FloatingPanel.HasKeyboardBinding && panel.FloatingPanel.IsHiddenOnStart)

@@ -107,5 +107,8 @@ namespace MSFSPopoutPanelManager.DomainModel.Profile
         
         [JsonIgnore] 
         public bool IsBuiltInPopOut => PanelType == PanelType.BuiltInPopout;
+
+        [JsonIgnore]
+        public MonitorInfo FullScreenMonitorInfo { get; set; }
     }
 }
