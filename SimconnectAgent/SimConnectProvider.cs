@@ -328,20 +328,19 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             if (cameraState == CameraState.Cockpit)
                 OnIsInCockpitChanged?.Invoke(this, true);
 
+            Debug.WriteLine($"Current State: {_currentCameraState} - Camera State: {cameraState}");
 
             switch (_currentCameraState)
             {
-                case CameraState.HomeScreen:
-                case CameraState.LoadScreen:
+                case CameraState.ReadyToFlyScreen:
                     if (cameraState == CameraState.Cockpit)
                     {
                         _currentCameraState = cameraState;
                         OnFlightStarted?.Invoke(this, EventArgs.Empty);
                     }
-
                     break;
                 case CameraState.Cockpit:
-                    if (cameraState == CameraState.LoadScreen || cameraState == CameraState.HomeScreen)
+                    if (cameraState == CameraState.HomeScreen || cameraState == CameraState.RestartScreen)
                     {
                         _currentCameraState = cameraState;
                         OnFlightStopped?.Invoke(this, EventArgs.Empty);
@@ -352,7 +351,7 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
                     break;
             }
 
-            if (cameraState is CameraState.Cockpit or CameraState.HomeScreen or CameraState.LoadScreen)
+            if (cameraState is CameraState.Cockpit or CameraState.HomeScreen or CameraState.RestartScreen or CameraState.ReadyToFlyScreen)
                 _currentCameraState = cameraState;
         }
 

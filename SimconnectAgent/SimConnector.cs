@@ -515,6 +515,10 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             if (filePathToken.Length > 1)
             {
                 var aircraftName = filePathToken[^2];
+
+                if (aircraftName.Equals("config", StringComparison.InvariantCultureIgnoreCase))
+                    aircraftName = filePathToken[^3];
+
                 aircraftName = aircraftName.Replace("_", " ").ToUpper();
 
                 OnActiveAircraftChanged?.Invoke(this, aircraftName);
