@@ -13,7 +13,7 @@ namespace MSFSPopoutPanelManager.DomainModel.Setting
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             var filePath = GetFilePath();
-            var autoStartArg = new LaunchAddOn() { Name = "MSFS Pop Out Panel Manager 2024", Disabled = "false", Path = $@"{Directory.GetCurrentDirectory()}\MSFSPopoutPanelManager.exe" };
+            var autoStartArg = new LaunchAddOn() { Name = "MSFS Pop Out Panel Manager 2024", Disabled = "false", Path = $@"{Directory.GetCurrentDirectory()}\MSFS Pop Out Panel Manager 2024.exe" };
             var serializer = new XmlSerializer(typeof(SimBaseDocument));
 
             if (filePath != null && File.Exists(filePath))
@@ -143,8 +143,8 @@ namespace MSFSPopoutPanelManager.DomainModel.Setting
 
         private static string GetFilePath()
         {
-            var filePathMsStore = Environment.ExpandEnvironmentVariables("%LocalAppData%") + @"\Packages\Microsoft.FlightSimulator_8wekyb3d8bbwe\LocalCache\";
-            var filePathSteam = Environment.ExpandEnvironmentVariables("%AppData%") + @"\Microsoft Flight Simulator\";
+            var filePathMsStore = Environment.ExpandEnvironmentVariables("%LocalAppData%") + @"\Packages\Microsoft.Limitless_8wekyb3d8bbwe\LocalCache\";
+            var filePathSteam = Environment.ExpandEnvironmentVariables("%AppData%") + @"\Microsoft Flight Simulator 2024\";
 
             if (Directory.Exists(filePathMsStore))
                 return filePathMsStore + "exe.xml";

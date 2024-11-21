@@ -40,7 +40,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
         public static void GetSimulatorProcess()
         {
-            SimulatorProcess = GetWindowProcess("FlightSimulator");
+            SimulatorProcess = GetWindowProcess("FlightSimulator2024");
         }
 
         public static void SetApplicationProcess()
