@@ -44,8 +44,6 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         public void Attach()
         {
-            return;
-
             if (AppSettingData == null || _isActive)
                 return;
 
@@ -84,8 +82,6 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         public void Detach()
         {
-            return;
-
             if (DynamicLodSetting == null)
                 return;
 
