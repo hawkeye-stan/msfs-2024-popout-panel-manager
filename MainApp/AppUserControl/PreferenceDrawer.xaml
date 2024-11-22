@@ -35,7 +35,7 @@
                 <TreeViewItem x:Name="CategoryTouchSettings" Header="Touch Settings" />
                 <TreeViewItem x:Name="CategoryTrackIrSettings" Header="Track IR Settings" />
                 <TreeViewItem x:Name="CategoryWindowedModeSettings" Header="Windowed Mode Settings" />
-                <!--<TreeViewItem x:Name="CategoryDynamicLodSettings" Header="Dynamic LOD Settings" />-->
+                <TreeViewItem x:Name="CategoryDynamicLodSettings" Header="Dynamic LOD Settings" />
             </TreeView>
         </ScrollViewer>
 
@@ -455,7 +455,7 @@
                 </StackPanel>
 
                 <!--  Dynamic LOD Settings  -->
-                <!--<StackPanel Orientation="Vertical" Visibility="{Binding ElementName=CategoryDynamicLodSettings, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                <StackPanel Orientation="Vertical" Visibility="{Binding ElementName=CategoryDynamicLodSettings, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                     <StackPanel Style="{StaticResource SectionHeader}">
                         <TextBlock Style="{StaticResource TextBlockHeading}">(Unsupported Feature) Dynamically adjust Terrain and Object Level of Details</TextBlock>
                         <Line />
@@ -469,7 +469,7 @@
                             <appUserControl:DynamicLodPreference />
                         </DockPanel>
                     </StackPanel>
-                </StackPanel>-->
+                </StackPanel>
             </StackPanel>
         </ScrollViewer>
     </DockPanel>
