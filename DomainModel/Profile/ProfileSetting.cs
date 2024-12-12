@@ -9,8 +9,6 @@ namespace MSFSPopoutPanelManager.DomainModel.Profile
             InitializeChildPropertyChangeBinding();
         }
 
-        public bool PowerOnRequiredForColdStart { get; set; }
-
         public bool IncludeInGamePanels { get; set; }
 
         public RefocusOnDisplay RefocusOnDisplay { get; set; } = new();

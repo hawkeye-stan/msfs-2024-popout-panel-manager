@@ -21,15 +21,9 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         public bool HasAircraftName => !String.IsNullOrEmpty(AircraftName);
 
-        public bool ElectricalMasterBatteryStatus { get; set; }
-
-        public bool AvionicsMasterSwitchStatus { get; set; }
-
         public bool TrackIRStatus { get; set; }
 
         public CameraState CameraState { get; set; }
-
-        public int CockpitCameraZoom { get; set; }
 
         public int CameraViewTypeAndIndex0 { get; set; }
 
@@ -71,8 +65,6 @@ namespace MSFSPopoutPanelManager.Orchestration
         private void Setup()
         {
             AircraftName = null;
-            ElectricalMasterBatteryStatus = false;
-            AvionicsMasterSwitchStatus = false;
             TrackIRStatus = false;
             IsInCockpit = false;
             PlaneInParkingSpot = false;

@@ -8,12 +8,8 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
         {
             var definitions = new List<SimConnectDataDefinition>
             {
-                new() { DefinitionId = DataDefinition.REQUIRED_DEFINITION, RequestId = DataRequest.REQUIRED_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.ElectricalMasterBattery, VariableName = "ELECTRICAL MASTER BATTERY", SimConnectUnit = "Bool", DataType = DataType.Float64 },
-                new() { DefinitionId = DataDefinition.REQUIRED_DEFINITION, RequestId = DataRequest.REQUIRED_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.AvionicsMasterSwitch, VariableName = "AVIONICS MASTER SWITCH", SimConnectUnit = "Bool", DataType = DataType.Float64 },
                 new() { DefinitionId = DataDefinition.REQUIRED_DEFINITION, RequestId = DataRequest.REQUIRED_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.TrackIREnable, VariableName = "TRACK IR ENABLE", SimConnectUnit = "Bool", DataType = DataType.Float64 },
-                new() { DefinitionId = DataDefinition.REQUIRED_DEFINITION, RequestId = DataRequest.REQUIRED_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.PlaneInParkingSpot, VariableName = "ATC ON PARKING SPOT", SimConnectUnit = "Bool", DataType = DataType.Float64 },
                 new() { DefinitionId = DataDefinition.REQUIRED_DEFINITION, RequestId = DataRequest.REQUIRED_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.CameraState, VariableName = "CAMERA STATE", SimConnectUnit = "Number", DataType = DataType.Float64 },
-                new() { DefinitionId = DataDefinition.REQUIRED_DEFINITION, RequestId = DataRequest.REQUIRED_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.CockpitCameraZoom, VariableName = "COCKPIT CAMERA ZOOM", SimConnectUnit = "Percentage", DataType = DataType.Float64 },
                 new() { DefinitionId = DataDefinition.REQUIRED_DEFINITION, RequestId = DataRequest.REQUIRED_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.CameraViewTypeAndIndex0, VariableName = "CAMERA VIEW TYPE AND INDEX:0", SimConnectUnit = "Enum", DataType = DataType.Float64 },
                 new() { DefinitionId = DataDefinition.REQUIRED_DEFINITION, RequestId = DataRequest.REQUIRED_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.CameraViewTypeAndIndex1, VariableName = "CAMERA VIEW TYPE AND INDEX:1", SimConnectUnit = "Enum", DataType = DataType.Float64 },
                 new() { DefinitionId = DataDefinition.REQUIRED_DEFINITION, RequestId = DataRequest.REQUIRED_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.CameraViewTypeAndIndex1Max, VariableName = "CAMERA VIEW TYPE AND INDEX MAX:1", SimConnectUnit = "Number", DataType = DataType.Float64 },
@@ -38,12 +34,8 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
         
         public static class PropName
         {
-            public static string ElectricalMasterBattery = "ElectricalMasterBattery";
-            public static string AvionicsMasterSwitch = "AvionicsMasterSwitch";
             public static string TrackIREnable = "TrackIREnable";
-            public static string PlaneInParkingSpot = "PlaneInParkingSpot";
             public static string CameraState = "CameraState";
-            public static string CockpitCameraZoom = "CockpitCameraZoom";
             public static string CameraViewTypeAndIndex0 = "CameraViewTypeAndIndex0";
             public static string CameraViewTypeAndIndex1 = "CameraViewTypeAndIndex1";
             public static string CameraViewTypeAndIndex1Max = "CameraViewTypeAndIndex1Max";
@@ -59,7 +51,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
         public enum WritableVariableName
         {
             TrackIREnable,
-            CockpitCameraZoom,
             CameraState,
             CameraRequestAction,
             CameraViewTypeAndIndex0,

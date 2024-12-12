@@ -185,9 +185,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
                     case WritableVariableName.TrackIREnable:
                         _simConnect.SetDataOnSimObject(DataDefinition.WRITABLE_TRACK_IR_DEFINITION, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, dataStruct);
                         break;
-                    case WritableVariableName.CockpitCameraZoom:
-                        _simConnect.SetDataOnSimObject(DataDefinition.WRITABLE_COCKPIT_CAMERA_ZOOM_DEFINITION, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, dataStruct);
-                        break;
                     case WritableVariableName.CameraState:
                         _simConnect.SetDataOnSimObject(DataDefinition.WRITABLE_COCKPIT_CAMERA_STATE_DEFINITION, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, dataStruct);
                         break;
@@ -339,7 +336,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
 
             _simConnect.AddToDataDefinition(DataDefinition.WRITABLE_TRACK_IR_DEFINITION, "TRACK IR ENABLE", "bool", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
             _simConnect.AddToDataDefinition(DataDefinition.WRITABLE_COCKPIT_CAMERA_STATE_DEFINITION, "CAMERA STATE", "enum", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-            _simConnect.AddToDataDefinition(DataDefinition.WRITABLE_COCKPIT_CAMERA_ZOOM_DEFINITION, "COCKPIT CAMERA ZOOM", "percentage", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
             _simConnect.AddToDataDefinition(DataDefinition.WRITABLE_CAMERA_REQUEST_ACTION_DEFINITION, "CAMERA REQUEST ACTION", "enum", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
             _simConnect.AddToDataDefinition(DataDefinition.WRITABLE_CAMERA_VIEW_TYPE_INDEX_0_DEFINITION, "CAMERA VIEW TYPE AND INDEX:0", "number", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
             _simConnect.AddToDataDefinition(DataDefinition.WRITABLE_CAMERA_VIEW_TYPE_INDEX_1_DEFINITION, "CAMERA VIEW TYPE AND INDEX:1", "number", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
@@ -347,7 +343,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             _simConnect.RegisterDataDefineStruct<SimConnectStruct>(DataDefinition.REQUIRED_DEFINITION);
             _simConnect.RegisterDataDefineStruct<SimConnectStruct>(DataDefinition.WRITABLE_TRACK_IR_DEFINITION);
             _simConnect.RegisterDataDefineStruct<SimConnectStruct>(DataDefinition.WRITABLE_COCKPIT_CAMERA_STATE_DEFINITION);
-            _simConnect.RegisterDataDefineStruct<SimConnectStruct>(DataDefinition.WRITABLE_COCKPIT_CAMERA_ZOOM_DEFINITION);
             _simConnect.RegisterDataDefineStruct<SimConnectStruct>(DataDefinition.WRITABLE_CAMERA_VIEW_TYPE_INDEX_0_DEFINITION);
             _simConnect.RegisterDataDefineStruct<SimConnectStruct>(DataDefinition.WRITABLE_CAMERA_VIEW_TYPE_INDEX_1_DEFINITION);
         }

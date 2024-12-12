@@ -50,7 +50,7 @@ namespace MSFSPopoutPanelManager.Orchestration
         public void DeleteAppCache()
         {
             var appLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var srcPath = Path.Combine(appLocal, @"temp\.net\MSFSPopoutPanelManager");
+            var srcPath = Path.Combine(appLocal, @"temp\.net\MSFS Pop Out Panel Manager 2024");
 
             try
             {

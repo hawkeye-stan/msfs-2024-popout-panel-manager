@@ -16,10 +16,6 @@
         DUMMY3,
         DUMMY4,
         DUMMY5,
-        MASTER_BATTERY_SET,
-        AVIONICS_MASTER_SET,
-        PAUSE_SET,
-        SIM_RATE_DECR,
-        SIM_RATE_INCR
+        PAUSE_SET
     }
 }

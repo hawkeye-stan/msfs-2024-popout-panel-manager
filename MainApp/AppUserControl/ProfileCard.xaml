@@ -237,11 +237,7 @@
                     </Expander.Header>
                     <StackPanel Margin="22,0,0,8">
                         <Separator Margin="0,0,0,10" />
-                        <DockPanel>
-                            <ToggleButton IsChecked="{Binding ActiveProfile.ProfileSetting.PowerOnRequiredForColdStart, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
-                            <TextBlock Style="{StaticResource TextBlockLabel}" ToolTip="During cold start, Pop Out Manager will first turn on power and avionics for the aircraft in order &#x0a;to pop out the instrumentation panels. After pop out is completed, Pop Out Manager will then &#x0a;turn off aircraft power and avionics to put the aircraft back to cold and dark state.">Power on is required to pop out panels on cold start (for G1000 based aircraft ONLY if needed)</TextBlock>
-                        </DockPanel>
-                        <WrapPanel Margin="0,8,0,0">
+                        <WrapPanel Margin="0,0,0,0">
                             <ToggleButton
                                 Command="{Binding IncludeInGamePanelUpdatedCommand}"
                                 IsChecked="{Binding ActiveProfile.ProfileSetting.IncludeInGamePanels, Mode=TwoWay, NotifyOnTargetUpdated=True}"

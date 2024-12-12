@@ -92,70 +92,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             _simConnector.StopReceiveFrameData();
         }
 
-
-        public void TurnOnPower(bool isRequiredForColdStart)
-        {
-            if (!isRequiredForColdStart || _requiredSimData == null)
-                return;
-
-            // Wait for _simData.AtcOnParkingSpot to refresh
-            Thread.Sleep(MSFS_DATA_REFRESH_TIMEOUT + 500);
-
-            var planeInParkingSpot = Convert.ToBoolean(_requiredSimData.Find(d => d.PropertyName == PropName.PlaneInParkingSpot).Value);
-
-            if (!planeInParkingSpot) 
-                return;
-
-            Debug.WriteLine("Turn On Battery Power...");
-
-            _isPowerOnForPopOut = true;
-            _simConnector.TransmitActionEvent(ActionEvent.MASTER_BATTERY_SET, 1);
-        }
-
-        public void TurnOffPower(bool isRequiredForColdStart)
-        {
-            if (!isRequiredForColdStart || _requiredSimData == null)
-                return;
-
-            if (!_isPowerOnForPopOut)
-                return;
-
-            Debug.WriteLine("Turn Off Battery Power...");
-
-            _simConnector.TransmitActionEvent(ActionEvent.MASTER_BATTERY_SET, 0);
-            _isPowerOnForPopOut = false;
-        }
-
-        public void TurnOnAvionics(bool isRequiredForColdStart)
-        {
-            if (!isRequiredForColdStart || _requiredSimData == null)
-                return;
-
-            var planeInParkingSpot = Convert.ToBoolean(_requiredSimData.Find(d => d.PropertyName == PropName.PlaneInParkingSpot).Value);
-            
-            if (!planeInParkingSpot)
-                return;
-
-            Debug.WriteLine("Turn On Avionics...");
-
-            _isAvionicsOnForPopOut = true;
-            _simConnector.TransmitActionEvent(ActionEvent.AVIONICS_MASTER_SET, 1);
-        }
-
-        public void TurnOffAvionics(bool isRequiredForColdStart)
-        {
-            if (!isRequiredForColdStart || _requiredSimData == null)
-                return;
-
-            if (!_isAvionicsOnForPopOut) 
-                return;
-
-            Debug.WriteLine("Turn Off Avionics...");
-
-            _simConnector.TransmitActionEvent(ActionEvent.AVIONICS_MASTER_SET, 0);
-            _isAvionicsOnForPopOut = false;
-        }
-
         public void TurnOnTrackIR()
         {
             if (_requiredSimData == null)
@@ -199,19 +135,7 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
 
             _simConnector.TransmitActionEvent(ActionEvent.PAUSE_SET, 0);
         }
-
-        public void IncreaseSimRate()
-        {
-            _simConnector.TransmitActionEvent(ActionEvent.SIM_RATE_INCR, 1);
-            Thread.Sleep(200);
-        }
-
-        public void DecreaseSimRate()
-        {
-            _simConnector.TransmitActionEvent(ActionEvent.SIM_RATE_DECR, 1);
-            Thread.Sleep(200);
-        }
-
+        
         public void SetCameraState(CameraState cameraState)
         {
             _simConnector.SetDataObject(WritableVariableName.CameraState, Convert.ToDouble(cameraState));
@@ -333,14 +257,26 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             switch (_currentCameraState)
             {
                 case CameraState.ReadyToFlyScreen:
+                case CameraState.PreloadScreen:
+                case CameraState.HomeScreen:
                     if (cameraState == CameraState.Cockpit)
                     {
                         _currentCameraState = cameraState;
                         OnFlightStarted?.Invoke(this, EventArgs.Empty);
                     }
                     break;
+                case CameraState.RestartScreen:
+                    if (cameraState == CameraState.PreloadScreen || cameraState == CameraState.HomeScreen)
+                    {
+                        _currentCameraState = cameraState;
+                        OnFlightStopped?.Invoke(this, EventArgs.Empty);
+                        OnIsInCockpitChanged?.Invoke(this, false);
+
+                        _dynamicLodRequestDataTimer.Stop();
+                    }
+                    break;
                 case CameraState.Cockpit:
-                    if (cameraState == CameraState.HomeScreen || cameraState == CameraState.RestartScreen)
+                    if (cameraState == CameraState.HomeScreen)
                     {
                         _currentCameraState = cameraState;
                         OnFlightStopped?.Invoke(this, EventArgs.Empty);
@@ -351,7 +287,7 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
                     break;
             }
 
-            if (cameraState is CameraState.Cockpit or CameraState.HomeScreen or CameraState.RestartScreen or CameraState.ReadyToFlyScreen)
+            if (cameraState is CameraState.Cockpit or CameraState.HomeScreen or CameraState.RestartScreen or CameraState.ReadyToFlyScreen or CameraState.PreloadScreen)
                 _currentCameraState = cameraState;
         }
 

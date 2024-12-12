@@ -1,4 +1,5 @@
 ﻿using MSFSPopoutPanelManager.Shared;
+using System.Text.Json.Serialization;
 
 namespace MSFSPopoutPanelManager.DomainModel.Setting
 {
@@ -9,6 +10,7 @@ namespace MSFSPopoutPanelManager.DomainModel.Setting
             InitializeChildPropertyChangeBinding();
         }
 
+        [JsonIgnore]
         public bool IsEnabled { get; set; } = false;
 
         public bool PauseWhenMsfsLoseFocus { get; set; } = true;
