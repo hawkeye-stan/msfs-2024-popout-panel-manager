@@ -7,16 +7,14 @@ MSFS Pop Out Panel Manager 2024 is an application for Microsoft Flight Simulator
 [x] November 19, 2024 - MSFS 2024 official release<br/><br/>
 [x] November 19, 2024 to November 21, 2024 - Game testing with code update<br/><br/>
 [x] November 21, 2024 - Beta release (unsupported)<br/><br/>
-[  ] November 22, 2024 to December 13, 2024 - Family vacation / holiday (unable to play the game or develop POPM 2024)<br/><br/>
+[x] November 22, 2024 to December 12, 2024 - Family vacation / holiday (unable to play the game or develop POPM 2024)<br/><br/>
+[  ] December 12, 2024 to Christmas 2024 - Beta release with reported bug fixes (supported)<br/><br/>
 [  ] Before Christmas 2024 - targeted release 1.0 of MSFS Pop Out Panel Manager 2024
 
 ## Note: POPM functionality that does not work with MSFS 2024
 - Auto Pop Out 
-  -- My community plugin "ready-to-fly-button-skipper" to skip the "Ready to Fly" screen no longer works. You will need to manually click "Ready to Fly" to initiate auto pop out. You can set the auto pop out delay in preference setting depending on the speed of your computer.
-- DynamicLOD
-  -- No longer works. Option removed for now. Since MSFS 2024 has dynamic FPS adjustment built-in, DynamicLOD or app like AutoFPS may not be needed?
-- Possible bugs and hopefully they do not affect POPM main functionality.
-
+  * My community plugin "ready-to-fly-button-skipper" to skip the "Ready to Fly" screen no longer works. You will need to manually click "Ready to Fly" to initiate auto pop out. You can set the auto pop out delay in preference setting depending on the speed of your computer.
+  * Worked around instruction has been created if you're comfortable modifying MSFS game file (as of Beta v0.1.1.0).
 
 ## Author
 Stanley Kwok

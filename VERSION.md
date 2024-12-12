@@ -8,7 +8,7 @@
 * Removed - Power on panel for G1000 aircraft for cold and dark option. This bug had been fixed for MSFS 2024. POPM work around is no longer needed.
 * Removed - DynamicLOD option removed since code no longer works with MSFS 2024.
 
-## Version 0.1.1.0
+## Version 0.1.0.0
 Initial beta release for MSFS 2024
 
 The following items do not work:

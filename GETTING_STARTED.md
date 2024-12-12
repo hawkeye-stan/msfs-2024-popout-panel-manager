@@ -57,7 +57,7 @@ Next, click the "Identify" button one at a time. This is to identify the source 
 <hr>
 <br />
 
-Once you're satified with the color circles placement for all panels, click the Toggle Edit Source Panel Location button (the green target icon). This will end the source panel configuration and will save your game window size (if using Windowed mode) to be recalled later to be used when popping out panels. Since the 3rd panel (GTN 580 touch) is also a touch enabled panel using POPM touch emulation, you can click the hand icon for this panel at this time. The hand will turn green which indicate the panel now has touch emulation enabled. 
+Once you're satisfied with the color circles placement for all panels, click the Toggle Edit Source Panel Location button (the green target icon). This will end the source panel configuration and will save your game window size (if using Windowed mode) to be recalled later to be used when popping out panels. Since the 3rd panel (GTN 580 touch) is also a touch enabled panel using POPM touch emulation, you can click the hand icon for this panel at this time. The hand will turn green which indicate the panel now has touch emulation enabled. 
 
 The Start Pop Out button should now be enabled. Click this button and start the pop out process. If Pop Out Panel Manager app window overlaps your selected instrumentation panels, don't worry, the app will relocate itself when simulating the in-game pop out keystrokes. You should also see a progress window indicating Pop Out Manager is in process of configuring and popping out panels.
 
