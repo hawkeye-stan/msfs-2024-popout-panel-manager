@@ -13,6 +13,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
     {
         private static IntPtr _hHook = IntPtr.Zero;
         private static readonly PInvoke.WindowsHookExProc CallbackDelegate = HookCallBack;
+        private static bool _isTouchDownStarted = false;
         private static bool _isTouchDownCompleted = true;
         private static bool _isTouchUpCompleted = true;
         private static bool _isDragged;
@@ -104,27 +105,38 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                     return 1;
 
                 case WM_LBUTTONDOWN:
+                    if (_isTouchDownStarted)
+                        return 1;
+
+                    lock (Lock)
+                    {
+                        _isTouchDownStarted = true;
+                    }
+
                     if (_isTouchDownCompleted && _isTouchUpCompleted)
                     {
                         _refocusedTaskIndex++;
                         if (panelConfig.PanelType == PanelType.RefocusDisplay)
                             return 1;
 
-                        lock (Lock)
-                        {
-                            _isTouchDownCompleted = false;
-                            _isTouchUpCompleted = false;
-                        }
-
                         Task.Run(() =>
                         {
-                            PInvoke.mouse_event(MOUSEEVENTF_LEFTUP, info.pt.X + 1, info.pt.Y + 1, 0, 0); // focus window
-                            Thread.Sleep(ApplicationSetting.TouchSetting.TouchDownUpDelay + 10);
-                            
-                            PInvoke.mouse_event(MOUSEEVENTF_LEFTDOWN, info.pt.X, info.pt.Y, 0, 0);
-                            Thread.Sleep(ApplicationSetting.TouchSetting.TouchDownUpDelay + 25);
                             lock (Lock)
                             {
+                                _isTouchDownStarted = true;
+                                _isTouchDownCompleted = false;
+                                _isTouchUpCompleted = false;
+                            }
+
+                            PInvoke.mouse_event(MOUSEEVENTF_LEFTUP, info.pt.X + 1, info.pt.Y + 1, 0, 0); // focus window
+                            Thread.Sleep(ApplicationSetting.TouchSetting.TouchDownUpDelay + 10);
+
+                            PInvoke.mouse_event(MOUSEEVENTF_LEFTDOWN, info.pt.X, info.pt.Y, 0, 0);
+                            Thread.Sleep(ApplicationSetting.TouchSetting.TouchDownUpDelay + 10);
+                            
+                            lock (Lock)
+                            {
+                                _isTouchDownStarted = false;
                                 _isTouchDownCompleted = true;
                             }
                         });
@@ -158,22 +170,17 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                     {
                         Task.Run(() =>
                         {
-                            SpinWait.SpinUntil(() => _isTouchDownCompleted, TimeSpan.FromSeconds(0.25));
-
-                            if (_isDragged)
-                            {
-                                // Need this for PMS GTN750
-                                PInvoke.mouse_event(MOUSEEVENTF_LEFTUP, info.pt.X, info.pt.Y, 0, 0);
-                                Thread.Sleep(ApplicationSetting.TouchSetting.TouchDownUpDelay + 25);
-                            }
+                            SpinWait.SpinUntil(() => _isTouchDownCompleted, TimeSpan.FromSeconds(1));
 
                             PInvoke.mouse_event(MOUSEEVENTF_LEFTUP, info.pt.X, info.pt.Y, 0, 0);
+                            Thread.Sleep(ApplicationSetting.TouchSetting.TouchDownUpDelay + 10);
 
                             lock (Lock)
                             {
                                 _isDragged = false;
                                 _isTouchDownCompleted = true;
                                 _isTouchUpCompleted = true;
+                                _isTouchDownStarted = false;
                             }
 
                             // Refocus game window
@@ -191,16 +198,16 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
                     return 1;
                 case WM_MOUSEMOVE:
-                    if (!_isTouchDownCompleted)
+                    if (!_isTouchDownStarted)
+                        break;
+                    
+                    if (_isTouchDownCompleted)
                     {
                         lock (Lock)
                         {
                             _isDragged = true;
                         }
-
-                        return 1;
                     }
-                    
                     break;
             }
 
