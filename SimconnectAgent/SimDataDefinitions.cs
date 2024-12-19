@@ -18,19 +18,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             };
             return definitions;
         }
-
-
-        public static List<SimConnectDataDefinition> GetDynamicLodDefinitions()
-        {
-            var definitions = new List<SimConnectDataDefinition>
-            {
-                new() { DefinitionId = DataDefinition.DYNAMICLOD_DEFINITION, RequestId = DataRequest.DYNAMICLOD_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.PlaneAltAboveGround, VariableName = "PLANE ALT ABOVE GROUND", SimConnectUnit = "feet", DataType = DataType.Float64 },
-                new() { DefinitionId = DataDefinition.DYNAMICLOD_DEFINITION, RequestId = DataRequest.DYNAMICLOD_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.PlaneAltAboveGroundMinusCg, VariableName = "PLANE ALT ABOVE GROUND MINUS CG", SimConnectUnit = "feet", DataType = DataType.Float64 },
-                new() { DefinitionId = DataDefinition.DYNAMICLOD_DEFINITION, RequestId = DataRequest.DYNAMICLOD_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.SimOnGround, VariableName = "SIM ON GROUND", SimConnectUnit = "Bool", DataType = DataType.Float64 },
-                new() { DefinitionId = DataDefinition.DYNAMICLOD_DEFINITION, RequestId = DataRequest.DYNAMICLOD_REQUEST, DataDefinitionType = DataDefinitionType.SimConnect, PropName = PropName.GroundVelocity, VariableName = "GROUND VELOCITY", SimConnectUnit = "knots", DataType = DataType.Float64 }
-            };
-            return definitions;
-        }
         
         public static class PropName
         {
@@ -40,12 +27,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             public static string CameraViewTypeAndIndex1 = "CameraViewTypeAndIndex1";
             public static string CameraViewTypeAndIndex1Max = "CameraViewTypeAndIndex1Max";
             public static string CameraViewTypeAndIndex2Max = "CameraViewTypeAndIndex2Max";
-
-            // Dynamic LOD
-            public static string PlaneAltAboveGround = "PlaneAltAboveGround";
-            public static string PlaneAltAboveGroundMinusCg = "PlaneAltAboveGroundMinusCg";
-            public static string SimOnGround = "SimOnGround";
-            public static string GroundVelocity = "GroundVelocity";
         }
 
         public enum WritableVariableName

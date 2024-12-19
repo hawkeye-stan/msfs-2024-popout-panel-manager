@@ -9,7 +9,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
     public class SimConnectProvider
     {
         private const int MSFS_DATA_REFRESH_TIMEOUT = 500;
-        private const int MSFS_DYNAMICLOD_DATA_REFRESH_TIMEOUT = 300;
 
         private readonly SimConnector _simConnector;
 
@@ -17,7 +16,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
         private List<SimDataItem> _requiredSimData;
 
         private System.Timers.Timer _requiredRequestDataTimer;
-        private System.Timers.Timer _dynamicLodRequestDataTimer;
         private bool _isPowerOnForPopOut;
         private bool _isAvionicsOnForPopOut;
         private bool _isTrackIRManaged;
@@ -29,7 +27,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
         public event EventHandler OnFlightStopped;
         public event EventHandler OnException;
         public event EventHandler<List<SimDataItem>> OnSimConnectDataRequiredRefreshed;
-        public event EventHandler<List<SimDataItem>> OnSimConnectDataDynamicLodRefreshed;
         public event EventHandler<int> OnSimConnectDataEventFrameRefreshed;
         public event EventHandler<string> OnActiveAircraftChanged;
 
@@ -41,7 +38,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             _simConnector.OnException += HandleSimException;
             _simConnector.OnReceiveSystemEvent += HandleReceiveSystemEvent;
             _simConnector.OnReceivedRequiredData += HandleRequiredDataReceived;
-            _simConnector.OnReceivedDynamicLodData += (_, e) => OnSimConnectDataDynamicLodRefreshed?.Invoke(this, e);
             _simConnector.OnReceivedEventFrameData += (_, e) => OnSimConnectDataEventFrameRefreshed?.Invoke(this, e);
             _simConnector.OnActiveAircraftChanged += (_, e) => OnActiveAircraftChanged?.Invoke(this, e);
 
@@ -68,28 +64,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             _simConnector.Stop();
             Thread.Sleep(2000);     // wait for everything to stop
             _simConnector.Restart();
-        }
-
-        public void StartDynamicLod()
-        {
-            if (_dynamicLodRequestDataTimer.Enabled)
-                return;
-            
-            // shut down data request and wait for the last request to be completed
-            _dynamicLodRequestDataTimer.Stop();
-            Thread.Sleep(MSFS_DYNAMICLOD_DATA_REFRESH_TIMEOUT);
-
-            _simConnector.SetSimConnectDynamicLodDataDefinition();
-
-            _dynamicLodRequestDataTimer.Start();
-
-            _simConnector.StartReceiveFrameData();
-        }
-
-        public void StopDynamicLod()
-        {
-            _dynamicLodRequestDataTimer.Stop();
-            _simConnector.StopReceiveFrameData();
         }
 
         public void TurnOnTrackIR()
@@ -181,26 +155,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
                     // ignored
                 }
             };
-            
-
-            // Setup dynamic data request timer
-            _dynamicLodRequestDataTimer = new()
-            {
-                Interval = MSFS_DYNAMICLOD_DATA_REFRESH_TIMEOUT,
-            };
-            _dynamicLodRequestDataTimer.Stop();
-            _dynamicLodRequestDataTimer.Elapsed += (_, _) =>
-            {
-                try
-                {
-                    _simConnector.RequestDynamicLodData();
-                }
-                catch
-                {
-                    // ignored
-                }
-            };
-
 
             OnConnected?.Invoke(this, EventArgs.Empty);
         }
@@ -208,7 +162,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
         private void HandleSimDisconnected(object source, EventArgs e)
         {
             _requiredRequestDataTimer.Stop();
-            _dynamicLodRequestDataTimer.Stop();
             OnDisconnected?.Invoke(this, EventArgs.Empty);
             StopAndReconnect();
         }
@@ -218,7 +171,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             OnException?.Invoke(this, EventArgs.Empty);
 
             _requiredRequestDataTimer.Stop();
-            _dynamicLodRequestDataTimer.Stop();
 
             if (!_isHandlingCriticalError)
             {
@@ -271,8 +223,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
                         _currentCameraState = cameraState;
                         OnFlightStopped?.Invoke(this, EventArgs.Empty);
                         OnIsInCockpitChanged?.Invoke(this, false);
-
-                        _dynamicLodRequestDataTimer.Stop();
                     }
                     break;
                 case CameraState.Cockpit:
@@ -281,8 +231,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
                         _currentCameraState = cameraState;
                         OnFlightStopped?.Invoke(this, EventArgs.Empty);
                         OnIsInCockpitChanged?.Invoke(this, false);
-
-                        _dynamicLodRequestDataTimer.Stop();
                     }
                     break;
             }

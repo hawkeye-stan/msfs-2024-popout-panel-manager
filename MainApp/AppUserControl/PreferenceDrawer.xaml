@@ -35,7 +35,6 @@
                 <TreeViewItem x:Name="CategoryTouchSettings" Header="Touch Settings" />
                 <TreeViewItem x:Name="CategoryTrackIrSettings" Header="Track IR Settings" />
                 <TreeViewItem x:Name="CategoryWindowedModeSettings" Header="Windowed Mode Settings" />
-                <!--<TreeViewItem x:Name="CategoryDynamicLodSettings" Header="Dynamic LOD Settings" />-->
             </TreeView>
         </ScrollViewer>
 
@@ -453,23 +452,6 @@
                         </DockPanel>
                     </StackPanel>
                 </StackPanel>
-
-                <!--  Dynamic LOD Settings  -->
-                <!--<StackPanel Orientation="Vertical" Visibility="{Binding ElementName=CategoryDynamicLodSettings, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                    <StackPanel Style="{StaticResource SectionHeader}">
-                        <TextBlock Style="{StaticResource TextBlockHeading}">(Unsupported Feature) Dynamically adjust Terrain and Object Level of Details</TextBlock>
-                        <Line />
-                        <DockPanel>
-                            <ToggleButton IsChecked="{Binding AppSettingData.ApplicationSetting.DynamicLodSetting.IsEnabled, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
-                            <TextBlock Style="{StaticResource TextBlockLabel}">
-                                Enable automatic adjustments of TLOD and OLOD to get the desired targeted frame rate (FPS).
-                            </TextBlock>
-                        </DockPanel>
-                        <DockPanel Visibility="{Binding Path=AppSettingData.ApplicationSetting.DynamicLodSetting.IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                            <appUserControl:DynamicLodPreference />
-                        </DockPanel>
-                    </StackPanel>
-                </StackPanel>-->
             </StackPanel>
         </ScrollViewer>
     </DockPanel>

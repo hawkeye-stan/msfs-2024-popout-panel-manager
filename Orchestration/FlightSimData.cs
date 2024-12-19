@@ -1,7 +1,6 @@
 ﻿using MSFSPopoutPanelManager.Shared;
 using System;
 using System.ComponentModel;
-using MSFSPopoutPanelManager.DomainModel.DynamicLod;
 using MSFSPopoutPanelManager.SimConnectAgent;
 
 namespace MSFSPopoutPanelManager.Orchestration
@@ -42,8 +41,6 @@ namespace MSFSPopoutPanelManager.Orchestration
         public bool IsInCockpit { get; set; }
 
         public bool IsFlightStarted { get; set; }
-
-        public DynamicLodSimData DynamicLodSimData { get; set; } = new();
 
         [IgnorePropertyChanged]
         internal ProfileData ProfileDataRef { get; set; }

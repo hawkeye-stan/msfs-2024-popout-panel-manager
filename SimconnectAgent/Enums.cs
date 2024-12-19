@@ -3,7 +3,6 @@
     public enum DataDefinition
     {
         REQUIRED_DEFINITION = 0,
-        DYNAMICLOD_DEFINITION,
         WRITABLE_TRACK_IR_DEFINITION,
         WRITABLE_COCKPIT_CAMERA_STATE_DEFINITION,
         WRITABLE_CAMERA_REQUEST_ACTION_DEFINITION,
@@ -15,7 +14,6 @@
     public enum DataRequest
     {
         REQUIRED_REQUEST = 0,
-        DYNAMICLOD_REQUEST,
         NA
     }
 
