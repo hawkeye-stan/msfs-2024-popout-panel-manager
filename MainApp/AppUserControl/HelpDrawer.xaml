@@ -162,7 +162,7 @@
                         </Hyperlink>
                     </TextBlock>
                     <TextBlock Margin="0,0,0,0" Style="{StaticResource TextBlockLabel}">
-                        <Label Style="{StaticResource Label}">© 2024 Stanley Kwok. All rights reserved.</Label>
+                        <Label Style="{StaticResource Label}">© 2021 Stanley Kwok. All rights reserved.</Label>
 
                     </TextBlock>
                 </StackPanel>

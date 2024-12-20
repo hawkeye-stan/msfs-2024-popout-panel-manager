@@ -10,12 +10,12 @@ namespace MSFSPopoutPanelManager.Orchestration
     {
         public void OpenGettingStarted()
         {
-            Process.Start(new ProcessStartInfo("https://github.com/hawkeye-stan/msfs-2024-popout-panel-manager/blob/master/GETTING_STARTED.md") { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo("https://github.com/hawkeye-stan/msfs-popout-panel-manager/blob/master/GETTING_STARTED.md") { UseShellExecute = true });
         }
 
         public void OpenUserGuide()
         {
-            Process.Start(new ProcessStartInfo("https://github.com/hawkeye-stan/msfs-2024-popout-panel-manager#msfs-pop-out-panel-manager") { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo("https://github.com/hawkeye-stan/msfs-popout-panel-manager#msfs-pop-out-panel-manager") { UseShellExecute = true });
         }
 
         public void OpenLicense()
@@ -50,7 +50,7 @@ namespace MSFSPopoutPanelManager.Orchestration
         public void DeleteAppCache()
         {
             var appLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var srcPath = Path.Combine(appLocal, @"temp\.net\MSFSPopoutPanelManager");
+            var srcPath = Path.Combine(appLocal, @"temp\.net\MSFS Pop Out Panel Manager 2020");
 
             try
             {

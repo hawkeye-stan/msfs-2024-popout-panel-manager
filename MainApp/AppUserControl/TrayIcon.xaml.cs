@@ -10,7 +10,10 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl
     public partial class TrayIcon
     {
         // This command has to be here since it doesn't work in view model, window StateChanged never gets fire
-        public DelegateCommand RestoreWindowCommand => new(() => { ((Window)((Border)((Grid)this.Parent).Parent).Parent).WindowState = WindowState.Normal; }, () => true);
+        public DelegateCommand RestoreWindowCommand => new(() => 
+        {
+            ((Window)((Grid)this.Parent).Parent).WindowState = WindowState.Normal; 
+        }, () => true);
 
         private TrayIconViewModel ViewModel { get; }
 
@@ -24,6 +27,8 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl
             Loaded += (_, _) => { DataContext = ViewModel; };
 
             Tray.DoubleClickCommand = RestoreWindowCommand;
+
+            ViewModel.OnOpenedApp += (_, _) => { ((Window)((Grid)this.Parent).Parent).WindowState = WindowState.Normal; };
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)

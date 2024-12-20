@@ -32,11 +32,11 @@ namespace MSFSPopoutPanelManager.Shared
         private static string GetBuildConfigPath()
         {
 #if DEBUG
-            return "MSFS Pop Out Panel Manager 2024 Debug";
+            return "MSFS Pop Out Panel Manager Debug";
 #elif LOCAL
-            return "MSFS Pop Out Panel Manager 2024 Local";
+            return "MSFS Pop Out Panel Manager Local";
 #else
-            return "MSFS Pop Out Panel Manager 2024";
+            return "MSFS Pop Out Panel Manager";
 #endif
         }
     }

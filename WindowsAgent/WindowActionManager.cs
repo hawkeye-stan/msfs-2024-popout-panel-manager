@@ -175,7 +175,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                 return PanelType.BuiltInPopout;                                         // MSFS built-in window such as ATC, VFRMap
             }
 
-            if (className.IndexOf("HwndWrapper[MSFS Pop Out Panel Manager 2024", StringComparison.Ordinal) > -1)
+            if (className.IndexOf("HwndWrapper[MSFS Pop Out Panel Manager 2020", StringComparison.Ordinal) > -1)
             {
                 if (caption.IndexOf("Virtual NumPad", StringComparison.Ordinal) > -1)
                     return PanelType.NumPadWindow;

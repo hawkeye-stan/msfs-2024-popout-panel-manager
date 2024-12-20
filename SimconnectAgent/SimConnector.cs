@@ -20,12 +20,10 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
         private bool _isDisabledReconnect;
 
         private readonly List<SimConnectDataDefinition> _simConnectRequiredDataDefinitions = SimDataDefinitions.GetRequiredDefinitions();
-        private readonly List<SimConnectDataDefinition> _simConnectDynamicLodDataDefinitions = SimDataDefinitions.GetDynamicLodDefinitions();
         private readonly FieldInfo[] _simConnectStructFields = typeof(SimConnectStruct).GetFields(BindingFlags.Public | BindingFlags.Instance);
 
         public event EventHandler<string> OnException;
         public event EventHandler<List<SimDataItem>> OnReceivedRequiredData;
-        public event EventHandler<List<SimDataItem>> OnReceivedDynamicLodData;
         public event EventHandler OnConnected;
         public event EventHandler OnDisconnected;
         public event EventHandler<SimConnectEvent> OnReceiveSystemEvent;
@@ -59,11 +57,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
         public void Restart()
         {
             _connectionTimer.Enabled = true;
-        }
-
-        public void SetSimConnectDynamicLodDataDefinition()
-        {
-            AddDynamicLodDataDefinitions();
         }
 
         private void HandleOnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
@@ -103,27 +96,7 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
                 OnException?.Invoke(this, null);
             }
         }
-
-        public void RequestDynamicLodData()
-        {
-            if (_simConnect == null || !Connected)
-                return;
-
-            try
-            {
-
-                if (_simConnectDynamicLodDataDefinitions != null)
-                    _simConnect.RequestDataOnSimObjectType(DataRequest.DYNAMICLOD_REQUEST, DataDefinition.DYNAMICLOD_DEFINITION, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
-            }
-            catch
-            {
-                if (!_isDisabledReconnect)
-                    _isDisabledReconnect = true;
-
-                OnException?.Invoke(this, null);
-            }
-        }
-
+        
         public void ReceiveMessage()
         {
             if (_simConnect == null)
@@ -185,9 +158,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
                     case WritableVariableName.TrackIREnable:
                         _simConnect.SetDataOnSimObject(DataDefinition.WRITABLE_TRACK_IR_DEFINITION, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, dataStruct);
                         break;
-                    case WritableVariableName.CockpitCameraZoom:
-                        _simConnect.SetDataOnSimObject(DataDefinition.WRITABLE_COCKPIT_CAMERA_ZOOM_DEFINITION, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, dataStruct);
-                        break;
                     case WritableVariableName.CameraState:
                         _simConnect.SetDataOnSimObject(DataDefinition.WRITABLE_COCKPIT_CAMERA_STATE_DEFINITION, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, dataStruct);
                         break;
@@ -230,7 +200,7 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
         private void InitializeSimConnect()
         {
             Debug.WriteLine("Trying to start simConnect");
-            _simConnect = new SimConnect("MSFS Pop Out Panel Manager 2024", Process.GetCurrentProcess().MainWindowHandle, WM_USER_SIMCONNECT, null, 0);
+            _simConnect = new SimConnect("MSFS Pop Out Panel Manager", Process.GetCurrentProcess().MainWindowHandle, WM_USER_SIMCONNECT, null, 0);
             Debug.WriteLine("SimConnect started");
 
             _connectionTimer.Enabled = false;
@@ -339,7 +309,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
 
             _simConnect.AddToDataDefinition(DataDefinition.WRITABLE_TRACK_IR_DEFINITION, "TRACK IR ENABLE", "bool", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
             _simConnect.AddToDataDefinition(DataDefinition.WRITABLE_COCKPIT_CAMERA_STATE_DEFINITION, "CAMERA STATE", "enum", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-            _simConnect.AddToDataDefinition(DataDefinition.WRITABLE_COCKPIT_CAMERA_ZOOM_DEFINITION, "COCKPIT CAMERA ZOOM", "percentage", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
             _simConnect.AddToDataDefinition(DataDefinition.WRITABLE_CAMERA_REQUEST_ACTION_DEFINITION, "CAMERA REQUEST ACTION", "enum", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
             _simConnect.AddToDataDefinition(DataDefinition.WRITABLE_CAMERA_VIEW_TYPE_INDEX_0_DEFINITION, "CAMERA VIEW TYPE AND INDEX:0", "number", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
             _simConnect.AddToDataDefinition(DataDefinition.WRITABLE_CAMERA_VIEW_TYPE_INDEX_1_DEFINITION, "CAMERA VIEW TYPE AND INDEX:1", "number", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
@@ -347,44 +316,8 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             _simConnect.RegisterDataDefineStruct<SimConnectStruct>(DataDefinition.REQUIRED_DEFINITION);
             _simConnect.RegisterDataDefineStruct<SimConnectStruct>(DataDefinition.WRITABLE_TRACK_IR_DEFINITION);
             _simConnect.RegisterDataDefineStruct<SimConnectStruct>(DataDefinition.WRITABLE_COCKPIT_CAMERA_STATE_DEFINITION);
-            _simConnect.RegisterDataDefineStruct<SimConnectStruct>(DataDefinition.WRITABLE_COCKPIT_CAMERA_ZOOM_DEFINITION);
             _simConnect.RegisterDataDefineStruct<SimConnectStruct>(DataDefinition.WRITABLE_CAMERA_VIEW_TYPE_INDEX_0_DEFINITION);
             _simConnect.RegisterDataDefineStruct<SimConnectStruct>(DataDefinition.WRITABLE_CAMERA_VIEW_TYPE_INDEX_1_DEFINITION);
-        }
-
-        private void AddDynamicLodDataDefinitions()
-        {
-            if (_simConnect == null)
-                return;
-
-            _simConnect.ClearDataDefinition(DataDefinition.DYNAMICLOD_DEFINITION);
-
-            if (_simConnectDynamicLodDataDefinitions == null)
-                return;
-
-            foreach (var definition in _simConnectDynamicLodDataDefinitions)
-            {
-                if (definition.DefinitionId != DataDefinition.DYNAMICLOD_DEFINITION ||
-                    definition.DataDefinitionType != DataDefinitionType.SimConnect) continue;
-
-                SIMCONNECT_DATATYPE simConnectDataType;
-                switch (definition.DataType)
-                {
-                    case DataType.String:
-                        simConnectDataType = SIMCONNECT_DATATYPE.STRING256;
-                        break;
-                    case DataType.Float64:
-                        simConnectDataType = SIMCONNECT_DATATYPE.FLOAT64;
-                        break;
-                    default:
-                        simConnectDataType = SIMCONNECT_DATATYPE.FLOAT64;
-                        break;
-                }
-
-                _simConnect.AddToDataDefinition(definition.DefinitionId, definition.VariableName, definition.SimConnectUnit, simConnectDataType, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-            }
-
-            _simConnect.RegisterDataDefineStruct<SimConnectStruct>(DataDefinition.DYNAMICLOD_DEFINITION);
         }
 
         private void HandleOnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
@@ -427,9 +360,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
                 case (int)DataRequest.REQUIRED_REQUEST:
                     ParseRequiredReceivedSimData(data);
                     break;
-                case (int)DataRequest.DYNAMICLOD_REQUEST:
-                    ParseDynamicLodReceivedSimData(data);
-                    break;
             }
         }
         
@@ -466,45 +396,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             catch (Exception ex)
             {
                 FileLogger.WriteException($"SimConnector: SimConnect received required data exception - {ex.Message}", ex);
-            }
-        }
-
-        private void ParseDynamicLodReceivedSimData(SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
-        {
-            try
-            {
-                if (_simConnectDynamicLodDataDefinitions == null)
-                    return;
-
-                var simData = new List<SimDataItem>();
-                var simDataStruct = (SimConnectStruct)data.dwData[0];
-
-                var i = 0;
-                lock (_simConnectDynamicLodDataDefinitions)
-                {
-                    foreach (var definition in _simConnectDynamicLodDataDefinitions)
-                    {
-                        if (definition.DataDefinitionType != DataDefinitionType.SimConnect)
-                            continue;
-
-                        var dataValue = _simConnectStructFields[i].GetValue(simDataStruct);
-                        var simDataItem = new SimDataItem
-                        {
-                            PropertyName = definition.PropName,
-                            Value = dataValue == null ? 0 : (double)dataValue
-                        };
-
-                        simData.Add(simDataItem);
-                        i++;
-                    }
-                }
-
-                OnReceivedDynamicLodData?.Invoke(this, simData);
-            }
-            catch (Exception ex)
-            {
-                FileLogger.WriteException($"SimConnector: SimConnect received dynamic lod data exception - {ex.Message}", ex);
-                StopAndReconnect();
             }
         }
 

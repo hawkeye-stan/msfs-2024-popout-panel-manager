@@ -23,6 +23,11 @@
         <tb:TaskbarIcon.ContextMenu>
             <ContextMenu>
                 <MenuItem
+                    Command="{Binding OpenAppCommand}"
+                    Header="Open"
+                    Style="{StaticResource MaterialDesignMenuItem}" />
+                <Separator />
+                <MenuItem
                     x:Name="MenuItemProfiles"
                     Click="MenuItem_Click"
                     Header="Profiles"

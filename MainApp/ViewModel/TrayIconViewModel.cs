@@ -1,6 +1,7 @@
 ﻿using MSFSPopoutPanelManager.Orchestration;
 using Prism.Commands;
 using System;
+using System.Reflection.Metadata.Ecma335;
 using System.Windows;
 using System.Windows.Input;
 
@@ -17,6 +18,10 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 
         public ICommand ExitAppCommand { get; }
 
+        public ICommand OpenAppCommand { get; }
+
+        public event EventHandler OnOpenedApp;
+
         public TrayIconViewModel(SharedStorage sharedStorage, AppOrchestrator appOrchestrator, PanelPopOutOrchestrator panelPopOutOrchestrator) : base(sharedStorage)
         {
             _appOrchestrator = appOrchestrator;
@@ -30,6 +35,8 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                                                                             .ObservesProperty(() => FlightSimData.IsInCockpit);
 
             ChangeProfileCommand = new DelegateCommand<object>(OnChangeProfile);
+
+            OpenAppCommand = new DelegateCommand(OnOpenApp);
 
             ExitAppCommand = new DelegateCommand(OnExitApp);
         }
@@ -56,6 +63,11 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 
             if (Application.Current != null)
                 Environment.Exit(0);
+        }
+
+        private void OnOpenApp()
+        {
+            OnOpenedApp?.Invoke(this, null);
         }
     }
 }

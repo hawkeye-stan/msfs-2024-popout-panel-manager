@@ -34,8 +34,6 @@ namespace MSFSPopoutPanelManager.DomainModel.Setting
 
         public KeyboardShortcutSetting KeyboardShortcutSetting { get; set; } = new();
 
-        public DynamicLodSetting DynamicLodSetting { get; set; } = new();
-
         public event EventHandler<bool> OnIsUsedKeyboardShortcutChanged;
     }
 }

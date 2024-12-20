@@ -6,7 +6,7 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodel="clr-namespace:MSFSPopoutPanelManager.MainApp.ViewModel"
-    Title="MSFS Pop Out Panel Manager 2024"
+    Title="MSFS Pop Out Panel Manager 2020"
     Width="Auto"
     Height="Auto"
     d:DataContext="{d:DesignInstance viewmodel:MessageWindowViewModel}"
@@ -30,7 +30,7 @@
                     Padding="10,5,10,5"
                     HorizontalAlignment="Stretch"
                     Style="{StaticResource TextBlockLabel}">
-                    MSFS POP OUT PANEL MANAGER 2024
+                    MSFS POP OUT PANEL MANAGER 2020
                 </TextBlock>
             </WrapPanel>
             <WrapPanel Margin="20,5,20,10">

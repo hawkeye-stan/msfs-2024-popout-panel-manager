@@ -1,7 +1,6 @@
 ﻿using MSFSPopoutPanelManager.Shared;
 using System;
 using System.ComponentModel;
-using MSFSPopoutPanelManager.DomainModel.DynamicLod;
 using MSFSPopoutPanelManager.SimConnectAgent;
 
 namespace MSFSPopoutPanelManager.Orchestration
@@ -21,15 +20,9 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         public bool HasAircraftName => !String.IsNullOrEmpty(AircraftName);
 
-        public bool ElectricalMasterBatteryStatus { get; set; }
-
-        public bool AvionicsMasterSwitchStatus { get; set; }
-
         public bool TrackIRStatus { get; set; }
 
         public CameraState CameraState { get; set; }
-
-        public int CockpitCameraZoom { get; set; }
 
         public int CameraViewTypeAndIndex0 { get; set; }
 
@@ -48,8 +41,6 @@ namespace MSFSPopoutPanelManager.Orchestration
         public bool IsInCockpit { get; set; }
 
         public bool IsFlightStarted { get; set; }
-
-        public DynamicLodSimData DynamicLodSimData { get; set; } = new();
 
         [IgnorePropertyChanged]
         internal ProfileData ProfileDataRef { get; set; }
@@ -71,8 +62,6 @@ namespace MSFSPopoutPanelManager.Orchestration
         private void Setup()
         {
             AircraftName = null;
-            ElectricalMasterBatteryStatus = false;
-            AvionicsMasterSwitchStatus = false;
             TrackIRStatus = false;
             IsInCockpit = false;
             PlaneInParkingSpot = false;

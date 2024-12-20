@@ -6,6 +6,6 @@ namespace MSFSPopoutPanelManager.DomainModel.Setting
     {
         public bool IsEnabled { get; set; } = true;
 
-        public int ReadyToFlyDelay { get; set; } = 1;
+        public int ReadyToFlyDelay { get; set; } = 3;
     }
 }

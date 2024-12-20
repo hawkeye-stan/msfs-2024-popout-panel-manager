@@ -13,7 +13,7 @@ namespace MSFSPopoutPanelManager.Orchestration
 {
     public class PanelPopOutOrchestrator : BaseOrchestrator
     {
-        private const int READY_TO_FLY_BUTTON_APPEARANCE_DELAY = 2000;
+        private const int READY_TO_FLY_BUTTON_APPEARANCE_DELAY = 1000;
         private const int CAMERA_VIEW_HOME_COCKPIT_MODE = 8;
         private const int CAMERA_VIEW_CUSTOM_CAMERA = 7;
 
@@ -59,7 +59,7 @@ namespace MSFSPopoutPanelManager.Orchestration
             ActiveProfile.IsDisabledStartPopOut = true;
             OnPopOutStarted?.Invoke(this, EventArgs.Empty);
 
-            await CoreSteps();
+            await CoreSteps(false);
         }
 
         public async Task AutoPopOut()
@@ -84,12 +84,10 @@ namespace MSFSPopoutPanelManager.Orchestration
                     ActiveProfile.PanelConfigs.Count(p => p.PanelType == PanelType.CustomPopout && p.HasPanelSource) != ActiveProfile.PanelConfigs.Count(p => p.PanelType == PanelType.CustomPopout))
                     return;
 
-                StepReadyToFlyDelay(true);
-
                 ActiveProfile.IsDisabledStartPopOut = true;
                 OnPopOutStarted?.Invoke(this, EventArgs.Empty);
 
-                await CoreSteps();
+                await CoreSteps(true);
             });
         }
 
@@ -101,13 +99,16 @@ namespace MSFSPopoutPanelManager.Orchestration
                 ActiveProfile.IsPoppedOut = false;
         }
 
-        private async Task CoreSteps()
+        private async Task CoreSteps(bool isAutoPopOut)
         {
             if (ActiveProfile == null || ActiveProfile.IsEditingPanelSource || ActiveProfile.HasUnidentifiedPanelSource)
                 return;
 
             StatusMessageWriter.IsEnabled = true;
             StatusMessageWriter.ClearMessage();
+
+            await StepReadyToFlyDelay(isAutoPopOut);
+
             StatusMessageWriter.WriteMessageWithNewLine("Pop out in progress. Please wait and do not move your mouse.", StatusMessageType.Info);
 
             StepPopoutPrep();
@@ -149,7 +150,7 @@ namespace MSFSPopoutPanelManager.Orchestration
             _panelSourceOrchestrator.CloseAllPanelSource();
         }
 
-        private void StepReadyToFlyDelay(bool isAutoPopOut)
+        private async Task StepReadyToFlyDelay(bool isAutoPopOut)
         {
             if (!isAutoPopOut)
                 return;
@@ -161,9 +162,17 @@ namespace MSFSPopoutPanelManager.Orchestration
                 return;
 
             // Extra wait for cockpit view to appear and align
-            Thread.Sleep(AppSetting.AutoPopOutSetting.ReadyToFlyDelay * 1000);
+            await Task.Run(() =>
+            {
+                for(var i = 0; i < AppSetting.AutoPopOutSetting.ReadyToFlyDelay; i++)
+                {
+                    StatusMessageWriter.ClearMessage();
+                    StatusMessageWriter.WriteMessageWithNewLine($"Auto pop out panel delay for {AppSetting.AutoPopOutSetting.ReadyToFlyDelay - i} second(s).", StatusMessageType.Info);
+                    Thread.Sleep(1000);
+                }
+                StatusMessageWriter.ClearMessage();
+            });
         }
-
 
         private async Task StepBeforePanelPopout()
         {
@@ -180,13 +189,6 @@ namespace MSFSPopoutPanelManager.Orchestration
                         WindowActionManager.SetMsfsGameWindowLocation(ActiveProfile.MsfsGameWindowConfig);
                         Thread.Sleep(1000);
                     });
-                }
-
-                // Turn on power and avionics if required to pop out panels at least one (fix Cessna 208b grand caravan mod where battery is reported as on)
-                if (ActiveProfile.ProfileSetting.PowerOnRequiredForColdStart)
-                {
-                    _flightSimOrchestrator.TurnOnPower();
-                    _flightSimOrchestrator.TurnOnAvionics();
                 }
 
                 // Turn off TrackIR if TrackIR is started
@@ -207,12 +209,6 @@ namespace MSFSPopoutPanelManager.Orchestration
 
             await Task.Run(() =>
             {
-                if (ActiveProfile.ProfileSetting.PowerOnRequiredForColdStart)
-                {
-                    _flightSimOrchestrator.TurnOffAvionics();
-                    _flightSimOrchestrator.TurnOffPower();
-                }
-
                 // Turn TrackIR back on
                 _flightSimOrchestrator.TurnOnTrackIR();
                 Thread.Sleep(500);

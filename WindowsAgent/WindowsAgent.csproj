@@ -2,17 +2,17 @@
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
     <AssemblyName>WindowsAgent</AssemblyName>
-    <PackageId>MSFS Pop Out Panel Manager 2024 WindowsAgent</PackageId>
-    <Product>MSFS Pop Out Panel Manager 2024 WindowsAgent</Product>
+    <PackageId>MSFS Pop Out Panel Manager 2020 WindowsAgent</PackageId>
+    <Product>MSFS Pop Out Panel Manager 2020 WindowsAgent</Product>
     <Authors>Stanley Kwok</Authors>
     <Company>Stanley Kwok</Company>
-    <Copyright>Stanley Kwok 2024</Copyright>
-    <PackageProjectUrl>https://github.com/hawkeye-stan/msfs-2024-popout-panel-manager</PackageProjectUrl>
+    <Copyright>Stanley Kwok 2021</Copyright>
+    <PackageProjectUrl>https://github.com/hawkeye-stan/msfs-popout-panel-manager</PackageProjectUrl>
     <RootNamespace>MSFSPopoutPanelManager.WindowsAgent</RootNamespace>
     <Platforms>x64</Platforms>
-    <Version>0.1.0.0</Version>
-    <AssemblyVersion>0.1.0.0</AssemblyVersion>
-    <FileVersion>0.1.0.0</FileVersion>
+    <Version>5.0.0.0</Version>
+    <AssemblyVersion>5.0.0.0</AssemblyVersion>
+    <FileVersion>5.0.0.0</FileVersion>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <DebugType>Embedded</DebugType>
     <Configurations>Debug;Release;Local</Configurations>

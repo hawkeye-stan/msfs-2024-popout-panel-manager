@@ -3,19 +3,19 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <AssemblyName>MSFS Pop Out Panel Manager 2024</AssemblyName>
-    <PackageId>MSFS Pop Out Panel Manager 2024</PackageId>
-    <Product>MSFS Pop Out Panel Manager 2024</Product>
+    <AssemblyName>MSFS Pop Out Panel Manager 2020</AssemblyName>
+    <PackageId>MSFS Pop Out Panel Manager 2020</PackageId>
+    <Product>MSFS Pop Out Panel Manager 2020</Product>
     <Authors>Stanley Kwok</Authors>
     <Company>Stanley Kwok</Company>
-    <Copyright>Stanley Kwok 2024</Copyright>
-    <PackageProjectUrl>https://github.com/hawkeye-stan/msfs-2024-popout-panel-manager</PackageProjectUrl>
+    <Copyright>Stanley Kwok 2021</Copyright>
+    <PackageProjectUrl>https://github.com/hawkeye-stan/msfs-popout-panel-manager</PackageProjectUrl>
     <RootNamespace>MSFSPopoutPanelManager.MainApp</RootNamespace>
     <ApplicationIcon>logo.ico</ApplicationIcon>
     <Platforms>x64</Platforms>
-    <Version>0.1.0.0</Version>
-    <AssemblyVersion>0.1.0.0</AssemblyVersion>
-    <FileVersion>0.1.0.0</FileVersion>
+    <Version>5.0.0.0</Version>
+    <AssemblyVersion>5.0.0.0</AssemblyVersion>
+    <FileVersion>5.0.0.0</FileVersion>
     <DebugType>embedded</DebugType>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <!-- Publishing options -->
@@ -85,8 +85,10 @@
   <Target Name="CopyItems" AfterTargets="ComputeFilesToPublish">
     <!-- Copy all plugin-extensions items -->
     <ItemGroup>
-      <Skipper Include="$(SolutionDir)\Assets\Community\zzz-ready-to-fly-button-skipper\**">
-      </Skipper>
+      <!--<Skipper Include="$(SolutionDir)\Assets\Community\zzz-ready-to-fly-button-skipper\**">
+      </Skipper>-->
+	  <Skipper Include="$(SolutionDir)\Assets\Skip Ready to Fly button manual update instruction.pdf">
+	  </Skipper>
       <License Include="$(SolutionDir)\LICENSE">
       </License>
       <Version Include="$(SolutionDir)\VERSION.md">
@@ -97,6 +99,7 @@
     <Copy SourceFiles="@(License)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" OverwriteReadOnlyFiles="true" />
     <Copy SourceFiles="@(Version)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" OverwriteReadOnlyFiles="true" />
     <Copy SourceFiles="@(ReleaseNotes)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" OverwriteReadOnlyFiles="true" />
-    <Copy SourceFiles="@(Skipper)" DestinationFolder="$(PublishDir)Community\zzz-ready-to-fly-button-skipper\%(RecursiveDir)" SkipUnchangedFiles="false" OverwriteReadOnlyFiles="true" />
+	<Copy SourceFiles="@(Skipper)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" OverwriteReadOnlyFiles="true" />
+    <!--<Copy SourceFiles="@(Skipper)" DestinationFolder="$(PublishDir)Community\zzz-ready-to-fly-button-skipper\%(RecursiveDir)" SkipUnchangedFiles="false" OverwriteReadOnlyFiles="true" />-->
   </Target>
 </Project>
