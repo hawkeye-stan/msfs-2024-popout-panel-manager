@@ -14,7 +14,7 @@ MSFS Pop Out Panel Manager 2024 is an application for Microsoft Flight Simulator
 ## Note: POPM functionality that does not work with MSFS 2024
 - Auto Pop Out 
   * My community plugin "ready-to-fly-button-skipper" to skip the "Ready to Fly" screen no longer works. You will need to manually click "Ready to Fly" to initiate auto pop out. You can set the auto pop out delay in preference setting depending on the speed of your computer.
-  * Worked around instruction has been created if you're comfortable modifying MSFS game file (as of Beta v0.1.1.0).
+  * Worked around instruction has been created if you're comfortable modifying MSFS game file (as of Beta v1.0.0.0).
 
 ## Author
 Stanley Kwok
