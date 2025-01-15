@@ -1,6 +1,7 @@
 ﻿using MSFSPopoutPanelManager.DomainModel.Profile;
 using MSFSPopoutPanelManager.DomainModel.Setting;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -30,6 +31,10 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         private const uint WM_RBUTTONUP = 0x0205;
         private const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
         private const uint MOUSEEVENTF_LEFTUP = 0x0004;
+
+        private const int MouseClickDelay = 15;
+        private static Queue<Tuple<int, int>> _queue = new Queue<Tuple<int, int>>();
+        private static Tuple<int, int> _coor;
 
         public static UserProfile ActiveProfile { private get; set; }
 
@@ -104,56 +109,36 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                 case WM_RBUTTONUP:
                     return 1;
 
-                case WM_LBUTTONDOWN:
-                    if (_isTouchDownStarted)
+                case WM_LBUTTONDOWN:                                        
+                    _refocusedTaskIndex++;
+                    if (panelConfig.PanelType == PanelType.RefocusDisplay)
                         return 1;
-
-                    lock (Lock)
+                
+                    Task.Run(() =>
                     {
-                        _isTouchDownStarted = true;
-                    }
+                        Debug.WriteLine($"DX: {info.pt.X}, DY: {info.pt.Y}");
 
-                    if (_isTouchDownCompleted && _isTouchUpCompleted)
-                    {
-                        _refocusedTaskIndex++;
-                        if (panelConfig.PanelType == PanelType.RefocusDisplay)
-                            return 1;
+                        lock(Lock)
+                        { 
+                            _queue.Enqueue(new Tuple<int, int>(info.pt.X, info.pt.Y));
 
-                        Task.Run(() =>
-                        {
-                            lock (Lock)
-                            {
-                                _isTouchDownStarted = true;
-                                _isTouchDownCompleted = false;
-                                _isTouchUpCompleted = false;
-                            }
-
-                            PInvoke.mouse_event(MOUSEEVENTF_LEFTUP, info.pt.X + 1, info.pt.Y + 1, 0, 0); // focus window
-                            Thread.Sleep(ApplicationSetting.TouchSetting.TouchDownUpDelay + 10);
+                            PInvoke.mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0); ; // focus window
+                            Thread.Sleep(ApplicationSetting.TouchSetting.TouchDownUpDelay + MouseClickDelay);
 
                             PInvoke.mouse_event(MOUSEEVENTF_LEFTDOWN, info.pt.X, info.pt.Y, 0, 0);
-                            Thread.Sleep(ApplicationSetting.TouchSetting.TouchDownUpDelay + 10);
-                            
-                            lock (Lock)
-                            {
-                                _isTouchDownStarted = false;
-                                _isTouchDownCompleted = true;
-                            }
-                        });
-                    }
+                            Thread.Sleep(ApplicationSetting.TouchSetting.TouchDownUpDelay + MouseClickDelay);
+
+                        }
+
+                        
+                    });
+
                     return 1;
                 case WM_LBUTTONUP:
                     if (panelConfig.PanelType == PanelType.RefocusDisplay)
                     {
                         Task.Run(() =>
                         {
-                            lock (Lock)
-                            {
-                                _isTouchDownCompleted = true;
-                                _isDragged = false;
-                                _isTouchUpCompleted = true;
-                            }
-
                             // Refocus game window
                             if (ApplicationSetting.RefocusSetting.RefocusGameWindow.IsEnabled && panelConfig.AutoGameRefocus)
                             {
@@ -162,7 +147,9 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                                 Thread.Sleep(Convert.ToInt32(ApplicationSetting.RefocusSetting.RefocusGameWindow.Delay * 1000));
 
                                 if (currentRefocusIndex == _refocusedTaskIndex)
+                                {
                                     WindowActionManager.RefocusMsfsGameWindow();
+                                }
                             }
                         });
                     }
@@ -170,18 +157,23 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                     {
                         Task.Run(() =>
                         {
-                            SpinWait.SpinUntil(() => _isTouchDownCompleted, TimeSpan.FromSeconds(1));
-
-                            PInvoke.mouse_event(MOUSEEVENTF_LEFTUP, info.pt.X, info.pt.Y, 0, 0);
-                            Thread.Sleep(ApplicationSetting.TouchSetting.TouchDownUpDelay + 10);
+                            Thread.Sleep(MouseClickDelay * 2);      // this must match amount of total exec threadsleep time during WM_LBUTTONDOWN 
 
                             lock (Lock)
                             {
-                                _isDragged = false;
-                                _isTouchDownCompleted = true;
-                                _isTouchUpCompleted = true;
-                                _isTouchDownStarted = false;
+                                _coor = _queue.Dequeue();
+
+                                Debug.WriteLine($"UX: {_coor.Item1}, UY: {_coor.Item2}");
+
+                                PInvoke.mouse_event(MOUSEEVENTF_LEFTUP, _coor.Item1, _coor.Item2, 0, 0);
+                                Thread.Sleep(ApplicationSetting.TouchSetting.TouchDownUpDelay + MouseClickDelay);
+
+                                PInvoke.mouse_event(MOUSEEVENTF_LEFTUP, _coor.Item1, _coor.Item2, 0, 0);
+
+                                Debug.WriteLine("-------------------------");
                             }
+
+                          
 
                             // Refocus game window
                             if (ApplicationSetting.RefocusSetting.RefocusGameWindow.IsEnabled && panelConfig.AutoGameRefocus)
@@ -191,23 +183,35 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                                 Thread.Sleep(Convert.ToInt32(ApplicationSetting.RefocusSetting.RefocusGameWindow.Delay * 1000));
 
                                 if (currentRefocusIndex == _refocusedTaskIndex)
+                                {
                                     WindowActionManager.RefocusMsfsGameWindow();
+                                }
                             }
+
+
+                          
                         });
                     }
 
+
                     return 1;
                 case WM_MOUSEMOVE:
-                    if (!_isTouchDownStarted)
-                        break;
+                    //if(_isTouchDownStarted)
+                    //{
+                    //    _mouseMoveCount++;
+                    //}
+
+
+                    //if (!_isTouchDownCompleted)
+                    //    break;
                     
-                    if (_isTouchDownCompleted)
-                    {
-                        lock (Lock)
-                        {
-                            _isDragged = true;
-                        }
-                    }
+                    //if (_isTouchDownCompleted)
+                    //{
+                    //    lock (Lock)
+                    //    {
+                    //        _isDragged = true;
+                    //    }
+                    //}
                     break;
             }
 

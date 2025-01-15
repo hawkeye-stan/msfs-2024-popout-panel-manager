@@ -35,6 +35,7 @@ namespace MSFSPopoutPanelManager.Orchestration
             if (ActiveProfile.IsSelectingPanelSource)
                 return;
 
+            WindowProcessManager.SetApplicationProcess();
             ActiveProfile.IsSelectingPanelSource = true;
         }
 
