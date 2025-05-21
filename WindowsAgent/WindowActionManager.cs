@@ -316,7 +316,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             PInvoke.SetForegroundWindow(WindowProcessManager.SimulatorProcess.Handle);
 
             var rect = GetWindowRectangle(WindowProcessManager.SimulatorProcess.Handle);
-            InputEmulationManager.LeftClick(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
+            PInvoke.SetCursorPos(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
         }
 
         public static void SetHostMonitor(PanelConfig panelConfig)
