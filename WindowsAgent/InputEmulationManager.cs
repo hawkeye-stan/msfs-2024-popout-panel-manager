@@ -10,6 +10,8 @@ namespace MSFSPopoutPanelManager.WindowsAgent
     {
         private const uint MOUSEEVENTF_LEFTDOWN = 0x02;
         private const uint MOUSEEVENTF_LEFTUP = 0x04;
+        private const uint MOUSEEVENTF_RIGHTDOWN = 0x08;
+        private const uint MOUSEEVENTF_RIGHTUP = 0x10;
         private const uint KEYEVENTF_KEYDOWN = 0x0;
         private const uint KEYEVENTF_KEYUP = 0x2;
         private const uint VK_LMENU = 0xA4;
@@ -63,11 +65,24 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
         public static void PopOutPanel(int x, int y, bool useSecondaryKeys, bool isTurbo)
         {
+            // ---- SU3 Beta 1.5.7 temporary fix ------
+            var appHandle = WindowProcessManager.SimulatorProcess.Handle;
+            var applicationRectangle = WindowActionManager.GetWindowRectangle(appHandle);
+            LeftClick(applicationRectangle.Width - 20, 30);
+            Thread.Sleep(200);
+            // ----------------------------------------
+
             if (useSecondaryKeys)
             {
+                // SU3 Beta 1.5.7 temporary fix
                 InputSimulator.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.LCONTROL);
                 InputSimulator.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.RCONTROL);
-                
+                PInvoke.SetCursorPos(x, y);
+
+                // Original code
+                //InputSimulator.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.LCONTROL);
+                //InputSimulator.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.RCONTROL);
+
                 Thread.Sleep(isTurbo ? 0: 500);
 
                 PInvoke.mouse_event(MOUSEEVENTF_LEFTDOWN, x, y, 0, 0);
@@ -82,7 +97,12 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             }
             else
             {
+                // SU3 Beta 1.5.7 temporary fix
                 InputSimulator.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.RMENU);
+                PInvoke.SetCursorPos(x, y);
+
+                // Original code
+                //InputSimulator.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.RMENU);
 
                 Thread.Sleep(isTurbo ? 0 : 500);
 
