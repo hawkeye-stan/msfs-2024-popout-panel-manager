@@ -21,26 +21,31 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             if (!_isHookMouseDown)
             {
                 Debug.WriteLine("Executing touch down event...");
+
                 lock (HookLock)
                 {
-                    PInvoke.GetCursorPos(out var point);
+                    if (panelConfig.PanelType != PanelType.RefocusDisplay)
+                    {
+                        PInvoke.GetCursorPos(out var point);
 
-                    // Disable left-clicking if user is touching the title bar area or the borders (with 5 extra pixels for margin of error)
-                    // Title bar
-                    if (point.Y - panelConfig.Top < (panelConfig.HideTitlebar ? 5 : 50))
-                        return;
+                        // Disable left-clicking if user is touching the title bar area or the borders (with 5 extra pixels for margin of error)
+                        // Title bar
+                        if (point.Y - panelConfig.Top < (panelConfig.HideTitlebar ? 5 : 50))
+                            return;
 
-                    // Bottom border
-                    if (panelConfig.Top + panelConfig.Height - point.Y < 15)
-                        return;
+                        // Bottom border
+                        if (panelConfig.Top + panelConfig.Height - point.Y < 15)
+                            return;
 
-                    // Left border
-                    if (point.X - panelConfig.Left < 15)
-                        return;
+                        // Left border
+                        if (point.X - panelConfig.Left < 15)
+                            return;
 
-                    // Right border
-                    if (panelConfig.Left + panelConfig.Width - point.X < 15)
-                        return;
+                        // Right border
+                        if (panelConfig.Left + panelConfig.Width - point.X < 15)
+                            return;
+
+                    }
 
                     _isHookMouseDown = true;
                 }
@@ -59,15 +64,28 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                 {
                     _isHookMouseDown = false;
 
-                    PInvoke.GetCursorPos(out var point);
+                    if (panelConfig.PanelType != PanelType.RefocusDisplay)
+                    {
+                        PInvoke.GetCursorPos(out var point);
 
-                    // Disable left-clicking if user is touching the title bar area
-                    if (point.Y - panelConfig.Top > (panelConfig.HideTitlebar ? 5 : 31))
+                        // Disable left-clicking if user is touching the title bar area
+                        if (point.Y - panelConfig.Top > (panelConfig.HideTitlebar ? 5 : 31))
+                        {
+                            var prevWinEventClickLock = ++_winEventClickLock;
+
+                            // Use click event refocus only if panel is not a touch panel
+                            if (prevWinEventClickLock == _winEventClickLock && ApplicationSetting.RefocusSetting.RefocusGameWindow.IsEnabled && panelConfig.AutoGameRefocus && !panelConfig.TouchEnabled)
+                            {
+                                Task.Run(() => RefocusMsfs(prevWinEventClickLock));
+                            }
+                        }
+                    }
+                    else
                     {
                         var prevWinEventClickLock = ++_winEventClickLock;
 
                         // Use click event refocus only if panel is not a touch panel
-                        if (prevWinEventClickLock == _winEventClickLock && ApplicationSetting.RefocusSetting.RefocusGameWindow.IsEnabled && panelConfig.AutoGameRefocus && !panelConfig.TouchEnabled)
+                        if (prevWinEventClickLock == _winEventClickLock)
                         {
                             Task.Run(() => RefocusMsfs(prevWinEventClickLock));
                         }

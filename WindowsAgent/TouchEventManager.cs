@@ -127,10 +127,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
                             PInvoke.mouse_event(MOUSEEVENTF_LEFTDOWN, info.pt.X, info.pt.Y, 0, 0);
                             Thread.Sleep(ApplicationSetting.TouchSetting.TouchDownUpDelay + MouseClickDelay);
-
                         }
-
-                        
                     });
 
                     return 1;

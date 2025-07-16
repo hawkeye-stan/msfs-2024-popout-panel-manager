@@ -1,28 +1,27 @@
 # Version History
 <hr/>
 
-## Version 1.0.2.0
+## Version 1.0.2
 
 * Updated - tried to fix double touches when using POPM touch feature
-* Test feature - added temporary workaround for SU3 Beta 1.5.7.0 where pop out activation is broken by latest beta release.
 
-## Version 1.0.1.0
+## Version 1.0.1
 * Fixed - unable to select game instrumentation panel for configuration if POPM is configured to start minimize on start.
 * Updated - improved touch reliability especially regarding double touches and missed touch.
 
-## Version 1.0.0.0
+## Version 1.0.0
 Official release for MSFS 2024
 
 * Updated - update algorithm to improve touch response when using tablet with SpaceDesk as well as direct connected touch screen.
 
-## Version 0.1.1.0 Beta
+## Version 0.1.1 Beta
 * Fixed - pop out panels closed unexpectedly when entering pause screen or entering menu screen to adjust game settings.
 * Fixed - when minimized into tray icon, app failed to reopen after double click tray icon. Also added an "Open" command to the tray icon right click menu to reopen app.
 * Added - manual instruction to modified MSFS game file to allow auto pop out to work.
 * Removed - Power on panel for G1000 aircraft for cold and dark option. This bug had been fixed for MSFS 2024. POPM work around is no longer needed.
 * Removed - DynamicLOD option removed since code no longer works with MSFS 2024.
 
-## Version 0.1.0.0 Beta
+## Version 0.1.0 Beta
 Initial beta release for MSFS 2024
 
 The following items do not work:

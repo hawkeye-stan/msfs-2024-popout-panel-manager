@@ -65,23 +65,10 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
         public static void PopOutPanel(int x, int y, bool useSecondaryKeys, bool isTurbo)
         {
-            // ---- SU3 Beta 1.5.7 temporary fix ------
-            var appHandle = WindowProcessManager.SimulatorProcess.Handle;
-            var applicationRectangle = WindowActionManager.GetWindowRectangle(appHandle);
-            LeftClick(applicationRectangle.Width - 20, 30);
-            Thread.Sleep(200);
-            // ----------------------------------------
-
             if (useSecondaryKeys)
             {
-                // SU3 Beta 1.5.7 temporary fix
                 InputSimulator.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.LCONTROL);
                 InputSimulator.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.RCONTROL);
-                PInvoke.SetCursorPos(x, y);
-
-                // Original code
-                //InputSimulator.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.LCONTROL);
-                //InputSimulator.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.RCONTROL);
 
                 Thread.Sleep(isTurbo ? 0: 500);
 
@@ -97,12 +84,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             }
             else
             {
-                // SU3 Beta 1.5.7 temporary fix
                 InputSimulator.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.RMENU);
-                PInvoke.SetCursorPos(x, y);
-
-                // Original code
-                //InputSimulator.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.RMENU);
 
                 Thread.Sleep(isTurbo ? 0 : 500);
 

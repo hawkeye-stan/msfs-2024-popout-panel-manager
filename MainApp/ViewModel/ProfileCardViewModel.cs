@@ -320,7 +320,8 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                     Top = monitor.Y,
                     Width = monitor.Width,
                     Height = monitor.Height,
-                    TouchEnabled = true
+                    TouchEnabled = false,
+                    AutoGameRefocus = true
                 });
             }
         }
