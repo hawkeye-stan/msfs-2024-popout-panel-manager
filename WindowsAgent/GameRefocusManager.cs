@@ -76,7 +76,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                             // Use click event refocus only if panel is not a touch panel
                             if (prevWinEventClickLock == _winEventClickLock && ApplicationSetting.RefocusSetting.RefocusGameWindow.IsEnabled && panelConfig.AutoGameRefocus && !panelConfig.TouchEnabled)
                             {
-                                Task.Run(() => RefocusMsfs(prevWinEventClickLock));
+                                Task.Run(() => RefocusMsfs(prevWinEventClickLock, panelConfig));
                             }
                         }
                     }
@@ -87,14 +87,14 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                         // Use click event refocus only if panel is not a touch panel
                         if (prevWinEventClickLock == _winEventClickLock)
                         {
-                            Task.Run(() => RefocusMsfs(prevWinEventClickLock));
+                            Task.Run(() => RefocusMsfs(prevWinEventClickLock, panelConfig));
                         }
                     }
                 }
             }
         }
 
-        private static void RefocusMsfs(int prevWinEventClickLock)
+        private static void RefocusMsfs(int prevWinEventClickLock, PanelConfig panelConfig)
         {
             Thread.Sleep(Convert.ToInt32(ApplicationSetting.RefocusSetting.RefocusGameWindow.Delay * 1000));
 
@@ -104,10 +104,15 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             if (_isHookMouseDown) 
                 return;
 
-            PInvoke.SetForegroundWindow(WindowProcessManager.SimulatorProcess.Handle);
-
             var rect = WindowActionManager.GetWindowRectangle(WindowProcessManager.SimulatorProcess.Handle);
             PInvoke.SetCursorPos(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
+
+            PInvoke.SetForegroundWindow(WindowProcessManager.SimulatorProcess.Handle);
+
+            if (panelConfig.PanelType == PanelType.RefocusDisplay)
+            {
+                InputEmulationManager.LeftClick(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
+            }
         }
     }
 }
