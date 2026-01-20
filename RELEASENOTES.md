@@ -1,5 +1,6 @@
-## Version 1.0.1.0
+## Version 1.0.2
 
-* Fixed - unable to select game instrumentation panel for configuration if POPM is configured to start minimize on start.
+* Fixed - issue when in cold and dark, exiting walkaround mode into cockpit does not trigger auto pop out
 
-* Updated - improved touch reliability especially regarding double touches and missed touch.
+* Updated - continue to minimize double touches issue when using POPM touch feature
+* updated - SimConnect SDK library

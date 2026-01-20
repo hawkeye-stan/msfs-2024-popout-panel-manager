@@ -210,6 +210,7 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             {
                 case CameraState.ReadyToFlyScreen:
                 case CameraState.PreloadScreen:
+                case CameraState.LoadScreen:
                 case CameraState.HomeScreen:
                     if (cameraState == CameraState.Cockpit)
                     {
@@ -235,7 +236,7 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
                     break;
             }
 
-            if (cameraState is CameraState.Cockpit or CameraState.HomeScreen or CameraState.RestartScreen or CameraState.ReadyToFlyScreen or CameraState.PreloadScreen)
+            if (cameraState is CameraState.Cockpit or CameraState.HomeScreen or CameraState.RestartScreen or CameraState.ReadyToFlyScreen or CameraState.PreloadScreen or CameraState.LoadScreen)
                 _currentCameraState = cameraState;
         }
 

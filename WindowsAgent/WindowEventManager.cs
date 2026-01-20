@@ -124,8 +124,35 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             Debug.WriteLine($"{DateTime.Now} - EventCallback_TouchDown/{hwnd.ToString("X")}");
             var panelConfig = ActiveProfile.PanelConfigs.FirstOrDefault(panel => panel.PanelHandle == hwnd);
 
-            if (panelConfig == null)   // Should not apply any other settings if panel is full screen mode
-                return;
+            if (panelConfig == null)
+            {
+                PInvoke.GetCursorPos(out var point);
+
+                foreach (PanelConfig p in ActiveProfile.PanelConfigs.ToList().FindAll(panel => panel.PanelType == PanelType.RefocusDisplay))
+                {
+                    // Top border
+                    if (point.Y - p.Top < 2)
+                        continue;
+
+                    // Bottom border
+                    if (p.Top + p.Height - point.Y < 2)
+                        continue;
+
+                    // Left border
+                    if (point.X - p.Left < 2)
+                        continue;
+
+                    // Right border
+                    if (p.Left + p.Width - point.X < 2)
+                        continue;
+
+                    panelConfig = p;
+                    break;
+                }
+
+                if(panelConfig == null)
+                    return;
+            }
             
             GameRefocusManager.HandleMouseDownEvent(panelConfig);
         }
@@ -135,9 +162,36 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             Debug.WriteLine($"{DateTime.Now} - EventCallback_TouchUp/{hwnd.ToString("X")}");
             var panelConfig = ActiveProfile.PanelConfigs.FirstOrDefault(panel => panel.PanelHandle == hwnd);
 
-            if (panelConfig == null)   // Should not apply any other settings if panel is full screen mode
-                return;
-            
+            if (panelConfig == null)  
+            {
+                PInvoke.GetCursorPos(out var point);
+
+                foreach (PanelConfig p in ActiveProfile.PanelConfigs.ToList().FindAll(panel => panel.PanelType == PanelType.RefocusDisplay))
+                {
+                    // Top border
+                    if (point.Y - p.Top < 2)
+                        continue;
+
+                    // Bottom border
+                    if (p.Top + p.Height - point.Y < 2)
+                        continue;
+
+                    // Left border
+                    if (point.X - p.Left < 2)
+                        continue;
+
+                    // Right border
+                    if (p.Left + p.Width - point.X < 2)
+                        continue;
+
+                    panelConfig = p;
+                    break;
+                }
+
+                if (panelConfig == null)
+                    return;
+            }
+
             GameRefocusManager.HandleMouseUpEvent(panelConfig);
         }
 
