@@ -10,9 +10,9 @@
     <PackageProjectUrl>https://github.com/hawkeye-stan/msfs-2024-popout-panel-manager</PackageProjectUrl>
     <RootNamespace>MSFSPopoutPanelManager.WindowsAgent</RootNamespace>
     <Platforms>x64</Platforms>
-    <Version>1.0.2.1</Version>
-    <AssemblyVersion>1.0.2.1</AssemblyVersion>
-    <FileVersion>1.0.2.1</FileVersion>
+    <Version>1.0.2.2</Version>
+    <AssemblyVersion>1.0.2.2</AssemblyVersion>
+    <FileVersion>1.0.2.2</FileVersion>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <DebugType>Embedded</DebugType>
     <Configurations>Debug;Release;Local</Configurations>
