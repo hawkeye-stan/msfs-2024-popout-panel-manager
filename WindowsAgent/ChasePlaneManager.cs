@@ -60,6 +60,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             if(_clientWebSocket != null && _clientWebSocket.State == WebSocketState.Open) 
                 await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
 
+            ChasePlaneViews = null;
             IsConnected = false;
         }
 
