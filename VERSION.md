@@ -1,6 +1,11 @@
 # Version History
 <hr/>
 
+## Version 1.0.3
+
+* Added - ChasePlane 2024 support
+* Added - Option to close Pop Out Panel Manager after successfully executing pop out process
+
 ## Version 1.0.2
 
 * Fixed - issue when in cold and dark, exiting walkaround mode into cockpit does not trigger auto pop out

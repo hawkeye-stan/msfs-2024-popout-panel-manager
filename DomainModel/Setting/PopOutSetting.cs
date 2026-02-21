@@ -23,6 +23,8 @@ namespace MSFSPopoutPanelManager.DomainModel.Setting
 
         public bool AutoActivePause { get; set; } = false;
 
+        public bool EnableCloseAfterSuccessfulPopOut { get; set; } = false;
+
         public PopOutTitleBarCustomization PopOutTitleBarCustomization { get; set; } = new();
     };
 }

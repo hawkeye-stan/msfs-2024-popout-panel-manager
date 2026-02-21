@@ -10,7 +10,9 @@ namespace MSFSPopoutPanelManager.DomainModel.Profile
 
         public int CameraIndex { get; set; } = 1;
 
-        public string Name { get; set; } = "Cockpit Pilot";
+        public string Name { get; set; }
+
+        public string Guid { get; set; }
     }
 
     public enum CameraType

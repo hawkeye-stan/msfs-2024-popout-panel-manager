@@ -10,12 +10,14 @@ namespace MSFSPopoutPanelManager.Orchestration
     public class AppOrchestrator : BaseOrchestrator
     {
         private readonly PanelConfigurationOrchestrator _panelConfigurationOrchestrator;
+        private readonly PanelPopOutOrchestrator _panelPopOutOrchestrator;
         private readonly FlightSimOrchestrator _flightSimOrchestrator;
         private readonly KeyboardOrchestrator _keyboardOrchestrator;
 
-        public AppOrchestrator(SharedStorage sharedStorage, PanelConfigurationOrchestrator panelConfigurationOrchestrator, FlightSimOrchestrator flightSimOrchestrator, HelpOrchestrator helpOrchestrator, KeyboardOrchestrator keyboardOrchestrator) : base(sharedStorage)
+        public AppOrchestrator(SharedStorage sharedStorage, PanelConfigurationOrchestrator panelConfigurationOrchestrator, PanelPopOutOrchestrator panelPopOutOrchestrator, FlightSimOrchestrator flightSimOrchestrator, HelpOrchestrator helpOrchestrator, KeyboardOrchestrator keyboardOrchestrator) : base(sharedStorage)
         {
             _panelConfigurationOrchestrator = panelConfigurationOrchestrator;
+            _panelPopOutOrchestrator = panelPopOutOrchestrator;
             _flightSimOrchestrator = flightSimOrchestrator;
             _keyboardOrchestrator = keyboardOrchestrator;
 
@@ -24,6 +26,7 @@ namespace MSFSPopoutPanelManager.Orchestration
             FlightSimData.ProfileDataRef = ProfileData;
 
             _flightSimOrchestrator.OnSimulatorExited += (_, _) => { ApplicationClose(); Environment.Exit(0); };
+            _panelPopOutOrchestrator.OnSuccessfulPopOut += HandleSuccessfulPopOut;
 
             // Delete all existing cache version of app
             helpOrchestrator.DeleteAppCache();
@@ -60,6 +63,15 @@ namespace MSFSPopoutPanelManager.Orchestration
                     FileLogger.WriteLog($"Unable to remove old POPM data folder. {FileIo.GetUserDataFilePath(!e)}", StatusMessageType.Error);
                 }
             };
+        }
+
+        private void HandleSuccessfulPopOut(object sender, EventArgs e)
+        {
+            if (AppSettingData.ApplicationSetting.PopOutSetting.EnableCloseAfterSuccessfulPopOut)
+            {
+                ApplicationClose();
+                Environment.Exit(0);
+            }
         }
 
         public void ApplicationClose()

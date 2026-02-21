@@ -1,6 +1,4 @@
-## Version 1.0.2
+## Version 1.0.3
 
-* Fixed - issue when in cold and dark, exiting walkaround mode into cockpit does not trigger auto pop out
-
-* Updated - continue to minimize double touches issue when using POPM touch feature
-* updated - SimConnect SDK library
+* Added - ChasePlane 2024 support
+* Added - Option to close Pop Out Panel Manager after successfully executing pop out process

@@ -78,7 +78,7 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl.PopOutPanelCard
             if (selectedItem == null)
                 return;
 
-            var index = items.ToList().FindIndex(x => x.Name == selectedItem.Name);
+            var index = items.ToList().FindIndex(x => x.Name == selectedItem.Name && x.Guid == selectedItem.Guid);
 
             if (index == -1)
                 index = 0;
