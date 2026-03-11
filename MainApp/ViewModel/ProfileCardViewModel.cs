@@ -179,10 +179,22 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 
         private void OnAddPanel()
         {
-            _profileOrchestrator.AddPanel();
+            foreach (var panelConfig in ActiveProfile.PanelConfigs)
+            {
+                panelConfig.IsSelectedPanelSource = false;
+                panelConfig.IsEditingPanel = false;
+            }
 
+            var newPanelConfig = _profileOrchestrator.AddPanel();
+            newPanelConfig.IsSelectedPanelSource = true;
+            newPanelConfig.IsEditingPanel = true;
+            
             ActiveProfile.IsEditingPanelSource = true;
             _panelSourceOrchestrator.StartEditPanelSources();
+
+            // refresh Chase Plane camera view and camera binding
+            if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled && ChasePlaneManager.IsConnected)
+                ChasePlaneManager.GetCameraViews();
         }
 
         private async void OnStartPopOut()

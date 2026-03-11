@@ -216,6 +216,7 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
                     {
                         _currentCameraState = cameraState;
                         OnFlightStarted?.Invoke(this, EventArgs.Empty);
+                        OnIsInCockpitChanged?.Invoke(this, true);
                     }
                     break;
                 case CameraState.RestartScreen:
@@ -227,7 +228,7 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
                     }
                     break;
                 case CameraState.Cockpit:
-                    if (cameraState == CameraState.HomeScreen)
+                    if (cameraState == CameraState.HomeScreen || cameraState == CameraState.RestartScreen)
                     {
                         _currentCameraState = cameraState;
                         OnFlightStopped?.Invoke(this, EventArgs.Empty);

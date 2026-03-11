@@ -52,7 +52,7 @@ namespace MSFSPopoutPanelManager.Orchestration
                 ProfileData.DeleteProfileBinding(bindingAircraft);
         }
 
-        public void AddPanel()
+        public PanelConfig AddPanel()
         {
             var panelConfig = new PanelConfig
             {
@@ -63,6 +63,8 @@ namespace MSFSPopoutPanelManager.Orchestration
                 }
             };
             ProfileData.ActiveProfile.PanelConfigs.Add(panelConfig);
+
+            return panelConfig;
         }
     }
 }

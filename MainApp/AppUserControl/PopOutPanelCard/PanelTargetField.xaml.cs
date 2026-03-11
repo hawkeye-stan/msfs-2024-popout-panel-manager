@@ -1,5 +1,6 @@
 ﻿using MSFSPopoutPanelManager.DomainModel.Profile;
 using MSFSPopoutPanelManager.MainApp.ViewModel;
+using MSFSPopoutPanelManager.Shared;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,9 +12,15 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl.PopOutPanelCard
     /// </summary>
     public partial class PanelTargetField
     {
+        public ObservableRangeCollection<ChasePlaneCameraConfig> _chasePlaneCameraConfigs = new();
+        public ObservableRangeCollection<FixedCameraConfig> _fixedCameraConfigs = new();
+
         public PanelTargetField()
         {
             InitializeComponent();
+
+            this.ComboBoxCameraSelection.ItemsSource = null;
+
             this.Loaded += PanelTargetField_Loaded;
         }
 
@@ -23,85 +30,172 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl.PopOutPanelCard
 
             if (dataContext == null)
                 return;
-            
-            dataContext.FixedCameraConfigs.CollectionChanged += (_, _) =>
+
+            if (dataContext.IsChasePlane)
+                this.ComboBoxCameraSelection.ItemsSource = _chasePlaneCameraConfigs;
+            else
+                this.ComboBoxCameraSelection.ItemsSource = _fixedCameraConfigs;
+
+            dataContext.OnChasePlaneCameraViewReady += delegate { };
+            dataContext.OnChasePlaneCameraViewReady += (_, e) =>
             {
-                var items = dataContext.FixedCameraConfigs;
-
-                this.ComboBoxCameraSelection.ItemsSource = items;
-                this.ComboBoxCameraSelection.DisplayMemberPath = "Name";
-
-                var index = items.ToList().FindIndex(x => x.Id == dataContext.DataItem.FixedCameraConfig.Id);
-
-                if (index == -1)
+                if (!dataContext.ActiveProfile.IsEditingPanelSource)
                     return;
-                
-                this.ComboBoxCameraSelection.SelectedIndex = index;
+
+                if (e != null)
+                {
+                    if (e.CameraConfigs == null || e.CameraConfigs.Count == 0)
+                        return;
+
+                    this.ComboBoxCameraSelection.ItemsSource = _chasePlaneCameraConfigs;
+                    _chasePlaneCameraConfigs.Clear();
+                    _chasePlaneCameraConfigs.AddRange(e.CameraConfigs);
+                }
+
+                var cameraConfig = dataContext.DataItem.ChasePlaneCameraConfigs?.FirstOrDefault(x => x.AircraftName.Equals(dataContext.FlightSimData.AircraftName, System.StringComparison.InvariantCultureIgnoreCase));
+
+                if (cameraConfig != null)
+                {
+                    var index = _chasePlaneCameraConfigs.ToList().FindIndex(x => x.Guid == cameraConfig.Guid);
+                    this.ComboBoxCameraSelection.SelectedIndex = index == -1 ? 0 : index;
+                }
+                else
+                {
+                    this.ComboBoxCameraSelection.SelectedIndex = -1;
+                }
+            };
+
+           dataContext.OnFixedCameraViewReady += delegate { };
+           dataContext.OnFixedCameraViewReady += (_, e) =>
+            {
+                if (!dataContext.ActiveProfile.IsEditingPanelSource)
+                    return;
+
+                if (e.CameraConfigs == null || e.CameraConfigs.Count == 0)
+                    return;
+
+                this.ComboBoxCameraSelection.ItemsSource = _fixedCameraConfigs;
+                _fixedCameraConfigs.Clear();
+                _fixedCameraConfigs.AddRange(e.CameraConfigs);
+
+                var index = e.CameraConfigs.FindIndex(x => x.Name.Equals(dataContext.DataItem.FixedCameraConfig.Name, System.StringComparison.InvariantCultureIgnoreCase));
+
+                if (index != -1)
+                    this.ComboBoxCameraSelection.SelectedIndex = index;
+                else
+                    this.ComboBoxCameraSelection.SelectedIndex = 0;
             };
         }
 
         private void PopupBoxCameraSelectionPrev_Clicked(object sender, RoutedEventArgs e)
         {
             var dataContext = ((PopOutPanelSourceCardViewModel)this.DataContext);
-            var selectedItem = dataContext.DataItem.FixedCameraConfig;
 
-            // rebinding the camera list with erase the selected item, need the next line to set the selectedItem
-            var items = dataContext.FixedCameraConfigs;
-
-            if (selectedItem == null) 
+            if (dataContext == null)
                 return;
 
-            var index = items.ToList().FindIndex(x => x.Name == selectedItem.Name);
+            var index = this.ComboBoxCameraSelection.SelectedIndex;
 
             if (index == -1)
                 return;
 
             if (index == 0)
-                index = items.Count - 1;
+                index = this.ComboBoxCameraSelection.Items.Count - 1;
             else
                 index -= 1;
 
             this.ComboBoxCameraSelection.SelectedIndex = index;
-            dataContext.DataItem.FixedCameraConfig = items[index];    // assign and save item
 
-            //dataContext.SetCamera();
+
+            if (!dataContext.IsChasePlane)
+            {
+                dataContext.DataItem.FixedCameraConfig = (FixedCameraConfig)this.ComboBoxCameraSelection.SelectedItem;
+            }
+            else
+            {
+                var item = dataContext.DataItem.ChasePlaneCameraConfigs.FirstOrDefault(x => x.AircraftName.Equals(dataContext.FlightSimData.AircraftName, System.StringComparison.InvariantCultureIgnoreCase));
+
+                if (item == null)
+                    dataContext.DataItem.ChasePlaneCameraConfigs.Add((ChasePlaneCameraConfig)this.ComboBoxCameraSelection.SelectedItem);
+                else
+                {
+                    dataContext.DataItem.ChasePlaneCameraConfigs.Remove(item);
+                    dataContext.DataItem.ChasePlaneCameraConfigs.Add((ChasePlaneCameraConfig)this.ComboBoxCameraSelection.SelectedItem);
+                }
+            }
+
+            dataContext.SetCamera();
         }
 
         private void PopupBoxCameraSelectionNext_Clicked(object sender, RoutedEventArgs e)
         {
             var dataContext = ((PopOutPanelSourceCardViewModel)this.DataContext);
-            var selectedItem = dataContext.DataItem.FixedCameraConfig;
 
-            // rebinding the camera list with erase the selected item, need the next line to set the selectedItem
-            var items = dataContext.FixedCameraConfigs;
-
-            if (selectedItem == null)
+            if (dataContext == null)
                 return;
 
-            var index = items.ToList().FindIndex(x => x.Name == selectedItem.Name && x.Guid == selectedItem.Guid);
+            var index = this.ComboBoxCameraSelection.SelectedIndex;
 
             if (index == -1)
                 index = 0;
 
-            if (index == items.Count - 1)
+            if (index == this.ComboBoxCameraSelection.Items.Count - 1)
                 index = 0;
             else
                 index += 1;
 
             this.ComboBoxCameraSelection.SelectedIndex = index;
-            dataContext.DataItem.FixedCameraConfig = items[index];    // assign and save item
 
-            //dataContext.SetCamera();
+
+            if (!dataContext.IsChasePlane)
+            {
+                dataContext.DataItem.FixedCameraConfig = (FixedCameraConfig)this.ComboBoxCameraSelection.SelectedItem;
+            }
+            else
+            {
+                var item = dataContext.DataItem.ChasePlaneCameraConfigs.FirstOrDefault(x => x.AircraftName.Equals(dataContext.FlightSimData.AircraftName, System.StringComparison.InvariantCultureIgnoreCase));
+
+                if (item == null)
+                    dataContext.DataItem.ChasePlaneCameraConfigs.Add((ChasePlaneCameraConfig)this.ComboBoxCameraSelection.SelectedItem);
+                else
+                {
+                    dataContext.DataItem.ChasePlaneCameraConfigs.Remove(item);
+                    dataContext.DataItem.ChasePlaneCameraConfigs.Add((ChasePlaneCameraConfig)this.ComboBoxCameraSelection.SelectedItem);
+                }
+            }
+
+            dataContext.SetCamera();
         }
 
         private void ComboBoxCameraSelection_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var dataContext = ((PopOutPanelSourceCardViewModel)this.DataContext);
 
+            if (!dataContext.DataItem.IsEditingPanel)
+                return;
+
             if (e.AddedItems.Count <= 0) 
                 return;
-            
-            dataContext.DataItem.FixedCameraConfig = (FixedCameraConfig)e.AddedItems[0];
+
+            var addedItem = e.AddedItems[0];
+
+            if (!dataContext.IsChasePlane)
+            {
+                dataContext.DataItem.FixedCameraConfig = (FixedCameraConfig)addedItem;
+            }
+            else
+            {
+                var item = dataContext.DataItem.ChasePlaneCameraConfigs.FirstOrDefault(x => x.AircraftName.Equals(dataContext.FlightSimData.AircraftName, System.StringComparison.InvariantCultureIgnoreCase));
+
+                if (item == null)
+                    dataContext.DataItem.ChasePlaneCameraConfigs.Add((ChasePlaneCameraConfig)addedItem);
+                else
+                {
+                    dataContext.DataItem.ChasePlaneCameraConfigs.Remove(item);
+                    dataContext.DataItem.ChasePlaneCameraConfigs.Add((ChasePlaneCameraConfig)addedItem);
+                }
+            }
+
             dataContext.SetCamera();
         }
     }

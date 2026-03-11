@@ -26,29 +26,23 @@
             <TextBlock
                 Margin="0,5,0,0"
                 Style="{StaticResource TextBlockLabel}"
-                TextAlignment="Center">
+                TextAlignment="Center"
+                Visibility="{c:Binding 'AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled'}">
+                ChasePlane Camera
+            </TextBlock>
+            <TextBlock
+                Margin="0,5,0,0"
+                Style="{StaticResource TextBlockLabel}"
+                TextAlignment="Center"
+                Visibility="{c:Binding '!AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled'}">
                 Fixed Camera
             </TextBlock>
-
-            <TextBox
-                Width="140"
-                Height="18"
-                Margin="0,-3,0,0"
-                Padding="1,0,1,0"
-                BorderBrush="Transparent"
-                IsEnabled="{Binding DataItem.IsCustomPopOut}"
-                IsHitTestVisible="False"
-                IsReadOnly="True"
-                Style="{StaticResource MaterialDesignTextBox}"
-                Text="{Binding DataItem.FixedCameraConfig.Name, Converter={StaticResource StringEmptyConverter}, ConverterParameter='N/A'}"
-                TextAlignment="Center"
-                Visibility="{c:Binding !DataItem.IsEditingPanel}" />
             <StackPanel
                 Height="18"
                 Margin="0,-2,0,0"
                 HorizontalAlignment="Center"
                 Orientation="Horizontal"
-                Visibility="{c:Binding 'DataItem.IsEditingPanel'}">
+                IsEnabled="{c:Binding DataItem.IsEditingPanel}">
                 <Button
                     x:Name="BtnPrevCameraSelection"
                     Width="24"
@@ -69,6 +63,7 @@
                     Padding="21,0,1,0"
                     VerticalAlignment="Center"
                     HorizontalContentAlignment="Center"
+                    DisplayMemberPath="Name"
                     SelectionChanged="ComboBoxCameraSelection_OnSelectionChanged"
                     Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
                 <Button

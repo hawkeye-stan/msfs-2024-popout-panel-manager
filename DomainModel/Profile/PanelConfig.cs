@@ -1,6 +1,7 @@
 ﻿using MSFSPopoutPanelManager.Shared;
 using Newtonsoft.Json;
 using System;
+using System.ComponentModel;
 
 namespace MSFSPopoutPanelManager.DomainModel.Profile
 {
@@ -10,6 +11,19 @@ namespace MSFSPopoutPanelManager.DomainModel.Profile
         {
             if (Id == Guid.Empty)
                 Id = Guid.NewGuid();
+
+            ChasePlaneCameraConfigs.CollectionChanged += (sender, e) =>
+            {
+                switch (e.Action)
+                {
+                    case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                    case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
+                    case System.Collections.Specialized.NotifyCollectionChangedAction.Move:
+                    case System.Collections.Specialized.NotifyCollectionChangedAction.Replace:
+                        base.OnPropertyChanged(sender, new PropertyChangedEventArgs("ChasePlaneCameraConfig"));
+                        break;
+                }
+            };
 
             InitializeChildPropertyChangeBinding();
 
@@ -61,6 +75,9 @@ namespace MSFSPopoutPanelManager.DomainModel.Profile
         public PanelSource PanelSource { get; set; } = new();
 
         public FixedCameraConfig FixedCameraConfig { get; set; } = new();
+
+        // Used by ChasePlane only
+        public ObservableRangeCollection<ChasePlaneCameraConfig> ChasePlaneCameraConfigs { get; set; } = new();
 
         [JsonIgnore]
         public IntPtr PanelHandle { get; set; } = IntPtr.MaxValue;

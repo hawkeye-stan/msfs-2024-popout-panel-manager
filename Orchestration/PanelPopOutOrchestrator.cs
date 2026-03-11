@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MSFSPopoutPanelManager.Orchestration
 {
@@ -230,21 +229,19 @@ namespace MSFSPopoutPanelManager.Orchestration
         {
             return await Task.Run(() =>
             {
-                ChasePlaneManager.Connect();
-
                 var result = WorkflowStepWithMessage.Execute("Connecting to ChasePlane API", () =>
                 {
-                    for (int i = 0; i < 5; i++)
-                    {
-                        if (ChasePlaneManager.IsConnected)
-                            return true;
+                    ChasePlaneManager.Connect();
 
-                        Thread.Sleep(500);
-                        i++;
+                    int tries = 5;
+                    while (!ChasePlaneManager.IsConnected && tries > 0)
+                    {
+                        Thread.Sleep(1000);
+                        tries--;
                     }
 
-                    return false;
-
+                    return ChasePlaneManager.IsConnected;
+                    
                 });
 
                 return result;
@@ -255,21 +252,12 @@ namespace MSFSPopoutPanelManager.Orchestration
         {
             return await Task.Run(() =>
             {
-                ChasePlaneManager.SetDefaultCamera();
-                ChasePlaneManager.Disconnect();
-
                 var result = WorkflowStepWithMessage.Execute("Disconnecting from ChasePlane API", () =>
                 {
-                    for (int i = 0; i < 5; i++)
-                    {
-                        if (!ChasePlaneManager.IsConnected)
-                            return true;
+                    ChasePlaneManager.SetDefaultCamera();
+                    ChasePlaneManager.Disconnect();
 
-                        Thread.Sleep(500);
-                        i++;
-                    }
-
-                    return false;
+                    return true;
 
                 });
 
@@ -345,8 +333,13 @@ namespace MSFSPopoutPanelManager.Orchestration
             {
                 if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled)
                 {
-                    ChasePlaneManager.SetCamera(panelConfig.FixedCameraConfig.Name, panelConfig.FixedCameraConfig.Guid);
-                    Thread.Sleep(250);
+                    var cameraView = ChasePlaneManager.ChasePlaneViews.IntersectBy(panelConfig.ChasePlaneCameraConfigs.Select(y => y.Guid), y => y.Guid).FirstOrDefault();
+
+                    if (cameraView != null)
+                    {
+                        ChasePlaneManager.SetCamera(cameraView.Name, cameraView.Guid);
+                        Thread.Sleep(250);
+                    }
                 }
                 else
                     _flightSimOrchestrator.SetFixedCamera(panelConfig.FixedCameraConfig.CameraType, panelConfig.FixedCameraConfig.CameraIndex);

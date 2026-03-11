@@ -326,7 +326,7 @@
                         FontSize="14"
                         Style="{StaticResource TextBlockBody}"
                         Text="Pop Out Panels" />
-                    <StackPanel Margin="723,0,0,0" Orientation="Horizontal">
+                    <StackPanel Margin="723,0,0,0" Orientation="Horizontal" d:IsLocked="True">
                         <ToggleButton
                             materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon Kind=CrosshairsGps}"
                             Command="{Binding ToggleEditPanelSourceCommand}"
