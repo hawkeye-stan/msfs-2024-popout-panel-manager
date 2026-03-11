@@ -127,5 +127,8 @@ namespace MSFSPopoutPanelManager.DomainModel.Profile
 
         [JsonIgnore]
         public MonitorInfo FullScreenMonitorInfo { get; set; }
+
+        [JsonIgnore]
+        public bool IsNewlyAddedPanel { get; set; }
     }
 }

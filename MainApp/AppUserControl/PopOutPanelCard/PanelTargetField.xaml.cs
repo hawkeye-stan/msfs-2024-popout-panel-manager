@@ -61,7 +61,13 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl.PopOutPanelCard
                 }
                 else
                 {
-                    this.ComboBoxCameraSelection.SelectedIndex = -1;
+                    if (dataContext.DataItem.IsNewlyAddedPanel)
+                    {
+                        this.ComboBoxCameraSelection.SelectedIndex = 0;
+                        dataContext.DataItem.IsNewlyAddedPanel = false;
+                    }
+                    else
+                        this.ComboBoxCameraSelection.SelectedIndex = -1;
                 }
             };
 
@@ -83,7 +89,10 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl.PopOutPanelCard
                 if (index != -1)
                     this.ComboBoxCameraSelection.SelectedIndex = index;
                 else
+                {
                     this.ComboBoxCameraSelection.SelectedIndex = 0;
+                    dataContext.DataItem.IsNewlyAddedPanel = false;
+                }
             };
         }
 

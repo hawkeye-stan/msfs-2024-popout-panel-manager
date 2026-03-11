@@ -60,7 +60,8 @@ namespace MSFSPopoutPanelManager.Orchestration
                 PanelSource =
                 {
                     Color = PanelConfigColors.GetNextAvailableColor(ProfileData.ActiveProfile.PanelConfigs.ToList())
-                }
+                },
+                IsNewlyAddedPanel = true,
             };
             ProfileData.ActiveProfile.PanelConfigs.Add(panelConfig);
 
