@@ -54,27 +54,21 @@ namespace MSFSPopoutPanelManager.Orchestration
             InputHookManager.StartMouseHook();
         }
 
-        public void StartEditPanelSources()
+        public async Task StartEditPanelSources()
         {
             // clear all number circles
             foreach (var panelConfig in ActiveProfile.PanelConfigs)
-               OnOverlayRemoved?.Invoke(this, panelConfig);
-            
+                OnOverlayRemoved?.Invoke(this, panelConfig);
+
             // Turn off TrackIR if TrackIR is started
             _flightSimOrchestrator.TurnOffTrackIR();
 
             // Connect websocket to ChasePlane API if enabled
             if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled)
-            {
-                ChasePlaneManager.Connect();
-                Thread.Sleep(500);
-            }
+                await ChasePlaneManager.Connect();
             else
-            {
                 OnFixedCameraReady?.Invoke(this, new FixedCameraViewReadyEventArgs(GetFixedCameraConfigs()));
-            }
         }
-
         public async Task EndEditPanelSources()
         {
             // Connect websocket to ChasePlane API if enabled

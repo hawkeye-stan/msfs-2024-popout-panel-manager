@@ -229,9 +229,9 @@ namespace MSFSPopoutPanelManager.Orchestration
         {
             return await Task.Run(() =>
             {
-                var result = WorkflowStepWithMessage.Execute("Connecting to ChasePlane API", () =>
+                var result = WorkflowStepWithMessage.Execute("Connecting to ChasePlane API", async () =>
                 {
-                    ChasePlaneManager.Connect();
+                    await ChasePlaneManager.Connect();
 
                     int tries = 5;
                     while (!ChasePlaneManager.IsConnected && tries > 0)
@@ -252,10 +252,10 @@ namespace MSFSPopoutPanelManager.Orchestration
         {
             return await Task.Run(() =>
             {
-                var result = WorkflowStepWithMessage.Execute("Disconnecting from ChasePlane API", () =>
+                var result = WorkflowStepWithMessage.Execute("Disconnecting from ChasePlane API", async () =>
                 {
-                    ChasePlaneManager.SetDefaultCamera();
-                    ChasePlaneManager.Disconnect();
+                    await ChasePlaneManager.SetDefaultCamera();
+                    await ChasePlaneManager.Disconnect();
 
                     return true;
 
@@ -309,7 +309,7 @@ namespace MSFSPopoutPanelManager.Orchestration
                     switch (panelConfig.PanelType)
                     {
                         case PanelType.CustomPopout:
-                            var success = PopOutCustomPanel(panelConfig, builtInPanelHandles, customPanelPopoutIndex);
+                            var success = await PopOutCustomPanel(panelConfig, builtInPanelHandles, customPanelPopoutIndex);
                             if (success)
                                 customPanelPopoutIndex++;
                             break;
@@ -327,9 +327,9 @@ namespace MSFSPopoutPanelManager.Orchestration
             });
         }
 
-        private bool PopOutCustomPanel(PanelConfig panelConfig, List<IntPtr> builtInPanelHandles, int index)
+        private async Task<bool> PopOutCustomPanel(PanelConfig panelConfig, List<IntPtr> builtInPanelHandles, int index)
         {
-            return WorkflowStepWithMessage.Execute($"Custom Panel - {panelConfig.PanelName}", () =>
+            return await WorkflowStepWithMessage.Execute($"Custom Panel - {panelConfig.PanelName}", async () =>
             {
                 if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled)
                 {
@@ -337,7 +337,7 @@ namespace MSFSPopoutPanelManager.Orchestration
 
                     if (cameraView != null)
                     {
-                        ChasePlaneManager.SetCamera(cameraView.Name, cameraView.Guid);
+                        await ChasePlaneManager.SetCamera(cameraView.Name, cameraView.Guid);
                         Thread.Sleep(250);
                     }
                 }

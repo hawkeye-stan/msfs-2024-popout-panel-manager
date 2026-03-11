@@ -17,6 +17,8 @@ namespace MSFSPopoutPanelManager.WindowsAgent
     {
         private static ClientWebSocket _clientWebSocket;
 
+        private static MessageReceiver _messageReceiver;
+
         public static List<ChasePlaneView> ChasePlaneViews { get; set; }
 
         public static bool IsConnected { get; set; } = false;
@@ -34,26 +36,28 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
         public static async Task Connect()
         {
-            if(_clientWebSocket == null || _clientWebSocket.State != WebSocketState.Open)
+            if (_clientWebSocket == null || _clientWebSocket.State != WebSocketState.Open)
+            {
                 _clientWebSocket = new ClientWebSocket();
+                _clientWebSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(30);    // Configure keep-alive to prevent connection drop/thread block
+            }
 
             ChasePlaneCameraConfigs.Clear();
-
             await _clientWebSocket.ConnectAsync(new Uri("ws://localhost:8652"), CancellationToken.None);
 
             try
             {
-                var messageReceiver = new MessageReceiver(_clientWebSocket);
-                messageReceiver.ApiConnected += (_, e) =>
+                _messageReceiver = new MessageReceiver(_clientWebSocket);
+                _messageReceiver.ApiConnected += (_, e) =>
                 {
                     Debug.WriteLine("Api Connected...");
                     IsConnected = true;
                 };
-                messageReceiver.CameraSet += (_, e) =>
+                _messageReceiver.CameraSet += (_, e) =>
                 {
                     Debug.WriteLine("Camera Set...");
                 };
-                messageReceiver.CameraViewsReady += (_, e) =>
+                _messageReceiver.CameraViewsReady += (_, e) =>
                 {
                     Debug.WriteLine("Views readied...");
 
@@ -68,19 +72,17 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                     Payload = new ChasePlaneMessagePayload { ClientName = "POPM" }
                 });
 
-                await messageReceiver.ReceivedMessages();
+                _messageReceiver.ReceivedMessages();
             }
             catch (WebSocketException ex)
             {
                 if(ex.WebSocketErrorCode != WebSocketError.InvalidState)
                     FileLogger.WriteException("ChasePlane 2024 Exception", ex);
+                await Disconnect();
             }
             catch(Exception ex)
             {
                 FileLogger.WriteException("ChasePlane 2024 Exception", ex);
-            }
-            finally
-            {
                 await Disconnect();
             }
         }
@@ -90,6 +92,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             if(_clientWebSocket != null && _clientWebSocket.State == WebSocketState.Open) 
                 await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
 
+            _messageReceiver = null;
             _clientWebSocket = null;
             IsConnected = false;
         }
@@ -149,7 +152,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         public async Task ReceivedMessages()
         {
             var buffer = new byte[1024 * 32];
-            while (true)
+            while (_clientWebSocket.State == WebSocketState.Open)
             {
                 var result = await _clientWebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
 
