@@ -13,10 +13,11 @@ namespace MSFSPopoutPanelManager.Shared
             StatusMessageWriter.WriteMessage(message, StatusMessageType.Info);
             StatusMessageWriter.WriteExecutingStatusMessage();
 
-            var result = function.Invoke();
+            var result = await function.Invoke();
 
             StatusMessageWriter.RemoveLastMessage();
-            if (result.Result)
+
+            if (result)
             {
                 StatusMessageWriter.WriteOkStatusMessage();
                 return true;

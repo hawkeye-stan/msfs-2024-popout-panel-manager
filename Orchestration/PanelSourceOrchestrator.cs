@@ -65,7 +65,12 @@ namespace MSFSPopoutPanelManager.Orchestration
 
             // Connect websocket to ChasePlane API if enabled
             if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled)
+            {
                 await ChasePlaneManager.Connect();
+
+                if (ChasePlaneManager.IsFirstRun)
+                    Thread.Sleep(ChasePlaneManager.IsFirstRunDelay);
+            }
             else
                 OnFixedCameraReady?.Invoke(this, new FixedCameraViewReadyEventArgs(GetFixedCameraConfigs()));
         }

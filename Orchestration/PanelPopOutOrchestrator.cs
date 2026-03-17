@@ -233,6 +233,9 @@ namespace MSFSPopoutPanelManager.Orchestration
                 {
                     await ChasePlaneManager.Connect();
 
+                    if(ChasePlaneManager.IsFirstRun)
+                        Thread.Sleep(ChasePlaneManager.IsFirstRunDelay);
+
                     int tries = 5;
                     while (!ChasePlaneManager.IsConnected && tries > 0)
                     {
