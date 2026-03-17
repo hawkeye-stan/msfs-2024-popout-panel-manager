@@ -27,7 +27,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
         public static bool IsFirstRun => _isFirstRun;
 
-        public static int IsFirstRunDelay => 3000;
+        public static int IsFirstRunDelay => 5000;
 
         public static ObservableRangeCollection<ChasePlaneCameraConfig> ChasePlaneCameraConfigs { get; private set; } = new();
 
@@ -114,12 +114,20 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
         public static async Task Disconnect()
         {
-            if(_clientWebSocket != null && _clientWebSocket.State == WebSocketState.Open) 
-                await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
-
-            _messageReceiver = null;
-            _clientWebSocket = null;
-            IsConnected = false;
+            try
+            {
+                if (_clientWebSocket != null && _clientWebSocket.State == WebSocketState.Open)
+                    await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
+            }
+            catch
+            {
+            }
+            finally
+            {
+                _messageReceiver = null;
+                _clientWebSocket = null;
+                IsConnected = false;
+            }
         }
 
         public static async Task GetCameraViews()

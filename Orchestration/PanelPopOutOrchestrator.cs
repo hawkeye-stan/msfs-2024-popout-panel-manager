@@ -336,7 +336,7 @@ namespace MSFSPopoutPanelManager.Orchestration
             {
                 if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled)
                 {
-                    var cameraView = ChasePlaneManager.ChasePlaneViews.IntersectBy(panelConfig.ChasePlaneCameraConfigs.Select(y => y.Guid), y => y.Guid).FirstOrDefault();
+                    var cameraView = ChasePlaneManager.ChasePlaneViews?.IntersectBy(panelConfig.ChasePlaneCameraConfigs?.Select(y => y.Guid), y => y.Guid)?.FirstOrDefault();
 
                     if (cameraView != null)
                     {
