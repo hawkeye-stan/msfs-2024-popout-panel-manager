@@ -15,8 +15,6 @@ namespace MSFSPopoutPanelManager.Shared
 
             var result = await function.Invoke();
 
-            StatusMessageWriter.RemoveLastMessage();
-
             if (result)
             {
                 StatusMessageWriter.WriteOkStatusMessage();
@@ -37,7 +35,6 @@ namespace MSFSPopoutPanelManager.Shared
 
             var result = function.Invoke();
 
-            StatusMessageWriter.RemoveLastMessage();
             if (result)
             {
                 StatusMessageWriter.WriteOkStatusMessage();
@@ -59,7 +56,6 @@ namespace MSFSPopoutPanelManager.Shared
 
             function.Invoke();
 
-            StatusMessageWriter.RemoveLastMessage();
             StatusMessageWriter.WriteOkStatusMessage();
         }
     }

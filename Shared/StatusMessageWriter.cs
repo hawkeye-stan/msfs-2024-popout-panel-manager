@@ -5,13 +5,18 @@ namespace MSFSPopoutPanelManager.Shared
 {
     public class StatusMessageWriter
     {
+        public static object Lock { get; set; } = new object();
+
         private static readonly List<StatusMessage> Messages = new();
 
         public static event EventHandler<List<StatusMessage>> OnStatusMessage;
 
         public static void WriteMessage(string message, StatusMessageType statusMessageType)
         {
-            Messages.Add(new StatusMessage { Message = message, StatusMessageType = statusMessageType });
+            lock (Lock)
+            {
+                Messages.Add(new StatusMessage { Message = message, StatusMessageType = statusMessageType });
+            }
 
             if (IsEnabled)
                 OnStatusMessage?.Invoke(null, Messages);
@@ -19,7 +24,10 @@ namespace MSFSPopoutPanelManager.Shared
 
         public static void WriteMessageWithNewLine(string message, StatusMessageType statusMessageType)
         {
-            Messages.Add(new StatusMessage { Message = message, StatusMessageType = statusMessageType, NewLine = true });
+            lock (Lock)
+            {
+                Messages.Add(new StatusMessage { Message = message, StatusMessageType = statusMessageType, NewLine = true });
+            }
 
             if (IsEnabled)
                 OnStatusMessage?.Invoke(null, Messages);
@@ -27,7 +35,10 @@ namespace MSFSPopoutPanelManager.Shared
 
         public static void WriteExecutingStatusMessage()
         {
-            Messages.Add(new StatusMessage { Message = "  (Executing)", StatusMessageType = StatusMessageType.Executing, NewLine = false });
+            lock (Lock)
+            {
+                Messages.Add(new StatusMessage { Message = "  (Executing)", StatusMessageType = StatusMessageType.Executing, NewLine = false });
+            }
 
             if (IsEnabled)
                 OnStatusMessage?.Invoke(null, Messages);
@@ -35,7 +46,11 @@ namespace MSFSPopoutPanelManager.Shared
 
         public static void WriteOkStatusMessage()
         {
-            Messages.Add(new StatusMessage { Message = "  (OK)", StatusMessageType = StatusMessageType.Success, NewLine = true });
+            lock (Lock)
+            {
+                Messages.RemoveAt(Messages.Count - 1);
+                Messages.Add(new StatusMessage { Message = "  (OK)", StatusMessageType = StatusMessageType.Success, NewLine = true });
+            }
 
             if (IsEnabled)
                 OnStatusMessage?.Invoke(null, Messages);
@@ -43,7 +58,11 @@ namespace MSFSPopoutPanelManager.Shared
 
         public static void WriteFailureStatusMessage()
         {
-            Messages.Add(new StatusMessage { Message = "  (FAILED)", StatusMessageType = StatusMessageType.Failure, NewLine = true });
+            lock (Lock)
+            {
+                Messages.RemoveAt(Messages.Count - 1);
+                Messages.Add(new StatusMessage { Message = "  (FAILED)", StatusMessageType = StatusMessageType.Failure, NewLine = true });
+            }
 
             if (IsEnabled)
                 OnStatusMessage?.Invoke(null, Messages);
@@ -51,12 +70,19 @@ namespace MSFSPopoutPanelManager.Shared
 
         public static void RemoveLastMessage()
         {
-            Messages.RemoveAt(Messages.Count - 1);
+            lock (Lock)
+            {
+                Messages.RemoveAt(Messages.Count - 1);
+            }
         }
 
         public static void ClearMessage()
         {
-            Messages.Clear();
+            lock (Lock)
+            {
+                Messages.Clear();
+            }
+
             OnStatusMessage?.Invoke(null, new List<StatusMessage>());
         }
 

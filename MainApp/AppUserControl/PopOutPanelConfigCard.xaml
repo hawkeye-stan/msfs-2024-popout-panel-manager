@@ -39,7 +39,8 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    <DockPanel>
+    <DockPanel
+        IsEnabled="{c:Binding '!ActiveProfile.IsPopOutInProgress'}">
         <Expander
             x:Name="RootExpander"
             materialDesign:ExpanderAssist.HorizontalHeaderPadding="10,0,10,0"

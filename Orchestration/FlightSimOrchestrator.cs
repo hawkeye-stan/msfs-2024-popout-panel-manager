@@ -4,7 +4,9 @@ using MSFSPopoutPanelManager.SimConnectAgent;
 using MSFSPopoutPanelManager.WindowsAgent;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MSFSPopoutPanelManager.Orchestration
 {
@@ -27,6 +29,8 @@ namespace MSFSPopoutPanelManager.Orchestration
         public event EventHandler OnFlightStarted;
 
         public event EventHandler OnFlightStopped;
+
+        public event EventHandler OnCameraViewTypeAndIndex2MaxChanged;
 
         public void StartSimConnectServer()
         {
@@ -70,7 +74,7 @@ namespace MSFSPopoutPanelManager.Orchestration
             };
 
             _simConnectProvider.OnFlightStarted += HandleOnFlightStarted;
-            _simConnectProvider.OnFlightStopped += HandleOnFlightStopped;
+            _simConnectProvider.OnFlightStopped += async (_, _) => { await HandleOnFlightStopped(null, null); };
             _simConnectProvider.OnIsInCockpitChanged += (_, e) =>
             {
                 FlightSimData.IsInCockpit = e;
@@ -187,10 +191,13 @@ namespace MSFSPopoutPanelManager.Orchestration
             FlightSimData.IsFlightStarted = true;
         }
 
-        private void HandleOnFlightStopped(object sender, EventArgs e)
+        private async Task HandleOnFlightStopped(object sender, EventArgs e)
         {
             ProfileData.ResetActiveProfile();
 
+            if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled)
+                await ChasePlaneManager.Disconnect();
+        
             OnFlightStopped?.Invoke(this, EventArgs.Empty);
 
             CloseAllPopOuts();
@@ -247,7 +254,10 @@ namespace MSFSPopoutPanelManager.Orchestration
 
             var cameraViewTypeAndIndex2Max = Convert.ToInt32(simData.Find(d => d.PropertyName == SimDataDefinitions.PropName.CameraViewTypeAndIndex2Max).Value);
             if (cameraViewTypeAndIndex2Max != FlightSimData.CameraViewTypeAndIndex2Max)
+            {
                 FlightSimData.CameraViewTypeAndIndex2Max = cameraViewTypeAndIndex2Max;
+                OnCameraViewTypeAndIndex2MaxChanged?.Invoke(this, null);
+            }
 
             FlightSimData.IsSimConnectDataReceived = true;
         }

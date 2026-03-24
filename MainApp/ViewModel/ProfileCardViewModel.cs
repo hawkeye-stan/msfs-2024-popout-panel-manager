@@ -59,32 +59,41 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
             _panelConfigurationOrchestrator = panelConfigurationOrchestrator;
             _panelPopOutOrchestrator = panelPopOutOrchestrator;
 
-            AddProfileCommand = new DelegateCommand(OnAddProfile);
+            AddProfileCommand = new DelegateCommand(OnAddProfile, () => ProfileData != null && ActiveProfile != null && !ActiveProfile.IsPopOutInProgress)
+                                                                                .ObservesProperty(() => ActiveProfile)
+                                                                                .ObservesProperty(() => ActiveProfile.IsPopOutInProgress);
+
             SearchProfileSelectedCommand = new DelegateCommand(OnSearchProfileSelected);
 
-            DeleteProfileCommand = new DelegateCommand(OnDeleteProfile);
+            DeleteProfileCommand = new DelegateCommand(OnDeleteProfile, () => ProfileData != null && ActiveProfile != null && !ActiveProfile.IsPopOutInProgress)
+                                                                                .ObservesProperty(() => ActiveProfile)
+                                                                                .ObservesProperty(() => ActiveProfile.IsPopOutInProgress);
 
-            ToggleAircraftBindingCommand = new DelegateCommand(OnEditAircraftBinding, () => ProfileData != null && ActiveProfile != null && FlightSimData is { HasAircraftName: true } && ProfileData.IsAllowedAddAircraftBinding && FlightSimData.IsSimulatorStarted)
+            ToggleAircraftBindingCommand = new DelegateCommand(OnEditAircraftBinding, () => ProfileData != null && ActiveProfile != null && FlightSimData is { HasAircraftName: true } && ProfileData.IsAllowedAddAircraftBinding && FlightSimData.IsSimulatorStarted && !ActiveProfile.IsPopOutInProgress)
                                                                                 .ObservesProperty(() => ActiveProfile)
                                                                                 .ObservesProperty(() => FlightSimData.AircraftName)
                                                                                 .ObservesProperty(() => FlightSimData.HasAircraftName)
                                                                                 .ObservesProperty(() => ProfileData.IsAllowedAddAircraftBinding)
-                                                                                .ObservesProperty(() => FlightSimData.IsSimulatorStarted);
+                                                                                .ObservesProperty(() => FlightSimData.IsSimulatorStarted)
+                                                                                .ObservesProperty(() => ActiveProfile.IsPopOutInProgress);
 
-            ToggleLockProfileCommand = new DelegateCommand(OnToggleLockProfile, () => ProfileData != null && ActiveProfile != null && ActiveProfile.PanelConfigs.Count > 0)
+            ToggleLockProfileCommand = new DelegateCommand(OnToggleLockProfile, () => ProfileData != null && ActiveProfile != null && ActiveProfile.PanelConfigs.Count > 0 && !ActiveProfile.IsPopOutInProgress)
                                                                                 .ObservesProperty(() => ActiveProfile)
-                                                                                .ObservesProperty(() => ActiveProfile.PanelConfigs.Count);
+                                                                                .ObservesProperty(() => ActiveProfile.PanelConfigs.Count)
+                                                                                .ObservesProperty(() => ActiveProfile.IsPopOutInProgress);
 
-            ToggleEditPanelSourceCommand = new DelegateCommand(OnToggleEditPanelSource, () => ProfileData != null && ActiveProfile != null && ActiveProfile.PanelConfigs.Count > 0 && !ActiveProfile.IsLocked && FlightSimData.IsInCockpit)
+            ToggleEditPanelSourceCommand = new DelegateCommand(OnToggleEditPanelSource, () => ProfileData != null && ActiveProfile != null && ActiveProfile.PanelConfigs.Count > 0 && !ActiveProfile.IsLocked && FlightSimData.IsInCockpit && !ActiveProfile.IsPopOutInProgress)
                                                                                 .ObservesProperty(() => ActiveProfile)
                                                                                 .ObservesProperty(() => ActiveProfile.PanelConfigs.Count)
                                                                                 .ObservesProperty(() => ActiveProfile.IsLocked)
-                                                                                .ObservesProperty(() => FlightSimData.IsInCockpit);
+                                                                                .ObservesProperty(() => FlightSimData.IsInCockpit)
+                                                                                .ObservesProperty(() => ActiveProfile.IsPopOutInProgress);
 
-            AddPanelCommand = new DelegateCommand(OnAddPanel, () => ProfileData != null && ActiveProfile != null && !ActiveProfile.IsLocked && FlightSimData.IsInCockpit)
+            AddPanelCommand = new DelegateCommand(OnAddPanel, () => ProfileData != null && ActiveProfile != null && !ActiveProfile.IsLocked && FlightSimData.IsInCockpit && !ActiveProfile.IsPopOutInProgress)
                                                                                 .ObservesProperty(() => ActiveProfile)
                                                                                 .ObservesProperty(() => ActiveProfile.IsLocked)
-                                                                                .ObservesProperty(() => FlightSimData.IsInCockpit);
+                                                                                .ObservesProperty(() => FlightSimData.IsInCockpit)
+                                                                                .ObservesProperty(() => ActiveProfile.IsPopOutInProgress);
 
             StartPopOutCommand = new DelegateCommand(OnStartPopOut, () => ProfileData != null && ActiveProfile != null && (ActiveProfile.PanelConfigs.Count > 0 || ActiveProfile.ProfileSetting.IncludeInGamePanels) && !ActiveProfile.HasUnidentifiedPanelSource && !ActiveProfile.IsEditingPanelSource && !ActiveProfile.IsDisabledStartPopOut && FlightSimData.IsInCockpit)
                                                                                 .ObservesProperty(() => ActiveProfile)
@@ -191,10 +200,6 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
             
             ActiveProfile.IsEditingPanelSource = true;
             _panelSourceOrchestrator.StartEditPanelSources();
-
-            // refresh Chase Plane camera view and camera binding
-            if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled && ChasePlaneManager.IsConnected)
-                ChasePlaneManager.GetCameraViews();
         }
 
         private async void OnStartPopOut()

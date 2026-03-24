@@ -1,10 +1,14 @@
 ﻿using MSFSPopoutPanelManager.DomainModel.Profile;
 using MSFSPopoutPanelManager.Orchestration;
+using MSFSPopoutPanelManager.Shared;
 using MSFSPopoutPanelManager.WindowsAgent;
 using Prism.Commands;
 using System;
 using System.Linq;
 using System.Windows.Input;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.ComponentModel;
 
 namespace MSFSPopoutPanelManager.MainApp.ViewModel
 {
@@ -21,10 +25,11 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 
         public DelegateCommand EditPanelSourceCommand { get; set; }
 
-        public event EventHandler<CameraViewReadyEventArgs> OnChasePlaneCameraViewReady;
-        public event EventHandler<FixedCameraViewReadyEventArgs> OnFixedCameraViewReady;
+        public ObservableRangeCollection<FixedCameraConfig> FixedCameraConfigs => _panelSourceOrchestrator.FixedCameraConfigs;
 
-        public bool IsChasePlane { get { return AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled; } }
+        public BehaviorSubject<bool> IsChasePlane { get; private set; } = new(false);
+
+        public event EventHandler RebindChasePlaneCamera;
 
         public PopOutPanelSourceCardViewModel(SharedStorage sharedStorage, PanelSourceOrchestrator panelSourceOrchestrator, PanelConfigurationOrchestrator panelConfigurationOrchestrator) : base(sharedStorage)
         {
@@ -42,17 +47,33 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 
             PanelAttributeUpdatedCommand = new DelegateCommand<string>(OnPanelAttributeUpdated);
 
-            _panelSourceOrchestrator.OnChasePlaneCameraReady += delegate { };
-            _panelSourceOrchestrator.OnChasePlaneCameraReady += (_, e) => { OnChasePlaneCameraViewReady?.Invoke(this, e); };
+            IsChasePlane.OnNext(AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled);
 
-            _panelSourceOrchestrator.OnFixedCameraReady += delegate { };
-            _panelSourceOrchestrator.OnFixedCameraReady += (_, e) => { OnFixedCameraViewReady?.Invoke(this, e); };
+            AppSettingData.ApplicationSetting.ChasePlaneSetting.PropertyChanged -= ChasePlaneSetting_PropertyChanged;
+            AppSettingData.ApplicationSetting.ChasePlaneSetting.PropertyChanged += ChasePlaneSetting_PropertyChanged;
+
+            _panelSourceOrchestrator.OnForceChasePlaneViewsRebind -= PanelSourceOrchestrator_OnForceChasePlaneViewsRebind;
+            _panelSourceOrchestrator.OnForceChasePlaneViewsRebind += PanelSourceOrchestrator_OnForceChasePlaneViewsRebind;
         }
 
         public void SetCamera()
         {
             if(DataItem.IsEditingPanel)
                 _panelSourceOrchestrator.SetCamera(DataItem);
+        }
+
+        private void ChasePlaneSetting_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName.Equals("IsEnabled", StringComparison.InvariantCultureIgnoreCase))
+            {
+                IsChasePlane.OnNext(AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled);
+            }
+        }
+
+        private void PanelSourceOrchestrator_OnForceChasePlaneViewsRebind(object sender, EventArgs e)
+        {
+            if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled && ChasePlaneManager.ChasePlaneCameraConfigs.Count > 0)
+                RebindChasePlaneCamera?.Invoke(this, null);
         }
 
         private void OnPanelAttributeUpdated(string commandParameter)
@@ -78,7 +99,7 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
             if (!DataItem.HasPanelSource)
                 return;
 
-            if (IsChasePlane)
+            if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled)
             {
                 // Add aircraft variant record if does not exist
                 var cameraConfig = DataItem.ChasePlaneCameraConfigs.FirstOrDefault(x => x.AircraftName.Equals(FlightSimData.AircraftName, StringComparison.InvariantCultureIgnoreCase));
@@ -101,41 +122,43 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                                 Guid = pilotCamera.Guid,
                                 AircraftName = FlightSimData.AircraftName
                             };
+
+                            DataItem.ChasePlaneCameraConfigs.Add(cameraView);
+                            _panelSourceOrchestrator.ForceChasePlaneViewsRebind();
                         }
                     }
                     else
                     {
-                        var existingCamera = ChasePlaneManager.ChasePlaneViews?.FirstOrDefault(x => x.Name.Equals(cameraView.Name, StringComparison.InvariantCultureIgnoreCase));
+                        var matchingCamera = ChasePlaneManager.ChasePlaneViews?.FirstOrDefault(x => x.Name.Equals(cameraView.Name, StringComparison.InvariantCultureIgnoreCase));
 
-                        if (existingCamera == null)
-                        {
-                            // The camera view does not exist in this aircraft variant, use pilot view instead
-                            var pilotCamera = ChasePlaneManager.ChasePlaneViews?.FirstOrDefault(x => x.Name.Equals("pilot", StringComparison.InvariantCultureIgnoreCase));
-
-                            if (pilotCamera != null)
-                            {
-                                cameraView = new ChasePlaneCameraConfig()
-                                {
-                                    Name = pilotCamera.Name,
-                                    Guid = pilotCamera.Guid,
-                                    AircraftName = FlightSimData.AircraftName
-                                };
-                            }
-                        }
-                        else
+                        if (matchingCamera != null)
                         {
                             cameraView = new ChasePlaneCameraConfig()
                             {
-                                Name = existingCamera.Name,
-                                Guid = existingCamera.Guid,
+                                Name = matchingCamera.Name,
+                                Guid = matchingCamera.Guid,
                                 AircraftName = FlightSimData.AircraftName
                             };
+
+                            DataItem.ChasePlaneCameraConfigs.Add(cameraView);
+                            _panelSourceOrchestrator.ForceChasePlaneViewsRebind();
+                        }
+                        else
+                        {
+                            // The camera view does not exist in this aircraft variant, use pilot view instead
+                            //var pilotCamera = ChasePlaneManager.ChasePlaneViews?.FirstOrDefault(x => x.Name.Equals("pilot", StringComparison.InvariantCultureIgnoreCase));
+
+                            //if (pilotCamera != null)
+                            //{
+                            //    cameraView = new ChasePlaneCameraConfig()
+                            //    {
+                            //        Name = pilotCamera.Name,
+                            //        Guid = pilotCamera.Guid,
+                            //        AircraftName = FlightSimData.AircraftName
+                            //    };
+                            //}   
                         }
                     }
-
-                    DataItem.ChasePlaneCameraConfigs.Add(cameraView);
-
-                    OnChasePlaneCameraViewReady?.Invoke(this, null);
                 }
             }
 

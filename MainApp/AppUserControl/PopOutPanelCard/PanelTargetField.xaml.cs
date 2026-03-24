@@ -1,19 +1,18 @@
 ﻿using MSFSPopoutPanelManager.DomainModel.Profile;
 using MSFSPopoutPanelManager.MainApp.ViewModel;
-using MSFSPopoutPanelManager.Shared;
+using MSFSPopoutPanelManager.WindowsAgent;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Reactive.Linq;
+using System;
 
 namespace MSFSPopoutPanelManager.MainApp.AppUserControl.PopOutPanelCard
 {
-    /// <summary>
-    /// Interaction logic for PanelTargetField.xaml
-    /// </summary>
     public partial class PanelTargetField
     {
-        public ObservableRangeCollection<ChasePlaneCameraConfig> _chasePlaneCameraConfigs = new();
-        public ObservableRangeCollection<FixedCameraConfig> _fixedCameraConfigs = new();
+        private bool _isChasePlane;
+        private PopOutPanelSourceCardViewModel _dataContext;
 
         public PanelTargetField()
         {
@@ -26,74 +25,72 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl.PopOutPanelCard
 
         private void PanelTargetField_Loaded(object sender, RoutedEventArgs e)
         {
-            var dataContext = ((PopOutPanelSourceCardViewModel) this.DataContext);
+            _dataContext = ((PopOutPanelSourceCardViewModel) this.DataContext);
 
-            if (dataContext == null)
+            if (_dataContext == null)
                 return;
 
-            if (dataContext.IsChasePlane)
-                this.ComboBoxCameraSelection.ItemsSource = _chasePlaneCameraConfigs;
-            else
-                this.ComboBoxCameraSelection.ItemsSource = _fixedCameraConfigs;
-
-            dataContext.OnChasePlaneCameraViewReady += delegate { };
-            dataContext.OnChasePlaneCameraViewReady += (_, e) =>
-            {
-                if (!dataContext.ActiveProfile.IsEditingPanelSource)
-                    return;
-
-                if (e != null)
+            // Subscribe to the observable to update the variable
+            _dataContext.IsChasePlane.Subscribe(
+                value =>
                 {
-                    if (e.CameraConfigs == null || e.CameraConfigs.Count == 0)
-                        return;
-
-                    this.ComboBoxCameraSelection.ItemsSource = _chasePlaneCameraConfigs;
-                    _chasePlaneCameraConfigs.Clear();
-                    _chasePlaneCameraConfigs.AddRange(e.CameraConfigs);
-                }
-
-                var cameraConfig = dataContext.DataItem.ChasePlaneCameraConfigs?.FirstOrDefault(x => x.AircraftName.Equals(dataContext.FlightSimData.AircraftName, System.StringComparison.InvariantCultureIgnoreCase));
-
-                if (cameraConfig != null)
-                {
-                    var index = _chasePlaneCameraConfigs.ToList().FindIndex(x => x.Guid == cameraConfig.Guid);
-                    this.ComboBoxCameraSelection.SelectedIndex = index == -1 ? 0 : index;
-                }
-                else
-                {
-                    if (dataContext.DataItem.IsNewlyAddedPanel)
+                    if(value)
                     {
-                        this.ComboBoxCameraSelection.SelectedIndex = 0;
-                        dataContext.DataItem.IsNewlyAddedPanel = false;
+                        _isChasePlane = true;
+
+                        this.ComboBoxCameraSelection.ItemsSource = ChasePlaneManager.ChasePlaneCameraConfigs;
+                        System.Windows.Data.BindingOperations.EnableCollectionSynchronization(ChasePlaneManager.ChasePlaneCameraConfigs, new object());
+
+                        if(ChasePlaneManager.ChasePlaneCameraConfigs.Count > 0)
+                            BindChasePlaneCameraComboBox();
                     }
                     else
-                        this.ComboBoxCameraSelection.SelectedIndex = -1;
+                    {
+                        _isChasePlane = false;
+                        this.ComboBoxCameraSelection.ItemsSource = _dataContext.FixedCameraConfigs;
+                        System.Windows.Data.BindingOperations.EnableCollectionSynchronization(_dataContext.FixedCameraConfigs, new object());
+
+                        if(_dataContext.FixedCameraConfigs.Count > 0)
+                            BindFixedCameraComboBox();
+                    }
                 }
-            };
+            );
 
-           dataContext.OnFixedCameraViewReady += delegate { };
-           dataContext.OnFixedCameraViewReady += (_, e) =>
+            if (_dataContext.DataItem.IsNewlyAddedPanel)
             {
-                if (!dataContext.ActiveProfile.IsEditingPanelSource)
-                    return;
-
-                if (e.CameraConfigs == null || e.CameraConfigs.Count == 0)
-                    return;
-
-                this.ComboBoxCameraSelection.ItemsSource = _fixedCameraConfigs;
-                _fixedCameraConfigs.Clear();
-                _fixedCameraConfigs.AddRange(e.CameraConfigs);
-
-                var index = e.CameraConfigs.FindIndex(x => x.Name.Equals(dataContext.DataItem.FixedCameraConfig.Name, System.StringComparison.InvariantCultureIgnoreCase));
-
-                if (index != -1)
-                    this.ComboBoxCameraSelection.SelectedIndex = index;
-                else
+                _dataContext.DataItem.IsNewlyAddedPanel = false;
+                this.ComboBoxCameraSelection.Dispatcher.Invoke(() =>
                 {
                     this.ComboBoxCameraSelection.SelectedIndex = 0;
-                    dataContext.DataItem.IsNewlyAddedPanel = false;
-                }
-            };
+                });
+            }
+
+            ChasePlaneManager.ChasePlaneCameraConfigs.CollectionChanged -= ChasePlaneCameraConfigs_CollectionChanged;
+            ChasePlaneManager.ChasePlaneCameraConfigs.CollectionChanged += ChasePlaneCameraConfigs_CollectionChanged;
+
+            _dataContext.RebindChasePlaneCamera -= DataContext_RebindChasePlaneCamera;
+            _dataContext.RebindChasePlaneCamera += DataContext_RebindChasePlaneCamera;
+
+            _dataContext.FixedCameraConfigs.CollectionChanged -= FixedCameraConfigs_CollectionChanged;
+            _dataContext.FixedCameraConfigs.CollectionChanged += FixedCameraConfigs_CollectionChanged;
+        }
+
+        private void FixedCameraConfigs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (_dataContext.FixedCameraConfigs.Count > 0)
+                BindFixedCameraComboBox();
+        }
+
+        private void DataContext_RebindChasePlaneCamera(object sender, EventArgs e)
+        {
+            if (ChasePlaneManager.ChasePlaneCameraConfigs.Count > 0)
+                BindChasePlaneCameraComboBox();
+        }
+
+        private void ChasePlaneCameraConfigs_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (ChasePlaneManager.ChasePlaneCameraConfigs.Count > 0)
+                BindChasePlaneCameraComboBox();
         }
 
         private void PopupBoxCameraSelectionPrev_Clicked(object sender, RoutedEventArgs e)
@@ -114,26 +111,6 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl.PopOutPanelCard
                 index -= 1;
 
             this.ComboBoxCameraSelection.SelectedIndex = index;
-
-
-            if (!dataContext.IsChasePlane)
-            {
-                dataContext.DataItem.FixedCameraConfig = (FixedCameraConfig)this.ComboBoxCameraSelection.SelectedItem;
-            }
-            else
-            {
-                var item = dataContext.DataItem.ChasePlaneCameraConfigs.FirstOrDefault(x => x.AircraftName.Equals(dataContext.FlightSimData.AircraftName, System.StringComparison.InvariantCultureIgnoreCase));
-
-                if (item == null)
-                    dataContext.DataItem.ChasePlaneCameraConfigs.Add((ChasePlaneCameraConfig)this.ComboBoxCameraSelection.SelectedItem);
-                else
-                {
-                    dataContext.DataItem.ChasePlaneCameraConfigs.Remove(item);
-                    dataContext.DataItem.ChasePlaneCameraConfigs.Add((ChasePlaneCameraConfig)this.ComboBoxCameraSelection.SelectedItem);
-                }
-            }
-
-            dataContext.SetCamera();
         }
 
         private void PopupBoxCameraSelectionNext_Clicked(object sender, RoutedEventArgs e)
@@ -154,33 +131,11 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl.PopOutPanelCard
                 index += 1;
 
             this.ComboBoxCameraSelection.SelectedIndex = index;
-
-
-            if (!dataContext.IsChasePlane)
-            {
-                dataContext.DataItem.FixedCameraConfig = (FixedCameraConfig)this.ComboBoxCameraSelection.SelectedItem;
-            }
-            else
-            {
-                var item = dataContext.DataItem.ChasePlaneCameraConfigs.FirstOrDefault(x => x.AircraftName.Equals(dataContext.FlightSimData.AircraftName, System.StringComparison.InvariantCultureIgnoreCase));
-
-                if (item == null)
-                    dataContext.DataItem.ChasePlaneCameraConfigs.Add((ChasePlaneCameraConfig)this.ComboBoxCameraSelection.SelectedItem);
-                else
-                {
-                    dataContext.DataItem.ChasePlaneCameraConfigs.Remove(item);
-                    dataContext.DataItem.ChasePlaneCameraConfigs.Add((ChasePlaneCameraConfig)this.ComboBoxCameraSelection.SelectedItem);
-                }
-            }
-
-            dataContext.SetCamera();
         }
 
         private void ComboBoxCameraSelection_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var dataContext = ((PopOutPanelSourceCardViewModel)this.DataContext);
-
-            if (!dataContext.DataItem.IsEditingPanel)
+            if (!_dataContext.DataItem.IsEditingPanel)
                 return;
 
             if (e.AddedItems.Count <= 0) 
@@ -188,24 +143,81 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl.PopOutPanelCard
 
             var addedItem = e.AddedItems[0];
 
-            if (!dataContext.IsChasePlane)
+            if (!_isChasePlane)
             {
-                dataContext.DataItem.FixedCameraConfig = (FixedCameraConfig)addedItem;
+                _dataContext.DataItem.FixedCameraConfig = (FixedCameraConfig)addedItem;
             }
             else
             {
-                var item = dataContext.DataItem.ChasePlaneCameraConfigs.FirstOrDefault(x => x.AircraftName.Equals(dataContext.FlightSimData.AircraftName, System.StringComparison.InvariantCultureIgnoreCase));
-
-                if (item == null)
-                    dataContext.DataItem.ChasePlaneCameraConfigs.Add((ChasePlaneCameraConfig)addedItem);
-                else
+                this.ComboBoxCameraSelection.Dispatcher.Invoke(() =>
                 {
-                    dataContext.DataItem.ChasePlaneCameraConfigs.Remove(item);
-                    dataContext.DataItem.ChasePlaneCameraConfigs.Add((ChasePlaneCameraConfig)addedItem);
-                }
+                    var item = _dataContext.DataItem.ChasePlaneCameraConfigs.FirstOrDefault(x => x.AircraftName.Equals(_dataContext.FlightSimData.AircraftName, StringComparison.InvariantCultureIgnoreCase));
+
+                    try 
+                    {
+                        if (item == null)
+                            _dataContext.DataItem.ChasePlaneCameraConfigs.Add((ChasePlaneCameraConfig)addedItem);
+                        else
+                        {
+                            var itemIndex = _dataContext.DataItem.ChasePlaneCameraConfigs.IndexOf(item);
+                            _dataContext.DataItem.ChasePlaneCameraConfigs[itemIndex] = (ChasePlaneCameraConfig)addedItem;
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        // Ignore: {"Cannot change ObservableCollection during a CollectionChanged event."} error for now
+                    }
+                    finally
+                    {
+                    }
+                });
             }
 
-            dataContext.SetCamera();
+            _dataContext.SetCamera();
+        }
+
+        private void BindChasePlaneCameraComboBox()
+        {
+            if (ChasePlaneManager.ChasePlaneCameraConfigs.Count == 0)
+                return;
+
+            this.ComboBoxCameraSelection.Dispatcher.Invoke(() =>
+            {
+                this.ComboBoxCameraSelection.ItemsSource = ChasePlaneManager.ChasePlaneCameraConfigs;
+
+                var cameraConfig = _dataContext.DataItem.ChasePlaneCameraConfigs?.FirstOrDefault(x => x.AircraftName.Equals(_dataContext.FlightSimData.AircraftName, StringComparison.InvariantCultureIgnoreCase));
+
+                if (cameraConfig != null)
+                {
+                    var index = ChasePlaneManager.ChasePlaneCameraConfigs.ToList().FindIndex(x => x.Guid == cameraConfig.Guid && x.AircraftName.Equals(_dataContext.FlightSimData.AircraftName, StringComparison.InvariantCultureIgnoreCase));
+                    this.ComboBoxCameraSelection.SelectedIndex = index == -1 ? 0 : index;
+                }
+                else
+                {
+                    this.ComboBoxCameraSelection.SelectedIndex = -1;
+                }
+            });
+        }
+
+        private void BindFixedCameraComboBox()
+        {
+            if (_dataContext.FixedCameraConfigs == null || _dataContext.FixedCameraConfigs.Count == 0)
+                return;
+
+            this.ComboBoxCameraSelection.Dispatcher.Invoke(() =>
+            {
+                this.ComboBoxCameraSelection.ItemsSource = _dataContext.FixedCameraConfigs;
+
+                var index = _dataContext.FixedCameraConfigs.ToList().FindIndex(x => x.Name.Equals(_dataContext.DataItem.FixedCameraConfig.Name, System.StringComparison.InvariantCultureIgnoreCase));
+
+                if (index != -1)
+                    this.ComboBoxCameraSelection.SelectedIndex = index;
+                else
+                {
+                    this.ComboBoxCameraSelection.SelectedIndex = 0;
+                    _dataContext.DataItem.IsNewlyAddedPanel = false;
+                }
+            });
         }
     }
 }

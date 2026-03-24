@@ -120,6 +120,9 @@ namespace MSFSPopoutPanelManager.DomainModel.Profile
         public bool IsDisabledStartPopOut { get; set; }
 
         [JsonIgnore]
+        public bool IsPopOutInProgress { get; set; }
+
+        [JsonIgnore]
         public bool HasCustomPanels => PanelConfigs != null && PanelConfigs.Count(p => p.PanelType == PanelType.CustomPopout) > 0;
 
         private void OnPanelConfigChanged()

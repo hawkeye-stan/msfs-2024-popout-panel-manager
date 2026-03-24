@@ -13,9 +13,9 @@
     <RootNamespace>MSFSPopoutPanelManager.MainApp</RootNamespace>
     <ApplicationIcon>logo.ico</ApplicationIcon>
     <Platforms>x64</Platforms>
-    <Version>1.0.3.2</Version>
-    <AssemblyVersion>1.0.3.2</AssemblyVersion>
-    <FileVersion>1.0.3.2</FileVersion>
+    <Version>1.0.3.3</Version>
+    <AssemblyVersion>1.0.3.3</AssemblyVersion>
+    <FileVersion>1.0.3.3</FileVersion>
     <DebugType>embedded</DebugType>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <!-- Publishing options -->
@@ -54,6 +54,7 @@
     <PackageReference Include="Prism.Core" Version="9.0.537" />
     <PackageReference Include="log4net" Version="3.0.2" />
     <PackageReference Include="InputSimulatorCore" Version="1.0.5" />
+    <PackageReference Include="System.Reactive" Version="6.1.0" />
     <PackageReference Include="WindowsHook" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>

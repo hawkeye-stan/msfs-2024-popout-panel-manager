@@ -14,11 +14,8 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 {
     public class MessageWindowViewModel : BaseViewModel
     {
-        private const int WINDOW_WIDTH_POPOUT_MESSAGE = 400;
-        private const int WINDOW_HEIGHT_POPOUT_MESSAGE = 225;
-
-        private const int WINDOW_WIDTH_REGULAR_MESSAGE = 300;
-        private const int WINDOW_HEIGHT_REGULAR_MESSAGE = 75;
+        private const int WINDOW_WIDTH = 400;
+        private const int WINDOW_HEIGHT = 225;
 
         private bool _isVisible;
 
@@ -35,32 +32,50 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                     return;
 
                 _isVisible = value;
-                if (value)
-                {
-                    CenterDialogToGameWindow();
-                }
             }
         }
-
-        public int WindowWidth { get; set; }
-
-        public int WindowHeight { get; set; }
 
         public MessageWindowViewModel(SharedStorage sharedStorage, PanelSourceOrchestrator panelSourceOrchestrator, PanelPopOutOrchestrator panelPopOutOrchestrator) : base(sharedStorage)
         {
             IsVisible = false;
+
             panelPopOutOrchestrator.OnPopOutStarted += (_, _) =>
             {
                 IsVisible = true;
-                WindowWidth = WINDOW_WIDTH_POPOUT_MESSAGE;
-                WindowHeight = WINDOW_HEIGHT_POPOUT_MESSAGE;
+                CenterDialogToProcessWindow(WindowProcessManager.SimulatorProcess);
             };
             panelPopOutOrchestrator.OnPopOutCompleted += (_, _) =>
             {
                 Thread.Sleep(1000);
                 IsVisible = false;
-                WindowWidth = WINDOW_WIDTH_POPOUT_MESSAGE;
-                WindowHeight = WINDOW_HEIGHT_POPOUT_MESSAGE;
+                StatusMessageWriter.ClearMessage();
+            };
+
+            ChasePlaneManager.ApiConnecting += (_, _) =>
+            {
+                IsVisible = true;
+                CenterDialogToProcessWindow(WindowProcessManager.AppProcess);
+            };
+
+            ChasePlaneManager.ApiConnectionFailed += (_, _) =>
+            {
+                Thread.Sleep(2000);
+                StatusMessageWriter.ClearMessage();
+                IsVisible = false;
+            };
+
+            ChasePlaneManager.ApiGeneralFailed += (_, _) =>
+            {
+                Thread.Sleep(2000);
+                StatusMessageWriter.ClearMessage();
+                IsVisible = false;
+            };
+
+            ChasePlaneManager.CameraViewsReady += (_, _) =>
+            {
+                Thread.Sleep(1000);
+                IsVisible = false;
+                StatusMessageWriter.ClearMessage();
             };
 
             StatusMessageWriter.OnStatusMessage += (_, e) =>
@@ -71,22 +86,20 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                     {
                         WindowActionManager.ApplyAlwaysOnTop(Handle, PanelType.StatusMessageWindow, true);
                         OnMessageUpdated?.Invoke(this, FormatStatusMessages(e));
-
-                        CenterDialogToGameWindow();
                     }
                 });
             };
         }
 
-        private void CenterDialogToGameWindow()
+        private void CenterDialogToProcessWindow(WindowProcess windowProcess)
         {
-            if (WindowProcessManager.SimulatorProcess == null)
+            if (windowProcess == null)
                 return;
 
-            var simulatorRectangle = WindowActionManager.GetWindowRectangle(WindowProcessManager.SimulatorProcess.Handle);
-            var left = simulatorRectangle.Left + simulatorRectangle.Width / 2 - WindowWidth / 2;
-            var top = simulatorRectangle.Top + simulatorRectangle.Height / 2 - WindowHeight / 2;
-            WindowActionManager.MoveWindow(Handle, left, top, WindowWidth, WindowHeight);
+            var simulatorRectangle = WindowActionManager.GetWindowRectangle(windowProcess.Handle);
+            var left = simulatorRectangle.Left + simulatorRectangle.Width / 2 - WINDOW_WIDTH / 2;
+            var top = simulatorRectangle.Top + simulatorRectangle.Height / 2 - WINDOW_HEIGHT / 2;
+            WindowActionManager.MoveWindow(Handle, left, top, WINDOW_WIDTH, WINDOW_HEIGHT);
             WindowActionManager.ApplyAlwaysOnTop(Handle, PanelType.StatusMessageWindow, true);
         }
 
@@ -97,32 +110,35 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                 Capacity = 0
             };
 
-            foreach (var statusMessage in messages)
+            lock (StatusMessageWriter.Lock)
             {
-                var run = new Run
+                foreach (var statusMessage in messages)
                 {
-                    Text = statusMessage.Message
-                };
+                    var run = new Run
+                    {
+                        Text = statusMessage.Message
+                    };
 
-                switch (statusMessage.StatusMessageType)
-                {
-                    case StatusMessageType.Success:
-                        run.Foreground = new SolidColorBrush(Colors.LimeGreen);
-                        break;
-                    case StatusMessageType.Failure:
-                        run.Foreground = new SolidColorBrush(Colors.IndianRed);
-                        break;
-                    case StatusMessageType.Executing:
-                        run.Foreground = new SolidColorBrush(Colors.NavajoWhite);
-                        break;
-                    case StatusMessageType.Info:
-                        break;
+                    switch (statusMessage.StatusMessageType)
+                    {
+                        case StatusMessageType.Success:
+                            run.Foreground = new SolidColorBrush(Colors.LimeGreen);
+                            break;
+                        case StatusMessageType.Failure:
+                            run.Foreground = new SolidColorBrush(Colors.IndianRed);
+                            break;
+                        case StatusMessageType.Executing:
+                            run.Foreground = new SolidColorBrush(Colors.NavajoWhite);
+                            break;
+                        case StatusMessageType.Info:
+                            break;
+                    }
+
+                    runs.Add(run);
+
+                    if (statusMessage.NewLine)
+                        runs.Add(new Run { Text = Environment.NewLine });
                 }
-
-                runs.Add(run);
-
-                if (statusMessage.NewLine)
-                    runs.Add(new Run { Text = Environment.NewLine });
             }
 
             return runs;

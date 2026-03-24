@@ -50,6 +50,8 @@ namespace MSFSPopoutPanelManager.MainApp.AppWindow
 
         private void ViewModel_OnMessageUpdated(object sender, List<Run> e)
         {
+            this.Topmost = true;
+
             if (e == null)
                 return;
 

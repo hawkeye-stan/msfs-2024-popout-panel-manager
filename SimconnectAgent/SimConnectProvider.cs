@@ -16,8 +16,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
         private List<SimDataItem> _requiredSimData;
 
         private System.Timers.Timer _requiredRequestDataTimer;
-        private bool _isPowerOnForPopOut;
-        private bool _isAvionicsOnForPopOut;
         private bool _isTrackIRManaged;
 
         public event EventHandler OnConnected;
@@ -201,9 +199,6 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             if (_currentCameraState == cameraState)
                 return;
 
-            if (cameraState == CameraState.Cockpit)
-                OnIsInCockpitChanged?.Invoke(this, true);
-
             Debug.WriteLine($"Current State: {_currentCameraState} - Camera State: {cameraState}");
 
             switch (_currentCameraState)
@@ -228,11 +223,18 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
                     }
                     break;
                 case CameraState.Cockpit:
-                    if (cameraState == CameraState.HomeScreen || cameraState == CameraState.RestartScreen)
+                    if (cameraState == CameraState.HomeScreen || cameraState == CameraState.RestartScreen || cameraState == CameraState.PreloadScreen)
                     {
                         _currentCameraState = cameraState;
                         OnFlightStopped?.Invoke(this, EventArgs.Empty);
                         OnIsInCockpitChanged?.Invoke(this, false);
+                    }
+                    break;
+                case CameraState.Unknown:
+                    if (cameraState == CameraState.Cockpit)
+                    {
+                        _currentCameraState = cameraState;
+                        OnIsInCockpitChanged?.Invoke(this, true);
                     }
                     break;
             }

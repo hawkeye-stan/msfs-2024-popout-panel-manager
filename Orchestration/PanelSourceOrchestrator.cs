@@ -1,4 +1,5 @@
 ﻿using MSFSPopoutPanelManager.DomainModel.Profile;
+using MSFSPopoutPanelManager.Shared;
 using MSFSPopoutPanelManager.WindowsAgent;
 using System;
 using System.Collections.Generic;
@@ -22,9 +23,10 @@ namespace MSFSPopoutPanelManager.Orchestration
 
             flightSimOrchestrator.OnFlightStopped += (_, _) => { CloseAllPanelSource(); };
 
-            ChasePlaneManager.CameraViewsReady += (_, e) =>
+            flightSimOrchestrator.OnCameraViewTypeAndIndex2MaxChanged += (_, _) =>
             {
-                OnChasePlaneCameraReady?.Invoke(this, e);
+                FixedCameraConfigs.Clear();
+                FixedCameraConfigs.AddRange(GetFixedCameraConfigs());
             };
         }
 
@@ -34,9 +36,9 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         public event EventHandler<PanelConfig> OnOverlayShowed;
         public event EventHandler<PanelConfig> OnOverlayRemoved;
+        public event EventHandler OnForceChasePlaneViewsRebind;
 
-        public event EventHandler<CameraViewReadyEventArgs> OnChasePlaneCameraReady;
-        public event EventHandler<FixedCameraViewReadyEventArgs> OnFixedCameraReady;
+        public ObservableRangeCollection<FixedCameraConfig> FixedCameraConfigs { get; private set; } = new();
 
         public void StartPanelSelectionEvent()
         {
@@ -56,6 +58,8 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         public async Task StartEditPanelSources()
         {
+            OnForceChasePlaneViewsRebind?.Invoke(this, null);
+
             // clear all number circles
             foreach (var panelConfig in ActiveProfile.PanelConfigs)
                 OnOverlayRemoved?.Invoke(this, panelConfig);
@@ -66,21 +70,34 @@ namespace MSFSPopoutPanelManager.Orchestration
             // Connect websocket to ChasePlane API if enabled
             if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled)
             {
-                await ChasePlaneManager.Connect();
+                await Task.Run(() =>
+                {
+                    var result = WorkflowStepWithMessage.Execute("Connecting to ChasePlane API", async () =>
+                    {
+                        if(!await ChasePlaneManager.Run(true))
+                            return false;
 
-                if (ChasePlaneManager.IsFirstRun)
-                    Thread.Sleep(ChasePlaneManager.IsFirstRunDelay);
+                        var result = ChasePlaneManager.IsChasePlaneViewsReady.WaitOne(10000);
+                        if (!result)
+                        {
+                            await ChasePlaneManager.Disconnect();
+                            return false;
+                        }
+
+                        return true;
+                    });
+
+                    return result;
+                });
             }
-            else
-                OnFixedCameraReady?.Invoke(this, new FixedCameraViewReadyEventArgs(GetFixedCameraConfigs()));
         }
+
         public async Task EndEditPanelSources()
         {
             // Connect websocket to ChasePlane API if enabled
             if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled)
             {
-                ChasePlaneManager.SetDefaultCamera();
-                ChasePlaneManager.Disconnect();
+                await ChasePlaneManager.SetDefaultCamera();
 
                 // Validate ChasePlane panel config to enable/disable start pop out button
                 ActiveProfile.IsDisabledStartPopOut = !IsPanelConfigsValid();
@@ -224,10 +241,10 @@ namespace MSFSPopoutPanelManager.Orchestration
         private List<FixedCameraConfig> GetFixedCameraConfigs()
         {
             var configs = new List<FixedCameraConfig>()
-            {
-                new() { Id = 0, Name = "Cockpit Pilot", CameraType = CameraType.Cockpit, CameraIndex = 1 },
-                new() { Id = 1, Name = "Cockpit Copilot", CameraType = CameraType.Cockpit, CameraIndex = 5 }
-            };
+                {
+                    new() { Id = 0, Name = "Cockpit Pilot", CameraType = CameraType.Cockpit, CameraIndex = 1 },
+                    new() { Id = 1, Name = "Cockpit Copilot", CameraType = CameraType.Cockpit, CameraIndex = 5 }
+                };
 
             for (var i = 0; i < FlightSimData.CameraViewTypeAndIndex2Max; i++)
             {
@@ -270,6 +287,11 @@ namespace MSFSPopoutPanelManager.Orchestration
                 await ChasePlaneManager.SetCamera(cameraView.Name, cameraView.Guid);
 
             Thread.Sleep(250);
+        }
+
+        public void ForceChasePlaneViewsRebind()
+        {
+            OnForceChasePlaneViewsRebind?.Invoke(this, null);
         }
     }
 

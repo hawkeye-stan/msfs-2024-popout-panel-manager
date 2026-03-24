@@ -77,7 +77,7 @@ namespace MSFSPopoutPanelManager.Orchestration
             if (!ActiveProfile.IsPoppedOut)
                 return;
 
-            Debug.WriteLine("Starting Panel Configuration...");
+            //Debug.WriteLine("Starting Panel Configuration...");
 
             WindowEventManager.ActiveProfile = ProfileData.ActiveProfile;
             WindowEventManager.ApplicationSetting = AppSettingData.ApplicationSetting;
@@ -91,7 +91,7 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         public void EndConfiguration()
         {
-            Debug.WriteLine("Ending Panel Configuration...");
+            //Debug.WriteLine("Ending Panel Configuration...");
             Application.Current.Dispatcher.Invoke(WindowEventManager.UnhookWinEvent);
         }
 

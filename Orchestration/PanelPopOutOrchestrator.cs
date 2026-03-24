@@ -59,6 +59,8 @@ namespace MSFSPopoutPanelManager.Orchestration
                 return;
 
             ActiveProfile.IsDisabledStartPopOut = true;
+            ActiveProfile.IsPopOutInProgress = true;
+
             OnPopOutStarted?.Invoke(this, EventArgs.Empty);
 
             await CoreSteps(false);
@@ -87,6 +89,8 @@ namespace MSFSPopoutPanelManager.Orchestration
                     return;
 
                 ActiveProfile.IsDisabledStartPopOut = true;
+                ActiveProfile.IsPopOutInProgress = true;
+
                 OnPopOutStarted?.Invoke(this, EventArgs.Empty);
 
                 if (AppSetting.ChasePlaneSetting.IsEnabled)
@@ -121,9 +125,9 @@ namespace MSFSPopoutPanelManager.Orchestration
             // *** THIS MUST BE DONE FIRST. Get the built-in panel list to be configured later
             List<IntPtr> builtInPanelHandles = WindowActionManager.GetWindowsByPanelType(new List<PanelType>() { PanelType.BuiltInPopout });
             
-            var isContinued = await StepBeforePanelPopout();
+            var hasBeforePanelPopoutError = await StepBeforePanelPopout();
 
-            if (isContinued)
+            if (!hasBeforePanelPopoutError)
             {
                 await StepPopOutPanels(builtInPanelHandles);
 
@@ -138,9 +142,11 @@ namespace MSFSPopoutPanelManager.Orchestration
                 Thread.Sleep(1000);
             }
 
-            await StepPostPopout();
+            await StepPostPopout(hasBeforePanelPopoutError);
 
             ActiveProfile.IsDisabledStartPopOut = false;
+            ActiveProfile.IsPopOutInProgress = false;
+
             OnPopOutCompleted?.Invoke(this, EventArgs.Empty);
 
             StatusMessageWriter.IsEnabled = false;
@@ -186,43 +192,43 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         private async Task<bool> StepBeforePanelPopout()
         {
+            var hasError = false;
+
             if (!ActiveProfile.HasCustomPanels)
                 return false;
 
             if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled)
             {
-                var isChasePlaneConnected = await StepConnectToChasePlaneApi();
-
-                if (!isChasePlaneConnected)
-                {
-                    await ChasePlaneManager.Disconnect();
-                    return false;
-                }
+                hasError = !await StepConnectToChasePlaneApi();
+                Thread.Sleep(1000);
             }
 
-            await Task.Run(() =>
+            if (!hasError)
             {
-                // Set Windowed Display Mode window's configuration if needed
-                if (AppSettingData.ApplicationSetting.WindowedModeSetting.AutoResizeMsfsGameWindow && WindowActionManager.IsMsfsGameInWindowedMode())
+                await Task.Run(() =>
                 {
-                    WorkflowStepWithMessage.Execute("Moving and resizing MSFS game window", () =>
+                    // Set Windowed Display Mode window's configuration if needed
+                    if (AppSettingData.ApplicationSetting.WindowedModeSetting.AutoResizeMsfsGameWindow && WindowActionManager.IsMsfsGameInWindowedMode())
                     {
-                        WindowActionManager.SetMsfsGameWindowLocation(ActiveProfile.MsfsGameWindowConfig);
-                        Thread.Sleep(1000);
-                    });
-                }
+                        WorkflowStepWithMessage.Execute("Moving and resizing MSFS game window", () =>
+                        {
+                            WindowActionManager.SetMsfsGameWindowLocation(ActiveProfile.MsfsGameWindowConfig);
+                            Thread.Sleep(1000);
+                        });
+                    }
 
-                // Turn off TrackIR if TrackIR is started
-                _flightSimOrchestrator.TurnOffTrackIR();
+                    // Turn off TrackIR if TrackIR is started
+                    _flightSimOrchestrator.TurnOffTrackIR();
 
-                // Turn on Active Pause
-                _flightSimOrchestrator.TurnOnActivePause();
+                    // Turn on Active Pause
+                    _flightSimOrchestrator.TurnOnActivePause();
 
-                // Reset all custom pop out panel handles
-                ActiveProfile.PanelConfigs.Where(p => p.PanelType == PanelType.CustomPopout).ToList().ForEach(p => p.PanelHandle = IntPtr.MaxValue);
-            });
+                    // Reset all custom pop out panel handles
+                    ActiveProfile.PanelConfigs.Where(p => p.PanelType == PanelType.CustomPopout).ToList().ForEach(p => p.PanelHandle = IntPtr.MaxValue);
+                });
+            }
 
-            return true;
+            return hasError;
         }
 
         private async Task<bool> StepConnectToChasePlaneApi()
@@ -231,37 +237,17 @@ namespace MSFSPopoutPanelManager.Orchestration
             {
                 var result = WorkflowStepWithMessage.Execute("Connecting to ChasePlane API", async () =>
                 {
-                    await ChasePlaneManager.Connect();
+                    if (!await ChasePlaneManager.Run(false))
+                        return false;
 
-                    if(ChasePlaneManager.IsFirstRun)
-                        Thread.Sleep(ChasePlaneManager.IsFirstRunDelay);
-
-                    int tries = 5;
-                    while (!ChasePlaneManager.IsConnected && tries > 0)
+                    var result = ChasePlaneManager.IsChasePlaneViewsReady.WaitOne(10000);
+                    if (!result)
                     {
-                        Thread.Sleep(1000);
-                        tries--;
+                        await ChasePlaneManager.Disconnect();
+                        return false;
                     }
 
-                    return ChasePlaneManager.IsConnected;
-                    
-                });
-
-                return result;
-            });
-        }
-
-        private async Task<bool> StepDisconnectChasePlaneApi()
-        {
-            return await Task.Run(() =>
-            {
-                var result = WorkflowStepWithMessage.Execute("Disconnecting from ChasePlane API", async () =>
-                {
-                    await ChasePlaneManager.SetDefaultCamera();
-                    await ChasePlaneManager.Disconnect();
-
                     return true;
-
                 });
 
                 return result;
@@ -451,17 +437,8 @@ namespace MSFSPopoutPanelManager.Orchestration
             }
         }
 
-        private async Task StepPostPopout()
+        private async Task StepPostPopout(bool hasBeforePanelPopOutError)
         {
-            var hasChasePlaneError = false;
-            if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled)
-            {
-                if (ChasePlaneManager.IsConnected)
-                    await StepDisconnectChasePlaneApi();
-                else
-                    hasChasePlaneError = true;
-            }
-                      
             await Task.Run(() =>
             {
                 // Set profile pop out status
@@ -473,10 +450,10 @@ namespace MSFSPopoutPanelManager.Orchestration
                 // Start touch hook
                 _panelConfigurationOrchestrator.StartTouchHook();
 
-                if (hasChasePlaneError)
-                    StatusMessageWriter.WriteMessageWithNewLine("Pop out failed with ChasePlane error.", StatusMessageType.Info);
-                else if (CheckForPopOutError())
-                    StatusMessageWriter.WriteMessageWithNewLine("Pop out has been completed with error.", StatusMessageType.Info);
+                if (hasBeforePanelPopOutError || CheckForPopOutError())
+                {
+                    StatusMessageWriter.WriteMessageWithNewLine("Pop out did not complete successfully with one or more errors.", StatusMessageType.Info);
+                }
                 else
                 {
                     StatusMessageWriter.WriteMessageWithNewLine("Pop out has been completed successfully.", StatusMessageType.Info);
