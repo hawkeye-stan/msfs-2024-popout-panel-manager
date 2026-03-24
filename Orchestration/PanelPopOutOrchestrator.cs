@@ -439,8 +439,11 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         private async Task StepPostPopout(bool hasBeforePanelPopOutError)
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
+                if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled)
+                    await ChasePlaneManager.SetDefaultCamera();
+                
                 // Set profile pop out status
                 ActiveProfile.IsPoppedOut = true;
 
@@ -452,7 +455,7 @@ namespace MSFSPopoutPanelManager.Orchestration
 
                 if (hasBeforePanelPopOutError || CheckForPopOutError())
                 {
-                    StatusMessageWriter.WriteMessageWithNewLine("Pop out did not complete successfully with one or more errors.", StatusMessageType.Info);
+                    StatusMessageWriter.WriteMessageWithNewLine("Pop out did not complete with one or more errors.", StatusMessageType.Info);
                 }
                 else
                 {

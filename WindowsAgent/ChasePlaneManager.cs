@@ -88,16 +88,16 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         {
             var view = ChasePlaneViews?.FirstOrDefault(v => v.Name == cameraViewName && v.Guid.Equals(guid, StringComparison.InvariantCultureIgnoreCase));
 
-            if (view != null)
+            if (view != null && _clientWebSocket != null && _clientWebSocket.State == WebSocketState.Open)
                 await SendMessage(_clientWebSocket, new ChasePlaneCamSetPositionMessage { Message = "cam_set_position", Payload = view });
-
 
             Thread.Sleep(250);
         }
 
         public static async Task SetDefaultCamera()
         {
-            await SendMessage(_clientWebSocket, new ChasePlaneMessage { Message = "cam_load_default" });
+            if(_clientWebSocket != null && _clientWebSocket.State == WebSocketState.Open)
+                await SendMessage(_clientWebSocket, new ChasePlaneMessage { Message = "cam_load_default" });
         }
 
         public static async Task Disconnect()
