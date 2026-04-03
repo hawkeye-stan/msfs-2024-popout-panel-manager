@@ -45,12 +45,26 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
         public static void SetApplicationProcess()
         {
-            AppProcess = GetWindowProcess("MSFS Pop Out Panel Manager 2024");
+            var assembly = Assembly.GetEntryAssembly();
+
+            if (assembly != null)
+            {
+                var location = assembly.Location;
+                var filePathTokens = location.Split(@"\");
+                var filename = filePathTokens[filePathTokens.Length - 3];
+#if DEBUG
+
+                filename = assembly.GetName().Name;
+#endif
+                //throw new ApplicationException("file: " + filename);
+                AppProcess = GetWindowProcess(filename);
+                return;
+            }
         }
 
         private static WindowProcess GetWindowProcess(string processName)
         {
-            var processes = Process.GetProcesses().Where(p => p.ProcessName == processName);
+            var processes = Process.GetProcesses().Where(p => p.ProcessName.Equals(processName, StringComparison.InvariantCultureIgnoreCase));
 
             var process = processes.FirstOrDefault();
 
