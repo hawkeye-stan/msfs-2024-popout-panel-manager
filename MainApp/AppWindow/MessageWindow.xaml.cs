@@ -45,22 +45,36 @@ namespace MSFSPopoutPanelManager.MainApp.AppWindow
                 WindowsServices.SetWindowExTransparent(_viewModel.Handle);
 
                 _viewModel.OnMessageUpdated += ViewModel_OnMessageUpdated;
+                _viewModel.OnMessageCleared += _viewModel_OnMessageCleared;
             };
         }
+
+
 
         private void ViewModel_OnMessageUpdated(object sender, List<Run> e)
         {
             this.Topmost = true;
 
-            if (e == null)
+            if (e == null || e.Count == 0)
                 return;
 
-            TextBlockMessage.Inlines.Clear();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                TextBlockMessage.Inlines.Clear();
 
-            foreach (var run in e)
-                TextBlockMessage.Inlines.Add(run);
+                foreach (var run in e)
+                    TextBlockMessage.Inlines.Add(run);
 
-            ScrollViewerMessage.ScrollToEnd();
+                ScrollViewerMessage.ScrollToEnd();
+            });
+        }
+
+        private void _viewModel_OnMessageCleared(object sender, EventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                TextBlockMessage.Inlines.Clear();
+            });
         }
     }
 

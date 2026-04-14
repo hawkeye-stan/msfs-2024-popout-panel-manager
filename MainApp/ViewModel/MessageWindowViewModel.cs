@@ -5,6 +5,7 @@ using MSFSPopoutPanelManager.WindowsAgent;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -22,6 +23,7 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
         public IntPtr Handle { get; set; }
 
         public event EventHandler<List<Run>> OnMessageUpdated;
+        public event EventHandler OnMessageCleared;
 
         public bool IsVisible
         {
@@ -41,14 +43,18 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 
             panelPopOutOrchestrator.OnPopOutStarted += (_, _) =>
             {
-                IsVisible = true;
                 CenterDialogToProcessWindow(WindowProcessManager.SimulatorProcess);
             };
             panelPopOutOrchestrator.OnPopOutCompleted += (_, _) =>
             {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    StatusMessageWriter.ClearMessage();
+                    IsVisible = false;
+                    OnMessageCleared?.Invoke(this, null);
+                });
+
                 Thread.Sleep(1000);
-                IsVisible = false;
-                StatusMessageWriter.ClearMessage();
             };
 
             ChasePlaneManager.ApiConnecting += (_, _) =>
@@ -60,22 +66,37 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
             ChasePlaneManager.ApiConnectionFailed += (_, _) =>
             {
                 Thread.Sleep(2000);
-                StatusMessageWriter.ClearMessage();
-                IsVisible = false;
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    StatusMessageWriter.ClearMessage();
+                    IsVisible = false;
+                    OnMessageCleared?.Invoke(this, null);
+                });
             };
 
             ChasePlaneManager.ApiGeneralFailed += (_, _) =>
             {
                 Thread.Sleep(2000);
-                StatusMessageWriter.ClearMessage();
-                IsVisible = false;
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    StatusMessageWriter.ClearMessage();
+                    IsVisible = false;
+                    OnMessageCleared?.Invoke(this, null);
+                });
             };
 
             ChasePlaneManager.CameraViewsReady += (_, _) =>
             {
                 Thread.Sleep(1000);
-                IsVisible = false;
-                StatusMessageWriter.ClearMessage();
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    StatusMessageWriter.ClearMessage();
+                    IsVisible = false;
+                    OnMessageCleared?.Invoke(this, null);
+                });
             };
 
             StatusMessageWriter.OnStatusMessage += (_, e) =>
@@ -85,7 +106,15 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                     if (AppSettingData.ApplicationSetting.PopOutSetting.EnablePopOutMessages)
                     {
                         WindowActionManager.ApplyAlwaysOnTop(Handle, PanelType.StatusMessageWindow, true);
+                        var runs = FormatStatusMessages(e);
                         OnMessageUpdated?.Invoke(this, FormatStatusMessages(e));
+
+                        Task.Run(() => {
+                            Thread.Sleep(250);
+                            if (runs.Count > 0)
+                                IsVisible = true;
+                        });
+
                     }
                 });
             };

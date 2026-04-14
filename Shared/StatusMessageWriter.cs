@@ -48,8 +48,11 @@ namespace MSFSPopoutPanelManager.Shared
         {
             lock (Lock)
             {
-                Messages.RemoveAt(Messages.Count - 1);
-                Messages.Add(new StatusMessage { Message = "  (OK)", StatusMessageType = StatusMessageType.Success, NewLine = true });
+                if (Messages.Count > 1)
+                {
+                    Messages.RemoveAt(Messages.Count - 1);
+                    Messages.Add(new StatusMessage { Message = "  (OK)", StatusMessageType = StatusMessageType.Success, NewLine = true });
+                }
             }
 
             if (IsEnabled)
@@ -60,8 +63,11 @@ namespace MSFSPopoutPanelManager.Shared
         {
             lock (Lock)
             {
-                Messages.RemoveAt(Messages.Count - 1);
-                Messages.Add(new StatusMessage { Message = "  (FAILED)", StatusMessageType = StatusMessageType.Failure, NewLine = true });
+                if (Messages.Count > 1)
+                {
+                    Messages.RemoveAt(Messages.Count - 1);
+                    Messages.Add(new StatusMessage { Message = "  (FAILED)", StatusMessageType = StatusMessageType.Failure, NewLine = true });
+                }
             }
 
             if (IsEnabled)
@@ -78,12 +84,7 @@ namespace MSFSPopoutPanelManager.Shared
 
         public static void ClearMessage()
         {
-            lock (Lock)
-            {
-                Messages.Clear();
-            }
-
-            OnStatusMessage?.Invoke(null, new List<StatusMessage>());
+            Messages.Clear();
         }
 
         public static bool IsEnabled { get; set; }

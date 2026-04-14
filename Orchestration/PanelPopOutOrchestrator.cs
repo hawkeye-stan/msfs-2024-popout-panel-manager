@@ -113,9 +113,9 @@ namespace MSFSPopoutPanelManager.Orchestration
             if (ActiveProfile == null || ActiveProfile.IsEditingPanelSource || ActiveProfile.HasUnidentifiedPanelSource)
                 return;
 
-            StatusMessageWriter.IsEnabled = true;
             StatusMessageWriter.ClearMessage();
-
+            StatusMessageWriter.IsEnabled = true;
+            
             await StepReadyToFlyDelay(isAutoPopOut);
 
             StatusMessageWriter.WriteMessageWithNewLine("Pop out in progress. Please wait and do not move your mouse.", StatusMessageType.Info);
