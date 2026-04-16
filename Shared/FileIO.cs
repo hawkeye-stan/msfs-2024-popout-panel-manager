@@ -17,12 +17,6 @@ namespace MSFSPopoutPanelManager.Shared
             return Path.Combine(Environment.GetFolderPath(specialFolder), GetBuildConfigPath(), @"LogFiles\error.log");
         }
 
-        public static string GetDebugLogFilePath(bool isRoamingPath)
-        {
-            var specialFolder = isRoamingPath ? Environment.SpecialFolder.ApplicationData : Environment.SpecialFolder.MyDocuments;
-            return Path.Combine(Environment.GetFolderPath(specialFolder), GetBuildConfigPath(), @"LogFiles\debug.log");
-        }
-
         public static string GetInfoLogFilePath(bool isRoamingPath)
         {
             var specialFolder = isRoamingPath ? Environment.SpecialFolder.ApplicationData : Environment.SpecialFolder.MyDocuments;

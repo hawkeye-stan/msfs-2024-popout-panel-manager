@@ -24,8 +24,14 @@ namespace MSFSPopoutPanelManager.Shared
             if (LogManager.GetRepository(Assembly.GetEntryAssembly()).GetAppenders().First() is not RollingFileAppender errorLogAppender) 
                 return;
 
+            if (LogManager.GetRepository(Assembly.GetEntryAssembly()).GetAppenders().Last() is not RollingFileAppender infoLogAppender)
+                return;
+
             errorLogAppender.File = FileIo.GetErrorLogFilePath(UseApplicationDataPath);
             errorLogAppender.ActivateOptions();
+
+            //infoLogAppender.File = FileIo.GetInfoLogFilePath(UseApplicationDataPath);
+            //infoLogAppender.ActivateOptions();
         }
 
         public static bool UseApplicationDataPath { get; set; } = true;
@@ -35,14 +41,11 @@ namespace MSFSPopoutPanelManager.Shared
             switch (messageType)
             {
                 case StatusMessageType.Error:
-                    Log.Error(message);
+                    Log.Error(message + Environment.NewLine);
                     break;
-                //case StatusMessageType.Info:
-                //    Log.Info(message);
-                //    break;
-                //case StatusMessageType.Debug:
-                //    Log.Debug(message);
-                //    break;
+                case StatusMessageType.Info:
+                    //Log.Info(message + Environment.NewLine);
+                    break;
             }
         }
 

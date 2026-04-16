@@ -1,4 +1,9 @@
-﻿using System;
+﻿using log4net.Core;
+using MSFSPopoutPanelManager.DomainModel.Profile;
+using MSFSPopoutPanelManager.Shared;
+using Newtonsoft.Json;
+using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,9 +12,6 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using MSFSPopoutPanelManager.DomainModel.Profile;
-using MSFSPopoutPanelManager.Shared;
-using Newtonsoft.Json;
 
 namespace MSFSPopoutPanelManager.WindowsAgent
 {
@@ -96,10 +98,12 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         private static async Task<bool> ConnectWebSocket()
         {
             _clientWebSocket = new ClientWebSocket();
+            _clientWebSocket.Options.SetBuffer(1024 * 128, 1024 * 10);  // set received buffer to 128KB
             _isInitialized = false;
             _isViewsReady = false;
 
             Debug.WriteLine("Connect to ChasePlane and initialize API");
+            FileLogger.WriteLog("POPM Status message: Connect to ChasePlane and initialize API", StatusMessageType.Info);
 
             Task timeoutTask = Task.Delay(TimeSpan.FromSeconds(5));
             Task webSocketConnectionTask = _clientWebSocket.ConnectAsync(new Uri("ws://localhost:8652"), CancellationToken.None);
@@ -118,9 +122,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
         private async static Task ListenInBackground(ClientWebSocket ws)
         {
-            var buffer = new byte[1024 * 32];
-
-
+            var buffer = ArrayPool<byte>.Shared.Rent(1024 * 128);   // set received buffer to 128KB
 
             try
             {
@@ -144,9 +146,12 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                         {
                             case "api_version":
                                 Debug.WriteLine(message);
+                                FileLogger.WriteLog("ChasePlane API Response message: " + message , StatusMessageType.Info);
                                 break;
                             case "cam_mode_set":
                                 Debug.WriteLine(message);
+                                FileLogger.WriteLog("ChasePlane API Response message: " + message, StatusMessageType.Info);
+
                                 var camModeSetMsg = JsonConvert.DeserializeObject<ChasePlaneMessage>(message);
 
                                 if(!_isViewsReady && camModeSetMsg.Payload.ViewsLoaded)
@@ -163,6 +168,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                                     continue;
 
                                 Debug.WriteLine(message);
+                                FileLogger.WriteLog("ChasePlane API Response message: " + message, StatusMessageType.Info);
 
                                 _isInitialized = true;
 
@@ -171,6 +177,8 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                                 if (chasePlaneMessage.Payload.Message.Equals("get_views", StringComparison.InvariantCultureIgnoreCase))
                                 {
                                     Debug.WriteLine(message);
+                                    FileLogger.WriteLog("ChasePlane API Response message: " + message, StatusMessageType.Info);
+
                                     var viewMessage = JsonConvert.DeserializeObject<ChasePlaneMessage>(message);
 
                                     var currentAircraftName = viewMessage.Payload.Payload.MetaData.Aircraft;
@@ -181,6 +189,8 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                                     if (chasePlaneViews != null && chasePlaneViews.Count > 0)
                                     {
                                         Debug.WriteLine("Getting camera view OK");
+                                        FileLogger.WriteLog("POPM Status message: Getting camera view OK", StatusMessageType.Info);
+
                                         foreach (var chasePlaneView in chasePlaneViews)
                                         {
                                             var item = new ChasePlaneCameraConfig
@@ -204,12 +214,16 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                                         _getCameraViewRetryCount--;
 
                                         Debug.WriteLine("Getting camera view failed, retrying");
+                                        FileLogger.WriteLog("POPM Status message: Getting camera view failed, retrying", StatusMessageType.Info);
+
                                         Thread.Sleep(2000);
                                         await GetCameraViews();
                                     }
                                     else
                                     {
                                         Debug.WriteLine("Getting camera view failed");
+                                        FileLogger.WriteLog("POPM Status message: Getting camera view failed", StatusMessageType.Info);
+
                                         await Disconnect();
                                     }
                                 }
@@ -231,6 +245,10 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                 FileLogger.WriteException("ChasePlane 2024 Exception", ex);
                 await DisconnectWebSocket();
             }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
         }
 
         private static async Task DisconnectWebSocket()
@@ -238,6 +256,8 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             try
             {
                 Debug.WriteLine("Disconnecting ChasePlane API");
+                FileLogger.WriteLog("POPM Status message: Disconnecting ChasePlane API", StatusMessageType.Info);
+
                 if (_clientWebSocket != null && _clientWebSocket.State == WebSocketState.Open)
                     await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
             }
@@ -295,6 +315,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             var message = JsonConvert.SerializeObject(chasePlaneMessage, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
             Debug.WriteLine("Sending message: " + message);
+            FileLogger.WriteLog("ChasePlane API Request message: " + message, StatusMessageType.Info);
 
             var bytes = Encoding.UTF8.GetBytes(message);
             var arraySegment = new ArraySegment<byte>(bytes, 0, bytes.Length);
