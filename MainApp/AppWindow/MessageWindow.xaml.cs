@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Extensions.DependencyInjection;
+using MSFSPopoutPanelManager.MainApp.ViewModel;
+using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Interop;
-using Microsoft.Extensions.DependencyInjection;
-using MSFSPopoutPanelManager.MainApp.ViewModel;
 
 namespace MSFSPopoutPanelManager.MainApp.AppWindow
 {
@@ -44,36 +43,26 @@ namespace MSFSPopoutPanelManager.MainApp.AppWindow
                 // Set window click through
                 WindowsServices.SetWindowExTransparent(_viewModel.Handle);
 
-                _viewModel.OnMessageUpdated += ViewModel_OnMessageUpdated;
-                _viewModel.OnMessageCleared += _viewModel_OnMessageCleared;
+                // Set Textblock binding
+                _viewModel.MessageList.CollectionChanged += Messages_CollectionChanged;
             };
         }
 
-
-
-        private void ViewModel_OnMessageUpdated(object sender, List<Run> e)
+        private void Messages_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            this.Topmost = true;
-
-            if (e == null || e.Count == 0)
-                return;
-
             Application.Current.Dispatcher.Invoke(() =>
             {
-                TextBlockMessage.Inlines.Clear();
+                this.Topmost = true;
 
-                foreach (var run in e)
-                    TextBlockMessage.Inlines.Add(run);
+                TextBlockMessage.Text = string.Empty;
+
+                if (_viewModel.MessageList == null || _viewModel.MessageList.Count == 0)
+                    return;
+                                
+                foreach (var message in _viewModel.MessageList)
+                    TextBlockMessage.Inlines.Add(message);
 
                 ScrollViewerMessage.ScrollToEnd();
-            });
-        }
-
-        private void _viewModel_OnMessageCleared(object sender, EventArgs e)
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                TextBlockMessage.Inlines.Clear();
             });
         }
     }

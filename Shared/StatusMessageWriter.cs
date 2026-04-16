@@ -5,88 +5,54 @@ namespace MSFSPopoutPanelManager.Shared
 {
     public class StatusMessageWriter
     {
-        public static object Lock { get; set; } = new object();
-
-        private static readonly List<StatusMessage> Messages = new();
-
         public static event EventHandler<List<StatusMessage>> OnStatusMessage;
 
-        public static void WriteMessage(string message, StatusMessageType statusMessageType)
-        {
-            lock (Lock)
-            {
-                Messages.Add(new StatusMessage { Message = message, StatusMessageType = statusMessageType });
-            }
-
-            if (IsEnabled)
-                OnStatusMessage?.Invoke(null, Messages);
-        }
+        public static event EventHandler OnStatusMessageClear;
 
         public static void WriteMessageWithNewLine(string message, StatusMessageType statusMessageType)
         {
-            lock (Lock)
+            var messages = new List<StatusMessage>
             {
-                Messages.Add(new StatusMessage { Message = message, StatusMessageType = statusMessageType, NewLine = true });
-            }
-
-            if (IsEnabled)
-                OnStatusMessage?.Invoke(null, Messages);
+                new() { Message = message, StatusMessageType = statusMessageType, NewLine = true }
+            };
+            
+            OnStatusMessage?.Invoke(null, messages);
         }
 
-        public static void WriteExecutingStatusMessage()
+        public static void WriteExecutingStatusMessage(string message)
         {
-            lock (Lock)
+            var messages = new List<StatusMessage>
             {
-                Messages.Add(new StatusMessage { Message = "  (Executing)", StatusMessageType = StatusMessageType.Executing, NewLine = false });
-            }
-
-            if (IsEnabled)
-                OnStatusMessage?.Invoke(null, Messages);
+                new() { Message = message, StatusMessageType = StatusMessageType.Info },
+                new() { Message = "  (Executing)", StatusMessageType = StatusMessageType.Executing }
+            };
+            
+            OnStatusMessage?.Invoke(null, messages);
         }
 
         public static void WriteOkStatusMessage()
         {
-            lock (Lock)
+            var messages = new List<StatusMessage> 
             {
-                if (Messages.Count > 1)
-                {
-                    Messages.RemoveAt(Messages.Count - 1);
-                    Messages.Add(new StatusMessage { Message = "  (OK)", StatusMessageType = StatusMessageType.Success, NewLine = true });
-                }
-            }
-
-            if (IsEnabled)
-                OnStatusMessage?.Invoke(null, Messages);
+                new() { Message = "  (OK)", StatusMessageType = StatusMessageType.Success, NewLine = true }
+            };
+            
+            OnStatusMessage?.Invoke(null, messages);
         }
 
         public static void WriteFailureStatusMessage()
         {
-            lock (Lock)
+            var messages = new List<StatusMessage>
             {
-                if (Messages.Count > 1)
-                {
-                    Messages.RemoveAt(Messages.Count - 1);
-                    Messages.Add(new StatusMessage { Message = "  (FAILED)", StatusMessageType = StatusMessageType.Failure, NewLine = true });
-                }
-            }
+                new() { Message = "  (FAILED)", StatusMessageType = StatusMessageType.Failure, NewLine = true }
+            };
 
-            if (IsEnabled)
-                OnStatusMessage?.Invoke(null, Messages);
-        }
-
-        public static void RemoveLastMessage()
-        {
-            lock (Lock)
-            {
-                Messages.RemoveAt(Messages.Count - 1);
-            }
+            OnStatusMessage?.Invoke(null, messages);
         }
 
         public static void ClearMessage()
         {
-            Messages.Clear();
+            OnStatusMessageClear?.Invoke(null, EventArgs.Empty);
         }
-
-        public static bool IsEnabled { get; set; }
     }
 }

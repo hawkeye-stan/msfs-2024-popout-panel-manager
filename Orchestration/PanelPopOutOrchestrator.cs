@@ -114,7 +114,6 @@ namespace MSFSPopoutPanelManager.Orchestration
                 return;
 
             StatusMessageWriter.ClearMessage();
-            StatusMessageWriter.IsEnabled = true;
             
             await StepReadyToFlyDelay(isAutoPopOut);
 
@@ -148,8 +147,6 @@ namespace MSFSPopoutPanelManager.Orchestration
             ActiveProfile.IsPopOutInProgress = false;
 
             OnPopOutCompleted?.Invoke(this, EventArgs.Empty);
-
-            StatusMessageWriter.IsEnabled = false;
         }
 
         private void StepPopoutPrep()
@@ -237,7 +234,7 @@ namespace MSFSPopoutPanelManager.Orchestration
             {
                 var result = WorkflowStepWithMessage.Execute("Connecting to ChasePlane API", async () =>
                 {
-                    if (!await ChasePlaneManager.Run(false))
+                    if (!await ChasePlaneManager.Run())
                         return false;
 
                     var result = ChasePlaneManager.IsChasePlaneViewsReady.WaitOne(10000);

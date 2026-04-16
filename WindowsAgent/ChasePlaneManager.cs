@@ -22,19 +22,6 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         public static ObservableRangeCollection<ChasePlaneCameraConfig> ChasePlaneCameraConfigs { get; private set; } = new();
 
         public static AutoResetEvent IsChasePlaneViewsReady = new AutoResetEvent(false);
-        public static event EventHandler<EventArgs> CameraViewsReady;
-
-        public static event EventHandler<EventArgs> ApiConnecting;
-
-        public static event EventHandler<EventArgs> ApiConnected;
-
-        public static event EventHandler<EventArgs> ApiConnectionFailed;
-
-        public static event EventHandler<EventArgs> ApiDisconnected;
-
-        public static event EventHandler<EventArgs> ApiGeneralFailed;
-
-        private static bool _isShownStatus;
 
         private static bool _isInitialized;
 
@@ -46,9 +33,9 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
         private static int _getCameraViewRetryCount = 3;
 
-        public static async Task<bool> Run(bool isShownStatus)
+        public static async Task<bool> Run()
         {
-            _isShownStatus = isShownStatus;
+            IsChasePlaneViewsReady.Reset();
 
             if (_clientWebSocket != null && _clientWebSocket.State == WebSocketState.Open)
             {
@@ -78,14 +65,6 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                 else
                 {
                     _isApiConnectionStarted = false;
-
-                    if (_isShownStatus)
-                    {
-                        StatusMessageWriter.WriteFailureStatusMessage();
-                        StatusMessageWriter.IsEnabled = false;
-                        ApiConnectionFailed?.Invoke(null, null);
-                    }
-                   
                     return false;
                 }
             }
@@ -121,15 +100,6 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             _isViewsReady = false;
 
             Debug.WriteLine("Connect to ChasePlane and initialize API");
-
-            if (_isShownStatus)
-            {
-                StatusMessageWriter.IsEnabled = true;
-                StatusMessageWriter.ClearMessage();
-                StatusMessageWriter.WriteMessage("Connecting to ChasePlane API", StatusMessageType.Info);
-                StatusMessageWriter.WriteExecutingStatusMessage();
-                ApiConnecting?.Invoke(null, null);
-            }
 
             Task timeoutTask = Task.Delay(TimeSpan.FromSeconds(5));
             Task webSocketConnectionTask = _clientWebSocket.ConnectAsync(new Uri("ws://localhost:8652"), CancellationToken.None);
@@ -184,12 +154,6 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                                     _isViewsReady = true;
                                     _getCameraViewRetryCount = 3;
 
-                                    if (_isShownStatus)
-                                    {
-                                        StatusMessageWriter.WriteMessage("Loading ChasePlane camera views", StatusMessageType.Info);
-                                        StatusMessageWriter.WriteExecutingStatusMessage();
-                                    }
-
                                     Thread.Sleep(1000);
                                     await GetCameraViews();
                                 }    
@@ -199,13 +163,6 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                                     continue;
 
                                 Debug.WriteLine(message);
-
-                                if (_isShownStatus && !_isInitialized)
-                                {
-                                    ApiConnected?.Invoke(null, null);
-
-                                    StatusMessageWriter.WriteOkStatusMessage();
-                                }
 
                                 _isInitialized = true;
 
@@ -241,14 +198,6 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                                         Thread.Sleep(1000);
                                         IsChasePlaneViewsReady.Set();
                                         IsChasePlaneViewsReady.Reset();
-
-                                        if (_isShownStatus)
-                                        {
-                                            StatusMessageWriter.WriteOkStatusMessage();
-                                            StatusMessageWriter.IsEnabled = false;
-
-                                            CameraViewsReady?.Invoke(null, null);
-                                        }
                                     }
                                     else if (_getCameraViewRetryCount > 0)
                                     {
@@ -261,13 +210,6 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                                     else
                                     {
                                         Debug.WriteLine("Getting camera view failed");
-
-                                        if (_isShownStatus)
-                                        {
-                                            StatusMessageWriter.WriteFailureStatusMessage();
-                                            StatusMessageWriter.IsEnabled = false;
-                                        }
-
                                         await Disconnect();
                                     }
                                 }
@@ -298,13 +240,6 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                 Debug.WriteLine("Disconnecting ChasePlane API");
                 if (_clientWebSocket != null && _clientWebSocket.State == WebSocketState.Open)
                     await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
-
-                if (_isShownStatus)
-                {
-                    StatusMessageWriter.WriteFailureStatusMessage();
-                    StatusMessageWriter.IsEnabled = false;
-                    ApiGeneralFailed?.Invoke(null, null);
-                }
             }
             catch
             {
@@ -316,6 +251,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                 _isViewsReady = false;
                 _clientWebSocket = null;
                 _msgListenerTask = null;
+                IsChasePlaneViewsReady.Reset();
             }
         }
 

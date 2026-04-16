@@ -4,6 +4,7 @@ using MSFSPopoutPanelManager.Shared;
 using MSFSPopoutPanelManager.WindowsAgent;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,8 +23,7 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 
         public IntPtr Handle { get; set; }
 
-        public event EventHandler<List<Run>> OnMessageUpdated;
-        public event EventHandler OnMessageCleared;
+        public ObservableCollection<Run> MessageList = new();
 
         public bool IsVisible
         {
@@ -43,79 +43,66 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 
             panelPopOutOrchestrator.OnPopOutStarted += (_, _) =>
             {
+                IsVisible = true;
+                MessageList.Clear();
                 CenterDialogToProcessWindow(WindowProcessManager.SimulatorProcess);
             };
+
             panelPopOutOrchestrator.OnPopOutCompleted += (_, _) =>
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    StatusMessageWriter.ClearMessage();
-                    IsVisible = false;
-                    OnMessageCleared?.Invoke(this, null);
+                    Task.Run(() => 
+                    {
+                        Thread.Sleep(1000);
+                        IsVisible = false;
+                        MessageList.Clear();
+                    });
                 });
-
-                Thread.Sleep(1000);
             };
 
-            ChasePlaneManager.ApiConnecting += (_, _) =>
+
+            panelSourceOrchestrator.OnChasePlaneLoadStarted += (_, _) =>
             {
                 IsVisible = true;
+                MessageList.Clear();
                 CenterDialogToProcessWindow(WindowProcessManager.AppProcess);
             };
 
-            ChasePlaneManager.ApiConnectionFailed += (_, _) =>
+            panelSourceOrchestrator.OnChasePlaneLoadCompleted += (_, _) =>
             {
-                Thread.Sleep(2000);
-
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    StatusMessageWriter.ClearMessage();
-                    IsVisible = false;
-                    OnMessageCleared?.Invoke(this, null);
-                });
-            };
-
-            ChasePlaneManager.ApiGeneralFailed += (_, _) =>
-            {
-                Thread.Sleep(2000);
-
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    StatusMessageWriter.ClearMessage();
-                    IsVisible = false;
-                    OnMessageCleared?.Invoke(this, null);
-                });
-            };
-
-            ChasePlaneManager.CameraViewsReady += (_, _) =>
-            {
-                Thread.Sleep(1000);
-
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    StatusMessageWriter.ClearMessage();
-                    IsVisible = false;
-                    OnMessageCleared?.Invoke(this, null);
+                    Task.Run(() =>
+                    {
+                        Thread.Sleep(1000);
+                        IsVisible = false;
+                        MessageList.Clear();
+                    });
                 });
             };
 
             StatusMessageWriter.OnStatusMessage += (_, e) =>
             {
+                if (!AppSettingData.ApplicationSetting.PopOutSetting.EnablePopOutMessages)
+                    return;
+
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    if (AppSettingData.ApplicationSetting.PopOutSetting.EnablePopOutMessages)
-                    {
-                        WindowActionManager.ApplyAlwaysOnTop(Handle, PanelType.StatusMessageWindow, true);
-                        var runs = FormatStatusMessages(e);
-                        OnMessageUpdated?.Invoke(this, FormatStatusMessages(e));
+                    WindowActionManager.ApplyAlwaysOnTop(Handle, PanelType.StatusMessageWindow, true);
 
-                        Task.Run(() => {
-                            Thread.Sleep(250);
-                            if (runs.Count > 0)
-                                IsVisible = true;
-                        });
+                    if (MessageList.Count > 0)
+                        IsVisible = true;
 
-                    }
+                    FormatStatusMessages(e);
+                });
+            };
+
+            StatusMessageWriter.OnStatusMessageClear += (_, e) =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageList.Clear();
                 });
             };
         }
@@ -132,45 +119,39 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
             WindowActionManager.ApplyAlwaysOnTop(Handle, PanelType.StatusMessageWindow, true);
         }
 
-        private List<Run> FormatStatusMessages(List<StatusMessage> messages)
+        private void FormatStatusMessages(List<StatusMessage> statusMessages)
         {
-            var runs = new List<Run>
+            foreach (var statusMessage in statusMessages)
             {
-                Capacity = 0
-            };
-
-            lock (StatusMessageWriter.Lock)
-            {
-                foreach (var statusMessage in messages)
+                var run = new Run
                 {
-                    var run = new Run
-                    {
-                        Text = statusMessage.Message
-                    };
+                    Text = statusMessage.Message
+                };
 
-                    switch (statusMessage.StatusMessageType)
-                    {
-                        case StatusMessageType.Success:
-                            run.Foreground = new SolidColorBrush(Colors.LimeGreen);
-                            break;
-                        case StatusMessageType.Failure:
-                            run.Foreground = new SolidColorBrush(Colors.IndianRed);
-                            break;
-                        case StatusMessageType.Executing:
-                            run.Foreground = new SolidColorBrush(Colors.NavajoWhite);
-                            break;
-                        case StatusMessageType.Info:
-                            break;
-                    }
-
-                    runs.Add(run);
-
-                    if (statusMessage.NewLine)
-                        runs.Add(new Run { Text = Environment.NewLine });
+                switch (statusMessage.StatusMessageType)
+                {
+                    case StatusMessageType.Success:
+                        run.Foreground = new SolidColorBrush(Colors.LimeGreen);
+                        if (MessageList.Count > 1)
+                            MessageList.RemoveAt(MessageList.Count - 1);
+                        break;
+                    case StatusMessageType.Failure:
+                        run.Foreground = new SolidColorBrush(Colors.IndianRed);
+                        if (MessageList.Count > 1)
+                            MessageList.RemoveAt(MessageList.Count - 1);
+                        break;
+                    case StatusMessageType.Executing:
+                        run.Foreground = new SolidColorBrush(Colors.NavajoWhite);
+                        break;
+                    case StatusMessageType.Info:
+                        break;
                 }
-            }
 
-            return runs;
+                MessageList.Add(run);
+
+                if (statusMessage.NewLine)
+                    MessageList.Add(new Run { Text = Environment.NewLine });
+            }
         }
     }
 }

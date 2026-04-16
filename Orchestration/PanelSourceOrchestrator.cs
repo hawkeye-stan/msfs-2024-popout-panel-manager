@@ -37,6 +37,8 @@ namespace MSFSPopoutPanelManager.Orchestration
         public event EventHandler<PanelConfig> OnOverlayShowed;
         public event EventHandler<PanelConfig> OnOverlayRemoved;
         public event EventHandler OnForceChasePlaneViewsRebind;
+        public event EventHandler OnChasePlaneLoadStarted;
+        public event EventHandler OnChasePlaneLoadCompleted;
 
         public ObservableRangeCollection<FixedCameraConfig> FixedCameraConfigs { get; private set; } = new();
 
@@ -69,12 +71,18 @@ namespace MSFSPopoutPanelManager.Orchestration
             // Connect websocket to ChasePlane API if enabled
             if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled)
             {
+                StatusMessageWriter.ClearMessage();
+
+                OnChasePlaneLoadStarted?.Invoke(this, EventArgs.Empty);
+
                 await Task.Run(() =>
                 {
                     var result = WorkflowStepWithMessage.Execute("Connecting to ChasePlane API", async () =>
                     {
-                        if(!await ChasePlaneManager.Run(true))
+                        if (!await ChasePlaneManager.Run())
+                        {
                             return false;
+                        }
 
                         var result = ChasePlaneManager.IsChasePlaneViewsReady.WaitOne(10000);
                         if (!result)
@@ -88,6 +96,8 @@ namespace MSFSPopoutPanelManager.Orchestration
 
                     return result;
                 });
+
+                OnChasePlaneLoadCompleted?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -232,7 +242,6 @@ namespace MSFSPopoutPanelManager.Orchestration
                         return false;
                 }
             }
-
 
             return true;
         }

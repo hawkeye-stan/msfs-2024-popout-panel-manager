@@ -10,8 +10,7 @@ namespace MSFSPopoutPanelManager.Shared
             if (isSubTask)
                 message = "    - " + message;
 
-            StatusMessageWriter.WriteMessage(message, StatusMessageType.Info);
-            StatusMessageWriter.WriteExecutingStatusMessage();
+            StatusMessageWriter.WriteExecutingStatusMessage(message);
 
             var result = await function.Invoke();
 
@@ -30,8 +29,7 @@ namespace MSFSPopoutPanelManager.Shared
             if (isSubTask)
                 message = "    - " + message;
 
-            StatusMessageWriter.WriteMessage(message, StatusMessageType.Info);
-            StatusMessageWriter.WriteExecutingStatusMessage();
+            StatusMessageWriter.WriteExecutingStatusMessage(message);
 
             var result = function.Invoke();
 
@@ -51,8 +49,7 @@ namespace MSFSPopoutPanelManager.Shared
             if (isSubTask)
                 message = "    - " + message;
 
-            StatusMessageWriter.WriteMessage(message, StatusMessageType.Info);
-            StatusMessageWriter.WriteExecutingStatusMessage();
+            StatusMessageWriter.WriteExecutingStatusMessage(message);
 
             function.Invoke();
 
