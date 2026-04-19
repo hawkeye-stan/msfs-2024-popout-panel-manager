@@ -1,5 +1,4 @@
-﻿using log4net.Core;
-using MSFSPopoutPanelManager.DomainModel.Profile;
+﻿using MSFSPopoutPanelManager.DomainModel.Profile;
 using MSFSPopoutPanelManager.Shared;
 using Newtonsoft.Json;
 using System;
@@ -22,6 +21,8 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         public static List<ChasePlaneView> ChasePlaneViews { get; private set; }
 
         public static ObservableRangeCollection<ChasePlaneCameraConfig> ChasePlaneCameraConfigs { get; private set; } = new();
+
+        public static bool HasCameraViews => ChasePlaneCameraConfigs.Count > 0;
 
         public static AutoResetEvent IsChasePlaneViewsReady = new AutoResetEvent(false);
 
@@ -79,15 +80,19 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             var view = ChasePlaneViews?.FirstOrDefault(v => v.Name.Equals(cameraViewName, StringComparison.InvariantCultureIgnoreCase) && v.Guid.Equals(guid, StringComparison.InvariantCultureIgnoreCase));
 
             if (view != null && _clientWebSocket != null && _clientWebSocket.State == WebSocketState.Open)
+            {
                 await SendMessage(_clientWebSocket, new ChasePlaneCamSetPositionMessage { Message = "cam_set_position", Payload = view });
-
-            Thread.Sleep(250);
+                Thread.Sleep(250);
+            }
         }
 
         public static async Task SetDefaultCamera()
         {
-            if(_clientWebSocket != null && _clientWebSocket.State == WebSocketState.Open)
+            if (_clientWebSocket != null && _clientWebSocket.State == WebSocketState.Open)
+            {
                 await SendMessage(_clientWebSocket, new ChasePlaneMessage { Message = "cam_load_default" });
+                Thread.Sleep(500);
+            }
         }
 
         public static async Task Disconnect()
@@ -102,9 +107,8 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             _isInitialized = false;
             _isViewsReady = false;
 
-            Debug.WriteLine("Connect to ChasePlane and initialize API");
-            FileLogger.WriteLog("POPM Status message: Connect to ChasePlane and initialize API", StatusMessageType.Info);
-
+            //Debug.WriteLine("Connect to ChasePlane and initialize API");
+            
             Task timeoutTask = Task.Delay(TimeSpan.FromSeconds(5));
             Task webSocketConnectionTask = _clientWebSocket.ConnectAsync(new Uri("ws://localhost:8652"), CancellationToken.None);
             await Task.WhenAny(webSocketConnectionTask, timeoutTask);
@@ -145,12 +149,10 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                         switch (chasePlaneMessage.Message.ToLower())
                         {
                             case "api_version":
-                                Debug.WriteLine(message);
-                                FileLogger.WriteLog("ChasePlane API Response message: " + message , StatusMessageType.Info);
+                                //Debug.WriteLine(message);
                                 break;
                             case "cam_mode_set":
-                                Debug.WriteLine(message);
-                                FileLogger.WriteLog("ChasePlane API Response message: " + message, StatusMessageType.Info);
+                                //Debug.WriteLine(message);
 
                                 var camModeSetMsg = JsonConvert.DeserializeObject<ChasePlaneMessage>(message);
 
@@ -167,8 +169,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                                 if (_isInitialized)
                                     continue;
 
-                                Debug.WriteLine(message);
-                                FileLogger.WriteLog("ChasePlane API Response message: " + message, StatusMessageType.Info);
+                                //Debug.WriteLine(message);
 
                                 _isInitialized = true;
 
@@ -176,8 +177,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                             case "api_reply":
                                 if (chasePlaneMessage.Payload.Message.Equals("get_views", StringComparison.InvariantCultureIgnoreCase))
                                 {
-                                    Debug.WriteLine(message);
-                                    FileLogger.WriteLog("ChasePlane API Response message: " + message, StatusMessageType.Info);
+                                    //Debug.WriteLine(message);
 
                                     var viewMessage = JsonConvert.DeserializeObject<ChasePlaneMessage>(message);
 
@@ -188,8 +188,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                                     
                                     if (chasePlaneViews != null && chasePlaneViews.Count > 0)
                                     {
-                                        Debug.WriteLine("Getting camera view OK");
-                                        FileLogger.WriteLog("POPM Status message: Getting camera view OK", StatusMessageType.Info);
+                                        //Debug.WriteLine("Getting camera view OK");
 
                                         foreach (var chasePlaneView in chasePlaneViews)
                                         {
@@ -213,17 +212,14 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                                     {
                                         _getCameraViewRetryCount--;
 
-                                        Debug.WriteLine("Getting camera view failed, retrying");
-                                        FileLogger.WriteLog("POPM Status message: Getting camera view failed, retrying", StatusMessageType.Info);
+                                        //Debug.WriteLine("Getting camera view failed, retrying");
 
                                         Thread.Sleep(2000);
                                         await GetCameraViews();
                                     }
                                     else
                                     {
-                                        Debug.WriteLine("Getting camera view failed");
-                                        FileLogger.WriteLog("POPM Status message: Getting camera view failed", StatusMessageType.Info);
-
+                                        //Debug.WriteLine("Getting camera view failed");
                                         await Disconnect();
                                     }
                                 }
@@ -255,8 +251,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         {
             try
             {
-                Debug.WriteLine("Disconnecting ChasePlane API");
-                FileLogger.WriteLog("POPM Status message: Disconnecting ChasePlane API", StatusMessageType.Info);
+                //Debug.WriteLine("Disconnecting ChasePlane API");
 
                 if (_clientWebSocket != null && _clientWebSocket.State == WebSocketState.Open)
                     await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
@@ -271,6 +266,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                 _isViewsReady = false;
                 _clientWebSocket = null;
                 _msgListenerTask = null;
+                ChasePlaneCameraConfigs.Clear();
                 IsChasePlaneViewsReady.Reset();
             }
         }
@@ -314,8 +310,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         {
             var message = JsonConvert.SerializeObject(chasePlaneMessage, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-            Debug.WriteLine("Sending message: " + message);
-            FileLogger.WriteLog("ChasePlane API Request message: " + message, StatusMessageType.Info);
+            //Debug.WriteLine("Sending message: " + message);
 
             var bytes = Encoding.UTF8.GetBytes(message);
             var arraySegment = new ArraySegment<byte>(bytes, 0, bytes.Length);

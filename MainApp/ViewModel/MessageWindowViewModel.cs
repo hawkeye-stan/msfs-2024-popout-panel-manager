@@ -43,9 +43,17 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 
             panelPopOutOrchestrator.OnPopOutStarted += (_, _) =>
             {
-                IsVisible = true;
-                MessageList.Clear();
-                CenterDialogToProcessWindow(WindowProcessManager.SimulatorProcess);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageList.Clear();
+                    CenterDialogToProcessWindow(WindowProcessManager.SimulatorProcess);
+
+                    Task.Run(() =>
+                    {
+                        Thread.Sleep(500);
+                        IsVisible = true;
+                    });
+                });
             };
 
             panelPopOutOrchestrator.OnPopOutCompleted += (_, _) =>
@@ -64,9 +72,20 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 
             panelSourceOrchestrator.OnChasePlaneLoadStarted += (_, _) =>
             {
-                IsVisible = true;
-                MessageList.Clear();
-                CenterDialogToProcessWindow(WindowProcessManager.AppProcess);
+                if (!ChasePlaneManager.HasCameraViews)
+                {
+                    MessageList.Clear();
+                    CenterDialogToProcessWindow(WindowProcessManager.AppProcess);
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        Task.Run(() =>
+                        {
+                            Thread.Sleep(500);
+                            IsVisible = true;
+                        });
+                    });
+                }
             };
 
             panelSourceOrchestrator.OnChasePlaneLoadCompleted += (_, _) =>

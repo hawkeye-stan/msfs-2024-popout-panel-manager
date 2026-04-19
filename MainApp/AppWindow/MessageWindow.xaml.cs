@@ -4,6 +4,7 @@ using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -14,6 +15,7 @@ namespace MSFSPopoutPanelManager.MainApp.AppWindow
     public partial class MessageWindow
     {
         private readonly MessageWindowViewModel _viewModel;
+        private object _lock = new object();
 
         public MessageWindow()
         {
@@ -54,15 +56,23 @@ namespace MSFSPopoutPanelManager.MainApp.AppWindow
             {
                 this.Topmost = true;
 
-                TextBlockMessage.Text = string.Empty;
-
                 if (_viewModel.MessageList == null || _viewModel.MessageList.Count == 0)
                     return;
-                                
-                foreach (var message in _viewModel.MessageList)
-                    TextBlockMessage.Inlines.Add(message);
 
-                ScrollViewerMessage.ScrollToEnd();
+                lock(_lock) {
+                    Task.Run(() =>
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            TextBlockMessage.Text = string.Empty;
+
+                            foreach (var message in _viewModel.MessageList)
+                                TextBlockMessage.Inlines.Add(message);
+
+                            ScrollViewerMessage.ScrollToEnd();
+                        });
+                    });
+                }
             });
         }
     }

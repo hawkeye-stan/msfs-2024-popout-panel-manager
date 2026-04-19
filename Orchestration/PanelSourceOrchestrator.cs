@@ -75,27 +75,30 @@ namespace MSFSPopoutPanelManager.Orchestration
 
                 OnChasePlaneLoadStarted?.Invoke(this, EventArgs.Empty);
 
-                await Task.Run(() =>
+                if (!ChasePlaneManager.HasCameraViews)
                 {
-                    var result = WorkflowStepWithMessage.Execute("Connecting to ChasePlane API", async () =>
+                    await Task.Run(() =>
                     {
-                        if (!await ChasePlaneManager.Run())
+                        var result = WorkflowStepWithMessage.Execute("Connecting to ChasePlane API", async () =>
                         {
-                            return false;
-                        }
+                            if (!await ChasePlaneManager.Run())
+                            {
+                                return false;
+                            }
 
-                        var result = ChasePlaneManager.IsChasePlaneViewsReady.WaitOne(10000);
-                        if (!result)
-                        {
-                            await ChasePlaneManager.Disconnect();
-                            return false;
-                        }
+                            var result = ChasePlaneManager.IsChasePlaneViewsReady.WaitOne(10000);
+                            if (!result)
+                            {
+                                await ChasePlaneManager.Disconnect();
+                                return false;
+                            }
 
-                        return true;
+                            return true;
+                        });
+
+                        return result;
                     });
-
-                    return result;
-                });
+                }
 
                 OnChasePlaneLoadCompleted?.Invoke(this, EventArgs.Empty);
             }

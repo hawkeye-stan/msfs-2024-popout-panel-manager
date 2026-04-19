@@ -4,7 +4,6 @@ using MSFSPopoutPanelManager.SimConnectAgent;
 using MSFSPopoutPanelManager.WindowsAgent;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -164,7 +163,7 @@ namespace MSFSPopoutPanelManager.Orchestration
             });
         }
         
-        public void ResetCameraView()
+        public async void ResetCameraView()
         {
             _simConnectProvider.SetCameraRequestAction(1);
         }
