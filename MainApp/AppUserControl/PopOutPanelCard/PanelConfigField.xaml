@@ -35,8 +35,7 @@
     <StackPanel IsEnabled="{c:Binding '!DataItem.FullScreen'}" Orientation="Horizontal">
         <StackPanel
             Width="47"
-            Orientation="Vertical"
-            Style="{StaticResource DisableWhenFullScreen}">
+            Orientation="Vertical">
             <TextBlock
                 Margin="0,2,0,0"
                 Style="{StaticResource TextBlockLabel}"
@@ -52,7 +51,6 @@
                 GotFocus="TextBox_GotFocus"
                 KeyDown="TextBox_KeyDown"
                 PreviewTextInput="TxtBox_NumbersOnly"
-                SourceUpdated="Data_SourceUpdated"
                 Style="{StaticResource FloatingHintOutlineTextBox}"
                 TextAlignment="Center"
                 TextChanged="TxtBox_NumbersOnlyTextChanged" />

@@ -70,8 +70,7 @@
                         <StackPanel
                             Grid.Column="1"
                             VerticalAlignment="Center"
-                            Orientation="Vertical"
-                            Style="{StaticResource DisableWhenFullScreen}">
+                            Orientation="Vertical">
                             <TextBlock
                                 Margin="6,2,0,0"
                                 Style="{StaticResource TextBlockLabel}"
@@ -98,8 +97,7 @@
                             Grid.Column="2"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
-                            Orientation="Vertical"
-                            Style="{StaticResource DisableWhenFullScreen}">
+                            Orientation="Vertical">
                             <TextBlock
                                 Margin="6,5,0,0"
                                 Style="{StaticResource TextBlockLabel}"
@@ -128,8 +126,7 @@
                             Grid.Column="3"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            Orientation="Vertical"
-                            Style="{StaticResource DisableWhenFullScreen}">
+                            Orientation="Vertical">
                             <TextBlock
                                 Margin="6,5,0,0"
                                 Style="{StaticResource TextBlockLabel}"

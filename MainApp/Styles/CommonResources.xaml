@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:c="clr-namespace:CalcBinding;assembly=CalcBinding"
     xmlns:converter="clr-namespace:MSFSPopoutPanelManager.MainApp.Converter"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
 
@@ -213,12 +214,38 @@
     <!--  Logic styles  -->
     <Style x:Key="DisableWhenFullScreen" TargetType="StackPanel">
         <Style.Triggers>
-            <DataTrigger Binding="{Binding DataItem.FullScreen}" Value="True">
+            <DataTrigger Binding="{c:Binding 'DataItem.FullScreen or DataItem.IsEditingPanel'}" Value="True">
                 <Setter Property="Opacity" Value="0.5" />
                 <Setter Property="IsEnabled" Value="False" />
                 <Setter Property="IsHitTestVisible" Value="False" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding DataItem.FullScreen}" Value="False">
+            <DataTrigger Binding="{c:Binding 'DataItem.FullScreen or DataItem.IsEditingPanel'}" Value="False">
+                <Setter Property="IsEnabled" Value="True" />
+                <Setter Property="IsHitTestVisible" Value="True" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="DisableWhenIsEditingPanelOrHideTitlebar" TargetType="StackPanel">
+        <Style.Triggers>
+            <DataTrigger Binding="{c:Binding 'DataItem.IsEditingPanel or DataItem.HideTitlebar'}" Value="True">
+                <Setter Property="Opacity" Value="0.5" />
+                <Setter Property="IsEnabled" Value="False" />
+                <Setter Property="IsHitTestVisible" Value="False" />
+            </DataTrigger>
+            <DataTrigger Binding="{c:Binding 'DataItem.IsEditingPanel or DataItem.HideTitlebar'}" Value="False">
+                <Setter Property="IsEnabled" Value="True" />
+                <Setter Property="IsHitTestVisible" Value="True" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="DisableWhenHideTitlebar" TargetType="ToggleButton" BasedOn="{StaticResource IconToggleButton}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding DataItem.HideTitlebar}" Value="True">
+                <Setter Property="Opacity" Value="0.5" />
+                <Setter Property="IsEnabled" Value="False" />
+                <Setter Property="IsHitTestVisible" Value="False" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding DataItem.HideTitlebar}" Value="False">
                 <Setter Property="IsEnabled" Value="True" />
                 <Setter Property="IsHitTestVisible" Value="True" />
             </DataTrigger>

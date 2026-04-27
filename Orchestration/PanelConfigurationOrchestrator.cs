@@ -150,20 +150,18 @@ namespace MSFSPopoutPanelManager.Orchestration
                         WindowActionManager.SetWindowCaption(panelConfig.PanelHandle, name);
                     }
                 }
-                else if (!panelConfig.FullScreen)
+                else if (!panelConfig.FullScreen )
                 {
                     switch (configPropertyName)
                     {
                         case PanelConfigPropertyName.Left:
                         case PanelConfigPropertyName.Top:
-                            WindowActionManager.MoveWindow(panelConfig.PanelHandle, panelConfig.Left, panelConfig.Top, panelConfig.Width, panelConfig.Height);
-                            break;
                         case PanelConfigPropertyName.Width:
                         case PanelConfigPropertyName.Height:
                             if (panelConfig.HideTitlebar)
                             {
                                 WindowActionManager.ApplyHidePanelTitleBar(panelConfig.PanelHandle, false);
-                                Thread.Sleep(100);
+                                Thread.Sleep(250);
                             }
 
                             WindowActionManager.MoveWindow(panelConfig.PanelHandle, panelConfig.Left, panelConfig.Top, panelConfig.Width, panelConfig.Height);
