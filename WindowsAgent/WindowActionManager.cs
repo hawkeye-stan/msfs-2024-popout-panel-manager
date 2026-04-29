@@ -44,11 +44,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             PInvoke.SetWindowLong(hwnd, PInvokeConstant.GWL_STYLE, currentStyle);
             Thread.Sleep(250);
                         
-            if (hideTitleBar)
-            {
-                PInvoke.SetWindowPos(hwnd, new IntPtr(PInvokeConstant.HWND_TOPMOST), 0, 0, rect.Width, rect.Height, PInvokeConstant.SWP_NOMOVE | PInvokeConstant.SWP_FRAMECHANGED | PInvokeConstant.SWP_NOSIZE);
-            }
-            else
+            if (!hideTitleBar)
             {
                 rectShadow = PInvoke.GetWindowRectShadow(hwnd);
                 PInvoke.MoveWindow(hwnd, rect.Left + rectShadow.Left - _borderWidth, rect.Top - _borderWidth, rect.Width + rectShadow.Width + 2 * _borderWidth, rect.Height + rectShadow.Height + 2 * _borderWidth, true);

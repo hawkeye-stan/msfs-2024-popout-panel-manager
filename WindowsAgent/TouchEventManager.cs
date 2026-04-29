@@ -219,7 +219,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         {
             return coor.pt.X > panelConfig.Left
                    && coor.pt.X < panelConfig.Left + panelConfig.Width
-                   && coor.pt.Y > panelConfig.Top + (panelConfig.HideTitlebar ? 5 : PANEL_MENUBAR_HEIGHT)
+                   && coor.pt.Y > panelConfig.Top + (panelConfig.HideTitlebar ? 1 : PANEL_MENUBAR_HEIGHT)
                    && coor.pt.Y < panelConfig.Top + panelConfig.Height;
         }
 
