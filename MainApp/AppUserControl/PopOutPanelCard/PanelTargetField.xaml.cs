@@ -185,7 +185,7 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl.PopOutPanelCard
             {
                 this.ComboBoxCameraSelection.ItemsSource = ChasePlaneManager.ChasePlaneCameraConfigs;
 
-                var cameraConfig = _dataContext.DataItem.ChasePlaneCameraConfigs?.FirstOrDefault(x => x.AircraftName.Equals(_dataContext.FlightSimData.AircraftName, StringComparison.InvariantCultureIgnoreCase));
+                var cameraConfig = _dataContext.DataItem?.ChasePlaneCameraConfigs?.FirstOrDefault(x => x.AircraftName.Equals(_dataContext.FlightSimData.AircraftName, StringComparison.InvariantCultureIgnoreCase));
 
                 if (cameraConfig != null)
                 {
