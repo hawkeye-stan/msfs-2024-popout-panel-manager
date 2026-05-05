@@ -22,7 +22,7 @@ namespace MSFSPopoutPanelManager.Orchestration
         private readonly PanelConfigurationOrchestrator _panelConfigurationOrchestrator;
         private readonly KeyboardOrchestrator _keyboardOrchestrator;
 
-        public event EventHandler OnSuccessfulPopOut;
+        public event EventHandler OnSuccessfulPopOutAndCloseApp;
 
         public PanelPopOutOrchestrator(SharedStorage sharedStorage, FlightSimOrchestrator flightSimOrchestrator, PanelSourceOrchestrator panelSourceOrchestrator, PanelConfigurationOrchestrator panelConfigurationOrchestrator, KeyboardOrchestrator keyboardOrchestrator) : base(sharedStorage)
         {
@@ -459,7 +459,9 @@ namespace MSFSPopoutPanelManager.Orchestration
                 else
                 {
                     StatusMessageWriter.WriteMessageWithNewLine("Pop out has been completed successfully.", StatusMessageType.Info);
-                    OnSuccessfulPopOut?.Invoke(this, null);
+
+                    if (AppSettingData.ApplicationSetting.PopOutSetting.EnableCloseAfterSuccessfulPopOut)
+                        OnSuccessfulPopOutAndCloseApp?.Invoke(this, null);
                 }
             });
         }

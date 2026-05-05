@@ -26,7 +26,7 @@ namespace MSFSPopoutPanelManager.Orchestration
             FlightSimData.ProfileDataRef = ProfileData;
 
             _flightSimOrchestrator.OnSimulatorExited += (_, _) => { ApplicationClose(); Environment.Exit(0); };
-            _panelPopOutOrchestrator.OnSuccessfulPopOut += HandleSuccessfulPopOut;
+            _panelPopOutOrchestrator.OnSuccessfulPopOutAndCloseApp += HandleSuccessfulPopOutAndCloseApp;
 
             // Delete all existing cache version of app
             helpOrchestrator.DeleteAppCache();
@@ -65,13 +65,10 @@ namespace MSFSPopoutPanelManager.Orchestration
             };
         }
 
-        private void HandleSuccessfulPopOut(object sender, EventArgs e)
+        private void HandleSuccessfulPopOutAndCloseApp(object sender, EventArgs e)
         {
-            if (AppSettingData.ApplicationSetting.PopOutSetting.EnableCloseAfterSuccessfulPopOut)
-            {
-                ApplicationClose();
-                Environment.Exit(0);
-            }
+            ApplicationClose();
+            Environment.Exit(0);
         }
 
         public void ApplicationClose()
