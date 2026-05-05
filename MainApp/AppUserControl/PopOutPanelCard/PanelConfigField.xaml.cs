@@ -94,11 +94,6 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl.PopOutPanelCard
             }
         }
 
-        private void Data_SourceUpdated(object sender, DataTransferEventArgs e)
-        {
-            _viewModel.DataUpdatedCommand.Execute(null);
-        }
-
         private void BtnPopupBoxOpen_Click(object sender, RoutedEventArgs e)
         {
             PopupBoxAdjustment.IsPopupOpen = true;

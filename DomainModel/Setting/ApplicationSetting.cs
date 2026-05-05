@@ -30,6 +30,8 @@ namespace MSFSPopoutPanelManager.DomainModel.Setting
 
         public WindowedModeSetting WindowedModeSetting { get; set; } = new();
 
+        public ChasePlaneSetting ChasePlaneSetting { get; set; } = new();
+
         public SystemSetting SystemSetting { get; set; } = new();
 
         public KeyboardShortcutSetting KeyboardShortcutSetting { get; set; } = new();

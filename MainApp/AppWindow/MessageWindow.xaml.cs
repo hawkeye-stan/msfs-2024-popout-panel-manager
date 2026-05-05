@@ -1,20 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Extensions.DependencyInjection;
+using MSFSPopoutPanelManager.MainApp.ViewModel;
+using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Interop;
-using Microsoft.Extensions.DependencyInjection;
-using MSFSPopoutPanelManager.MainApp.ViewModel;
 
 namespace MSFSPopoutPanelManager.MainApp.AppWindow
 {
     public partial class MessageWindow
     {
         private readonly MessageWindowViewModel _viewModel;
+        private object _lock = new object();
 
         public MessageWindow()
         {
@@ -44,21 +45,35 @@ namespace MSFSPopoutPanelManager.MainApp.AppWindow
                 // Set window click through
                 WindowsServices.SetWindowExTransparent(_viewModel.Handle);
 
-                _viewModel.OnMessageUpdated += ViewModel_OnMessageUpdated;
+                // Set Textblock binding
+                _viewModel.MessageList.CollectionChanged += Messages_CollectionChanged;
             };
         }
 
-        private void ViewModel_OnMessageUpdated(object sender, List<Run> e)
+        private void Messages_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (e == null)
-                return;
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                this.Topmost = true;
 
-            TextBlockMessage.Inlines.Clear();
+                if (_viewModel.MessageList == null || _viewModel.MessageList.Count == 0)
+                    return;
 
-            foreach (var run in e)
-                TextBlockMessage.Inlines.Add(run);
+                lock(_lock) {
+                    Task.Run(() =>
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            TextBlockMessage.Text = string.Empty;
 
-            ScrollViewerMessage.ScrollToEnd();
+                            foreach (var message in _viewModel.MessageList)
+                                TextBlockMessage.Inlines.Add(message);
+
+                            ScrollViewerMessage.ScrollToEnd();
+                        });
+                    });
+                }
+            });
         }
     }
 

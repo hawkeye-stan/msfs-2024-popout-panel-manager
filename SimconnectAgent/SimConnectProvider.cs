@@ -16,9 +16,8 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
         private List<SimDataItem> _requiredSimData;
 
         private System.Timers.Timer _requiredRequestDataTimer;
-        private bool _isPowerOnForPopOut;
-        private bool _isAvionicsOnForPopOut;
         private bool _isTrackIRManaged;
+        private bool _isFlightStarted;
 
         public event EventHandler OnConnected;
         public event EventHandler OnDisconnected;
@@ -29,7 +28,7 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
         public event EventHandler<List<SimDataItem>> OnSimConnectDataRequiredRefreshed;
         public event EventHandler<int> OnSimConnectDataEventFrameRefreshed;
         public event EventHandler<string> OnActiveAircraftChanged;
-
+                
         public SimConnectProvider()
         {
             _simConnector = new SimConnector();
@@ -201,37 +200,58 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
             if (_currentCameraState == cameraState)
                 return;
 
-            if (cameraState == CameraState.Cockpit)
-                OnIsInCockpitChanged?.Invoke(this, true);
-
             Debug.WriteLine($"Current State: {_currentCameraState} - Camera State: {cameraState}");
 
             switch (_currentCameraState)
             {
-                case CameraState.ReadyToFlyScreen:
                 case CameraState.PreloadScreen:
                 case CameraState.LoadScreen:
-                case CameraState.HomeScreen:
+                case CameraState.ReadyToFlyScreen:
                     if (cameraState == CameraState.Cockpit)
                     {
                         _currentCameraState = cameraState;
-                        OnFlightStarted?.Invoke(this, EventArgs.Empty);
+
+                        if (!_isFlightStarted)
+                        {
+                            if (_currentSimConnectEvent != SimConnectEvent.VIEW)
+                            {
+                                _isWaitForReadyToFlyCompleted = true;
+                            }
+                            else
+                            {
+                                _isFlightStarted = true;
+                                OnFlightStarted?.Invoke(this, EventArgs.Empty);
+                            }
+                        }
+
+                        OnIsInCockpitChanged?.Invoke(this, true);
                     }
                     break;
                 case CameraState.RestartScreen:
                     if (cameraState == CameraState.PreloadScreen || cameraState == CameraState.HomeScreen)
                     {
+                        _isFlightStarted = false;
                         _currentCameraState = cameraState;
                         OnFlightStopped?.Invoke(this, EventArgs.Empty);
                         OnIsInCockpitChanged?.Invoke(this, false);
                     }
                     break;
                 case CameraState.Cockpit:
-                    if (cameraState == CameraState.HomeScreen)
+                    if (cameraState == CameraState.HomeScreen || cameraState == CameraState.RestartScreen || cameraState == CameraState.PreloadScreen)
                     {
+                        _isFlightStarted = false;
                         _currentCameraState = cameraState;
                         OnFlightStopped?.Invoke(this, EventArgs.Empty);
                         OnIsInCockpitChanged?.Invoke(this, false);
+                    }
+                    break;
+                case CameraState.Unknown:
+                    if (cameraState == CameraState.Cockpit)
+                    {
+                        _currentCameraState = cameraState;
+                        OnIsInCockpitChanged?.Invoke(this, true);
+
+                        Debug.WriteLine("Flight Started:" + _isFlightStarted);
                     }
                     break;
             }
@@ -240,9 +260,18 @@ namespace MSFSPopoutPanelManager.SimConnectAgent
                 _currentCameraState = cameraState;
         }
 
+        private SimConnectEvent _currentSimConnectEvent = SimConnectEvent.SIM_STOP;
+        private bool _isWaitForReadyToFlyCompleted = false;
+
         private void HandleReceiveSystemEvent(object sender, SimConnectEvent e)
         {
-            // TBD
+            if(_currentSimConnectEvent == SimConnectEvent.SIM_START && e == SimConnectEvent.VIEW && _isWaitForReadyToFlyCompleted)
+            {
+                _isFlightStarted = true;
+                _isWaitForReadyToFlyCompleted = false;
+                OnFlightStarted?.Invoke(this, EventArgs.Empty);
+            }
+            _currentSimConnectEvent = e;
         }
     }
 }

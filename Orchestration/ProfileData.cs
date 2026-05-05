@@ -139,8 +139,6 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         public void SetActiveProfile(Guid id)
         {
-            StatusMessageWriter.ClearMessage();
-
             if (id == Guid.Empty && Profiles.Count == 0)
             {
                 ActiveProfile = null;

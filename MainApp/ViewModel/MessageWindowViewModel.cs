@@ -4,7 +4,9 @@ using MSFSPopoutPanelManager.Shared;
 using MSFSPopoutPanelManager.WindowsAgent;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -14,17 +16,14 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 {
     public class MessageWindowViewModel : BaseViewModel
     {
-        private const int WINDOW_WIDTH_POPOUT_MESSAGE = 400;
-        private const int WINDOW_HEIGHT_POPOUT_MESSAGE = 225;
-
-        private const int WINDOW_WIDTH_REGULAR_MESSAGE = 300;
-        private const int WINDOW_HEIGHT_REGULAR_MESSAGE = 75;
+        private const int WINDOW_WIDTH = 400;
+        private const int WINDOW_HEIGHT = 225;
 
         private bool _isVisible;
 
         public IntPtr Handle { get; set; }
 
-        public event EventHandler<List<Run>> OnMessageUpdated;
+        public ObservableCollection<Run> MessageList = new();
 
         public bool IsVisible
         {
@@ -35,69 +34,112 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                     return;
 
                 _isVisible = value;
-                if (value)
-                {
-                    CenterDialogToGameWindow();
-                }
             }
         }
-
-        public int WindowWidth { get; set; }
-
-        public int WindowHeight { get; set; }
 
         public MessageWindowViewModel(SharedStorage sharedStorage, PanelSourceOrchestrator panelSourceOrchestrator, PanelPopOutOrchestrator panelPopOutOrchestrator) : base(sharedStorage)
         {
             IsVisible = false;
+
             panelPopOutOrchestrator.OnPopOutStarted += (_, _) =>
             {
-                IsVisible = true;
-                WindowWidth = WINDOW_WIDTH_POPOUT_MESSAGE;
-                WindowHeight = WINDOW_HEIGHT_POPOUT_MESSAGE;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageList.Clear();
+                    CenterDialogToProcessWindow(WindowProcessManager.SimulatorProcess);
+
+                    Task.Run(() =>
+                    {
+                        Thread.Sleep(500);
+                        IsVisible = true;
+                    });
+                });
             };
+
             panelPopOutOrchestrator.OnPopOutCompleted += (_, _) =>
             {
-                Thread.Sleep(1000);
-                IsVisible = false;
-                WindowWidth = WINDOW_WIDTH_POPOUT_MESSAGE;
-                WindowHeight = WINDOW_HEIGHT_POPOUT_MESSAGE;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Task.Run(() => 
+                    {
+                        Thread.Sleep(500);
+                        IsVisible = false;
+                        MessageList.Clear();
+                    });
+                });
+            };
+
+
+            panelSourceOrchestrator.OnChasePlaneLoadStarted += (_, _) =>
+            {
+                if (!ChasePlaneManager.HasCameraViews)
+                {
+                    MessageList.Clear();
+                    CenterDialogToProcessWindow(WindowProcessManager.AppProcess);
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        Task.Run(() =>
+                        {
+                            Thread.Sleep(500);
+                            IsVisible = true;
+                        });
+                    });
+                }
+            };
+
+            panelSourceOrchestrator.OnChasePlaneLoadCompleted += (_, _) =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Task.Run(() =>
+                    {
+                        IsVisible = false;
+                        MessageList.Clear();
+                    });
+                });
             };
 
             StatusMessageWriter.OnStatusMessage += (_, e) =>
             {
+                if (!AppSettingData.ApplicationSetting.PopOutSetting.EnablePopOutMessages)
+                    return;
+
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    if (AppSettingData.ApplicationSetting.PopOutSetting.EnablePopOutMessages)
-                    {
-                        WindowActionManager.ApplyAlwaysOnTop(Handle, PanelType.StatusMessageWindow, true);
-                        OnMessageUpdated?.Invoke(this, FormatStatusMessages(e));
+                    WindowActionManager.ApplyAlwaysOnTop(Handle, PanelType.StatusMessageWindow, true);
 
-                        CenterDialogToGameWindow();
-                    }
+                    if (MessageList.Count > 0)
+                        IsVisible = true;
+
+                    FormatStatusMessages(e);
+                });
+            };
+
+            StatusMessageWriter.OnStatusMessageClear += (_, e) =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageList.Clear();
                 });
             };
         }
 
-        private void CenterDialogToGameWindow()
+        private void CenterDialogToProcessWindow(WindowProcess windowProcess)
         {
-            if (WindowProcessManager.SimulatorProcess == null)
+            if (windowProcess == null)
                 return;
 
-            var simulatorRectangle = WindowActionManager.GetWindowRectangle(WindowProcessManager.SimulatorProcess.Handle);
-            var left = simulatorRectangle.Left + simulatorRectangle.Width / 2 - WindowWidth / 2;
-            var top = simulatorRectangle.Top + simulatorRectangle.Height / 2 - WindowHeight / 2;
-            WindowActionManager.MoveWindow(Handle, left, top, WindowWidth, WindowHeight);
+            var simulatorRectangle = WindowActionManager.GetWindowRectangle(windowProcess.Handle);
+            var left = simulatorRectangle.Left + simulatorRectangle.Width / 2 - WINDOW_WIDTH / 2;
+            var top = simulatorRectangle.Top + simulatorRectangle.Height / 2 - WINDOW_HEIGHT / 2;
+            WindowActionManager.MoveWindow(Handle, left, top, WINDOW_WIDTH, WINDOW_HEIGHT);
             WindowActionManager.ApplyAlwaysOnTop(Handle, PanelType.StatusMessageWindow, true);
         }
 
-        private List<Run> FormatStatusMessages(List<StatusMessage> messages)
+        private void FormatStatusMessages(List<StatusMessage> statusMessages)
         {
-            var runs = new List<Run>
-            {
-                Capacity = 0
-            };
-
-            foreach (var statusMessage in messages)
+            foreach (var statusMessage in statusMessages)
             {
                 var run = new Run
                 {
@@ -108,9 +150,13 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                 {
                     case StatusMessageType.Success:
                         run.Foreground = new SolidColorBrush(Colors.LimeGreen);
+                        if (MessageList.Count > 1)
+                            MessageList.RemoveAt(MessageList.Count - 1);
                         break;
                     case StatusMessageType.Failure:
                         run.Foreground = new SolidColorBrush(Colors.IndianRed);
+                        if (MessageList.Count > 1)
+                            MessageList.RemoveAt(MessageList.Count - 1);
                         break;
                     case StatusMessageType.Executing:
                         run.Foreground = new SolidColorBrush(Colors.NavajoWhite);
@@ -119,13 +165,11 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                         break;
                 }
 
-                runs.Add(run);
+                MessageList.Add(run);
 
                 if (statusMessage.NewLine)
-                    runs.Add(new Run { Text = Environment.NewLine });
+                    MessageList.Add(new Run { Text = Environment.NewLine });
             }
-
-            return runs;
         }
     }
 }

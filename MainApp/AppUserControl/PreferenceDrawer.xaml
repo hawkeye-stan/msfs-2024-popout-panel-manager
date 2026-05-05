@@ -35,6 +35,7 @@
                 <TreeViewItem x:Name="CategoryTouchSettings" Header="Touch Settings" />
                 <TreeViewItem x:Name="CategoryTrackIrSettings" Header="Track IR Settings" />
                 <TreeViewItem x:Name="CategoryWindowedModeSettings" Header="Windowed Mode Settings" />
+                <TreeViewItem x:Name="ChasePlaneSettings" Header="ChasePlane Settings" />
             </TreeView>
         </ScrollViewer>
 
@@ -211,7 +212,7 @@
                         </DockPanel>
                     </StackPanel>
                     <StackPanel Style="{StaticResource SectionHeader}">
-                        <TextBlock Style="{StaticResource TextBlockHeading}">Enable Return to Predefined Camera View After Pop Out</TextBlock>
+                        <TextBlock Style="{StaticResource TextBlockHeading}">Enable Return to Predefined Camera View After Pop Out (Not applicable to ChasePlane)</TextBlock>
                         <Line />
                         <DockPanel>
                             <ToggleButton IsChecked="{Binding AppSettingData.ApplicationSetting.PopOutSetting.AfterPopOutCameraView.IsEnabled, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
@@ -258,6 +259,14 @@
                                     Configure key binding for custom camera view to load. Requires binding keystroke to custom camera in MSFS control setting. (Default: Alt-1 to load).
                                 </TextBlock>
                             </DockPanel>
+                        </DockPanel>
+                    </StackPanel>
+                    <StackPanel Style="{StaticResource SectionHeader}">
+                        <TextBlock Style="{StaticResource TextBlockHeading}">Enable Closing of Pop Out Panel Manager After Successful Pop Out</TextBlock>
+                        <Line />
+                        <DockPanel>
+                            <ToggleButton IsChecked="{Binding AppSettingData.ApplicationSetting.PopOutSetting.EnableCloseAfterSuccessfulPopOut, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
+                            <TextBlock Style="{StaticResource TextBlockLabel}">Enable closing of Pop Out Panel Manager after performing successful pop out.</TextBlock>
                         </DockPanel>
                     </StackPanel>
                     <StackPanel Style="{StaticResource SectionHeader}">
@@ -448,6 +457,20 @@
                             <TextBlock Style="{StaticResource TextBlockLabel}">
                                 Enable automatic resize of MSFS game window when using Windowed Display Mode. When playing the game in Windowed Display Mode, this setting is used to resize game window to match original size
                                 and location when panel profile was initially defined. When this setting is first checked, current game window size and location will also be saved automatically.
+                            </TextBlock>
+                        </DockPanel>
+                    </StackPanel>
+                </StackPanel>
+
+                <!--  ChasePlane Settings  -->
+                <StackPanel Orientation="Vertical" Visibility="{Binding ElementName=ChasePlaneSettings, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                    <StackPanel Style="{StaticResource SectionHeader}">
+                        <TextBlock Style="{StaticResource TextBlockHeading}">Override default camera view and use ChasePlane camera view when defining pop out panel</TextBlock>
+                        <Line />
+                        <DockPanel>
+                            <ToggleButton IsChecked="{Binding AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
+                            <TextBlock Style="{StaticResource TextBlockLabel}">
+                                 Enable use of ChasePlane camera view. This setting will apply to all aircraft profiles. You will need to edit panel source for all existing profiles to realign the location of each panel once this setthing is turned on. Re-editing panel source is needed because this step will add additional ChasePlane information to aircraft profiles. 
                             </TextBlock>
                         </DockPanel>
                     </StackPanel>

@@ -1,8 +1,9 @@
 ﻿using MSFSPopoutPanelManager.DomainModel.Profile;
+using MSFSPopoutPanelManager.Shared;
 using MSFSPopoutPanelManager.WindowsAgent;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Point = System.Drawing.Point;
@@ -21,6 +22,12 @@ namespace MSFSPopoutPanelManager.Orchestration
             ProfileData.OnActiveProfileChanged += (_, _) => { CloseAllPanelSource(); };
 
             flightSimOrchestrator.OnFlightStopped += (_, _) => { CloseAllPanelSource(); };
+
+            flightSimOrchestrator.OnCameraViewTypeAndIndex2MaxChanged += (_, _) =>
+            {
+                FixedCameraConfigs.Clear();
+                FixedCameraConfigs.AddRange(GetFixedCameraConfigs());
+            };
         }
 
         internal IntPtr ApplicationHandle { get; set; }
@@ -29,13 +36,17 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         public event EventHandler<PanelConfig> OnOverlayShowed;
         public event EventHandler<PanelConfig> OnOverlayRemoved;
+        public event EventHandler OnForceChasePlaneViewsRebind;
+        public event EventHandler OnChasePlaneLoadStarted;
+        public event EventHandler OnChasePlaneLoadCompleted;
+
+        public ObservableRangeCollection<FixedCameraConfig> FixedCameraConfigs { get; private set; } = new();
 
         public void StartPanelSelectionEvent()
         {
             if (ActiveProfile.IsSelectingPanelSource)
                 return;
-
-            WindowProcessManager.SetApplicationProcess();
+                        
             ActiveProfile.IsSelectingPanelSource = true;
         }
 
@@ -46,25 +57,67 @@ namespace MSFSPopoutPanelManager.Orchestration
             InputHookManager.StartMouseHook();
         }
 
-        public void StartEditPanelSources()
+        public async Task StartEditPanelSources()
         {
-            if (_isEditingPanelSourceLock)
-                return;
+            OnForceChasePlaneViewsRebind?.Invoke(this, null);
 
-            _isEditingPanelSourceLock = true;
+            // clear all number circles
+            foreach (var panelConfig in ActiveProfile.PanelConfigs)
+                OnOverlayRemoved?.Invoke(this, panelConfig);
 
             // Turn off TrackIR if TrackIR is started
             _flightSimOrchestrator.TurnOffTrackIR();
+
+            // Connect websocket to ChasePlane API if enabled
+            if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled)
+            {
+                StatusMessageWriter.ClearMessage();
+
+                OnChasePlaneLoadStarted?.Invoke(this, EventArgs.Empty);
+
+                if (!ChasePlaneManager.HasCameraViews)
+                {
+                    await Task.Run(() =>
+                    {
+                        var result = WorkflowStepWithMessage.Execute("Connecting to ChasePlane API", async () =>
+                        {
+                            if (!await ChasePlaneManager.Run())
+                            {
+                                return false;
+                            }
+
+                            var result = ChasePlaneManager.IsChasePlaneViewsReady.WaitOne(10000);
+                            if (!result)
+                            {
+                                await ChasePlaneManager.Disconnect();
+                                return false;
+                            }
+
+                            return true;
+                        });
+
+                        return result;
+                    });
+                }
+
+                OnChasePlaneLoadCompleted?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         public async Task EndEditPanelSources()
         {
-            if (!_isEditingPanelSourceLock)
-                return;
+            // Connect websocket to ChasePlane API if enabled
+            if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled)
+            {
+                await ChasePlaneManager.SetDefaultCamera();
 
-            _flightSimOrchestrator.ResetCameraView();
-
-            _isEditingPanelSourceLock = false;
+                // Validate ChasePlane panel config to enable/disable start pop out button
+                ActiveProfile.IsDisabledStartPopOut = !IsPanelConfigsValid();
+            }
+            else
+            {
+                _flightSimOrchestrator.ResetCameraView();
+            }
 
             foreach (var panelConfig in ProfileData.ActiveProfile.PanelConfigs)
             {
@@ -95,10 +148,25 @@ namespace MSFSPopoutPanelManager.Orchestration
                 panelConfig.IsEditingPanel = false;
             }
 
-            panel.IsEditingPanel = true;
+            if (panel != null)
+            {
+                panel.IsEditingPanel = true;
 
-            if (panel.HasPanelSource)
-                OnOverlayShowed?.Invoke(this, panel);
+                if (panel.HasPanelSource)
+                    OnOverlayShowed?.Invoke(this, panel);
+            }
+        }
+
+        public void RemovePanelSource(PanelConfig panelConfig)
+        {
+            // Disable hooks if active
+            InputHookManager.EndMouseHook();
+
+            ProfileData.ActiveProfile.CurrentMoveResizePanelId = Guid.Empty;
+
+            OnOverlayRemoved?.Invoke(this, panelConfig);
+
+            ProfileData.ActiveProfile.PanelConfigs.Remove(panelConfig);
         }
 
         public void CloseAllPanelSource()
@@ -106,7 +174,6 @@ namespace MSFSPopoutPanelManager.Orchestration
             if (ActiveProfile != null)
             {
                 ActiveProfile.IsEditingPanelSource = false;
-                _isEditingPanelSourceLock = false;
 
                 foreach (var panelConfig in ActiveProfile.PanelConfigs)
                     OnOverlayRemoved?.Invoke(this, panelConfig);
@@ -115,23 +182,10 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         public void SetCamera(PanelConfig panel)
         {
-            if (!FlightSimData.IsInCockpit)
-                return;
-
-            if (panel.FixedCameraConfig == null)
-                return;
-            
-            Task.Run(() =>
-            {
-                if (panel.FixedCameraConfig.CameraType == CameraType.Cockpit)
-                {
-                    _flightSimOrchestrator.ResetCameraView();
-                    Thread.Sleep(250);
-                }
-
-                _flightSimOrchestrator.SetFixedCamera(panel.FixedCameraConfig.CameraType, panel.FixedCameraConfig.CameraIndex);
-            });
-            Thread.Sleep(250);
+            if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled)
+                SetChasePlaneCamera(panel);
+            else
+                SetMsfsCamera(panel);
         }
 
         public void HandleOnPanelSelectionAdded(PanelConfig panelConfig, Point e)
@@ -161,25 +215,47 @@ namespace MSFSPopoutPanelManager.Orchestration
             ActiveProfile.IsSelectingPanelSource = false;
         }
 
-        public void RemovePanelSource(PanelConfig panelConfig)
+        public bool IsPanelConfigsValid()
         {
-            // Disable hooks if active
-            InputHookManager.EndMouseHook();
+            if (!FlightSimData.IsInCockpit)
+                return false;
 
-            ProfileData.ActiveProfile.CurrentMoveResizePanelId = Guid.Empty;
+            if (ProfileData == null || ActiveProfile == null)
+                return false;
 
-            OnOverlayRemoved?.Invoke(this, panelConfig);
+            if (ActiveProfile.HasUnidentifiedPanelSource)
+                return false;
 
-            ProfileData.ActiveProfile.PanelConfigs.Remove(panelConfig);
+            if (ActiveProfile.IsEditingPanelSource)
+                return false;
+
+            if (ActiveProfile.PanelConfigs.Count == 0)
+                return false;
+
+            if (ActiveProfile.PanelConfigs.Any(p => p.PanelType == PanelType.CustomPopout && p.PanelSource.X == null))
+                return false;
+
+            if (AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled)
+            {
+                var panelConfigs = ActiveProfile.PanelConfigs.TakeWhile(p => p.PanelType == PanelType.CustomPopout);
+
+                foreach (var panelConfig in panelConfigs)
+                {
+                    if (!panelConfig.ChasePlaneCameraConfigs.Any(p => p.AircraftName.Equals(FlightSimData.AircraftName, StringComparison.InvariantCultureIgnoreCase)))
+                        return false;
+                }
+            }
+
+            return true;
         }
 
-        public ObservableCollection<FixedCameraConfig> GetFixedCameraConfigs()
+        private List<FixedCameraConfig> GetFixedCameraConfigs()
         {
-            var configs = new List<FixedCameraConfig>
-            {
-                new() { Id = 0, Name = "Cockpit Pilot", CameraType = CameraType.Cockpit, CameraIndex = 1 },
-                new() { Id = 1, Name = "Cockpit Copilot", CameraType = CameraType.Cockpit, CameraIndex = 5 }
-            };
+            var configs = new List<FixedCameraConfig>()
+                {
+                    new() { Id = 0, Name = "Cockpit Pilot", CameraType = CameraType.Cockpit, CameraIndex = 1 },
+                    new() { Id = 1, Name = "Cockpit Copilot", CameraType = CameraType.Cockpit, CameraIndex = 5 }
+                };
 
             for (var i = 0; i < FlightSimData.CameraViewTypeAndIndex2Max; i++)
             {
@@ -193,7 +269,50 @@ namespace MSFSPopoutPanelManager.Orchestration
                 configs.Add(item);
             }
 
-            return new ObservableCollection<FixedCameraConfig>(configs);
+            return configs;
+        }
+
+        private void SetMsfsCamera(PanelConfig panel)
+        {
+            if (!FlightSimData.IsInCockpit || panel.FixedCameraConfig == null)
+                return;
+
+            if (panel.FixedCameraConfig.CameraType == CameraType.Cockpit)
+            {
+                _flightSimOrchestrator.ResetCameraView();
+                Thread.Sleep(250);
+            }
+
+            _flightSimOrchestrator.SetFixedCamera(panel.FixedCameraConfig.CameraType, panel.FixedCameraConfig.CameraIndex);
+            Thread.Sleep(250);
+        }
+
+        private async Task SetChasePlaneCamera(PanelConfig panel)
+        {
+            var cameraView = panel.ChasePlaneCameraConfigs?.FirstOrDefault(v => v.AircraftName.Equals(FlightSimData.AircraftName, StringComparison.InvariantCultureIgnoreCase));
+
+            if (!FlightSimData.IsInCockpit || cameraView == null)
+                return;
+
+            if (cameraView != null)
+                await ChasePlaneManager.SetCamera(cameraView.Name, cameraView.Guid);
+
+            Thread.Sleep(250);
+        }
+
+        public void ForceChasePlaneViewsRebind()
+        {
+            OnForceChasePlaneViewsRebind?.Invoke(this, null);
+        }
+    }
+
+    public class FixedCameraViewReadyEventArgs : EventArgs
+    {
+        public List<FixedCameraConfig> CameraConfigs { get; }
+
+        public FixedCameraViewReadyEventArgs(List<FixedCameraConfig> cameraConfigs)
+        {
+            CameraConfigs = cameraConfigs;
         }
     }
 }

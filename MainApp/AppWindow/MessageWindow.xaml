@@ -7,8 +7,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodel="clr-namespace:MSFSPopoutPanelManager.MainApp.ViewModel"
     Title="MSFS Pop Out Panel Manager 2024"
-    Width="Auto"
-    Height="Auto"
+    Width="400"
+    Height="225"
+    MaxWidth="400"
+    MaxHeight="225"
     d:DataContext="{d:DesignInstance viewmodel:MessageWindowViewModel}"
     AllowsTransparency="True"
     ResizeMode="NoResize"
@@ -21,7 +23,7 @@
         Width="Auto"
         Height="Auto"
         Mode="Dark">
-        <DockPanel Width="{Binding WindowWidth}" Height="{Binding WindowHeight}">
+        <DockPanel Width="400" Height="225">
             <WrapPanel
                 Height="30"
                 Background="SlateGray"

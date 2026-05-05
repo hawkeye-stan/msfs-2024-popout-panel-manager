@@ -95,7 +95,8 @@
                                 Click="ToggleButtonEditProfileTitle_Click"
                                 IsChecked="False"
                                 Style="{StaticResource MaterialDesignActionDarkToggleButton}"
-                                ToolTip="Edit aircraft profile name">
+                                ToolTip="Edit aircraft profile name"
+                                IsEnabled="{c:Binding '!ActiveProfile.IsPopOutInProgress'}">
                                 <materialDesign:PackIcon
                                     Width="14"
                                     Height="14"
@@ -106,7 +107,7 @@
                             x:Name="PopupBoxFinder"
                             Margin="10,0,8,0"
                             Padding="0"
-                            IsEnabled="{c:Binding 'ProfileData.Profiles.Count > 1'}"
+                            IsEnabled="{c:Binding 'ProfileData.Profiles.Count > 1 and !ActiveProfile.IsPopOutInProgress'}"
                             PlacementMode="LeftAndAlignMiddles"
                             PopupHorizontalOffset="-8"
                             PopupUniformCornerRadius="4"
@@ -235,7 +236,8 @@
                             </StackPanel>
                         </DockPanel>
                     </Expander.Header>
-                    <StackPanel Margin="22,0,0,8">
+                    <StackPanel Margin="22,0,0,8"
+                        IsEnabled="{c:Binding '!ActiveProfile.IsPopOutInProgress'}">
                         <Separator Margin="0,0,0,10" />
                         <WrapPanel Margin="0,0,0,0">
                             <ToggleButton
@@ -326,7 +328,7 @@
                         FontSize="14"
                         Style="{StaticResource TextBlockBody}"
                         Text="Pop Out Panels" />
-                    <StackPanel Margin="723,0,0,0" Orientation="Horizontal">
+                    <StackPanel Margin="723,0,0,0" Orientation="Horizontal" d:IsLocked="True">
                         <ToggleButton
                             materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon Kind=CrosshairsGps}"
                             Command="{Binding ToggleEditPanelSourceCommand}"

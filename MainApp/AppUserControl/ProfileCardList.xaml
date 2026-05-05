@@ -54,12 +54,6 @@
                 Visibility="{c:Binding '!ActiveProfile.IsEditingPanelSource and ActiveProfile.HasUnidentifiedPanelSource'}">
                 Please identify all source panel locations to enable Start Pop Out
             </TextBlock>
-            <TextBlock
-                Style="{StaticResource TextBlockLabel}"
-                TextAlignment="Center"
-                Visibility="{c:Binding 'ActiveProfile.IsDisabledStartPopOut'}">
-                Pop out in progress. Please wait and do not move your mouse.
-            </TextBlock>
         </DockPanel>
     </Grid>
 </UserControl>

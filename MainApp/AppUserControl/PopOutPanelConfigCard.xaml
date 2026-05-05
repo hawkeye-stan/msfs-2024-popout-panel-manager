@@ -39,7 +39,8 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    <DockPanel>
+    <DockPanel
+        IsEnabled="{c:Binding '!ActiveProfile.IsPopOutInProgress'}">
         <Expander
             x:Name="RootExpander"
             materialDesign:ExpanderAssist.HorizontalHeaderPadding="10,0,10,0"
@@ -167,7 +168,10 @@
                                     SourceUpdated="Data_SourceUpdated"
                                     Style="{StaticResource ToggleButton}" />
                             </StackPanel>
-                            <StackPanel Width="65" Orientation="Vertical">
+                            <StackPanel 
+                                Width="65" 
+                                Orientation="Vertical"
+                                Style="{StaticResource DisableWhenIsEditingPanelOrHideTitlebar}">
                                 <TextBlock
                                     Style="{StaticResource TextBlockLabel}"
                                     TextAlignment="Center"
@@ -212,7 +216,7 @@
                                 materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon Kind=MoveResize}"
                                 Command="{Binding MoveResizePanelCommand}"
                                 IsChecked="{Binding DataItem.IsEditingPanel, Mode=TwoWay}"
-                                Style="{StaticResource IconToggleButton}"
+                                Style="{StaticResource DisableWhenHideTitlebar}"
                                 ToolTip="Use keyboard commands to edit panel size &#x0a;and location. Please see help for more info.">
                                 <materialDesign:PackIcon Kind="MoveResize" />
                             </ToggleButton>

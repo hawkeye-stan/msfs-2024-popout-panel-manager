@@ -77,7 +77,7 @@ namespace MSFSPopoutPanelManager.Orchestration
             if (!ActiveProfile.IsPoppedOut)
                 return;
 
-            Debug.WriteLine("Starting Panel Configuration...");
+            //Debug.WriteLine("Starting Panel Configuration...");
 
             WindowEventManager.ActiveProfile = ProfileData.ActiveProfile;
             WindowEventManager.ApplicationSetting = AppSettingData.ApplicationSetting;
@@ -91,7 +91,7 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         public void EndConfiguration()
         {
-            Debug.WriteLine("Ending Panel Configuration...");
+            //Debug.WriteLine("Ending Panel Configuration...");
             Application.Current.Dispatcher.Invoke(WindowEventManager.UnhookWinEvent);
         }
 
@@ -150,20 +150,18 @@ namespace MSFSPopoutPanelManager.Orchestration
                         WindowActionManager.SetWindowCaption(panelConfig.PanelHandle, name);
                     }
                 }
-                else if (!panelConfig.FullScreen)
+                else if (!panelConfig.FullScreen )
                 {
                     switch (configPropertyName)
                     {
                         case PanelConfigPropertyName.Left:
                         case PanelConfigPropertyName.Top:
-                            WindowActionManager.MoveWindow(panelConfig.PanelHandle, panelConfig.Left, panelConfig.Top, panelConfig.Width, panelConfig.Height);
-                            break;
                         case PanelConfigPropertyName.Width:
                         case PanelConfigPropertyName.Height:
                             if (panelConfig.HideTitlebar)
                             {
                                 WindowActionManager.ApplyHidePanelTitleBar(panelConfig.PanelHandle, false);
-                                Thread.Sleep(100);
+                                Thread.Sleep(250);
                             }
 
                             WindowActionManager.MoveWindow(panelConfig.PanelHandle, panelConfig.Left, panelConfig.Top, panelConfig.Width, panelConfig.Height);

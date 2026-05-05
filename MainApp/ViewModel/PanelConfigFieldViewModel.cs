@@ -26,7 +26,6 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
             _panelConfigurationOrchestrator = panelConfigurationOrchestrator;
 
             PlusMinusCommand = new DelegateCommand<object>(OnPlusMinus);
-            DataUpdatedCommand = new DelegateCommand(OnDataUpdated);
         }
 
         private void OnPlusMinus(object param)
@@ -42,11 +41,6 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
             var value = Convert.ToInt32(bindingPathProperty.GetValue(DataItem, null));
             bindingPathProperty.SetValue(DataItem, Convert.ToInt32(param) + value);
 
-            OnDataUpdated();
-        }
-
-        private void OnDataUpdated()
-        {
             if (DataItem != null)
                 _panelConfigurationOrchestrator.PanelConfigPropertyUpdated(DataItem.PanelHandle, (PanelConfigPropertyName)Enum.Parse(typeof(PanelConfigPropertyName), BindingPath));
         }

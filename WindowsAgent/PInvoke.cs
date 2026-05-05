@@ -22,6 +22,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         public const int SWP_NOMOVE = 0x0002;
         public const int SWP_NOSIZE = 0x0001;
         public const int SWP_ALWAYS_ON_TOP = SWP_NOMOVE | SWP_NOSIZE;
+        public const int SWP_FRAMECHANGED = 0x0020;
 
         public const int GWL_STYLE = -16;
         public const uint WS_SIZEBOX = 0x00040000;
@@ -85,11 +86,16 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpWndPl);
 
+        [DllImport("user32.dll")]
+        private static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+
+
         [DllImport("user32.dll", SetLastError = true)]
         private static extern int GetWindowRect(IntPtr hWnd, out Rectangle lpRect);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpWindowText, int nMaxCount);
+
         public static string GetWindowText(IntPtr hWnd)
         {
             try
@@ -179,6 +185,20 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             var right = includeShadow.Width - excludeShadow.Right;
             var top = includeShadow.Top - excludeShadow.Top;
             var bottom = includeShadow.Height - excludeShadow.Bottom;
+            var width = right - left;
+            var height = bottom - top;
+
+            return new Rectangle(left, top, width, height);
+        }
+
+        public static Rectangle GetClientRectangle(IntPtr handle)
+        {
+            GetClientRect(handle, out var rect);
+
+            var left = rect.Left;
+            var right = rect.Right;
+            var top = rect.Top;
+            var bottom = rect.Bottom;
             var width = right - left;
             var height = bottom - top;
 

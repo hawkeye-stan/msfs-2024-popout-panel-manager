@@ -1,6 +1,7 @@
 ﻿using MSFSPopoutPanelManager.DomainModel.Profile;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -12,14 +13,24 @@ namespace MSFSPopoutPanelManager.WindowsAgent
     {
         public static event EventHandler<bool> OnPopOutManagerAlwaysOnTopChanged;
 
+        private static int _borderWidth;
+
         public static void ApplyHidePanelTitleBar(IntPtr hwnd, bool hideTitleBar)
         {
+            var rect = WindowActionManager.GetWindowRectangle(hwnd);
+            var rectShadow = PInvoke.GetWindowRectShadow(hwnd);
+            var clientRectangle = PInvoke.GetClientRectangle(hwnd);
+            var bw = (rect.Width - clientRectangle.Width) / 2;
+
+            if (bw != 0)
+                _borderWidth = bw;
+            
+            Debug.WriteLine("rect: {0}, {1}, {2}, {3}", rect.Top, rect.Left, rect.Width, rect.Height);
+            Debug.WriteLine("clientRectangle: {0}, {1}, {2}, {3}", clientRectangle.Top, clientRectangle.Left, clientRectangle.Width, clientRectangle.Height);
+
             if (hideTitleBar)
             {
-                var rect = WindowActionManager.GetWindowRectangle(hwnd);
-                var rectShadow = PInvoke.GetWindowRectShadow(hwnd);
-
-                MoveWindow(hwnd, rect.Left - rectShadow.Left, rect.Top, rect.Width - rectShadow.Width, rect.Height - rectShadow.Height);
+                MoveWindow(hwnd, rect.Left - rectShadow.Left + _borderWidth, rect.Top + _borderWidth, rect.Width - rectShadow.Width - 2 * _borderWidth, rect.Height - rectShadow.Height - 2 * _borderWidth);
                 Thread.Sleep(250);
             }
 
@@ -32,12 +43,11 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
             PInvoke.SetWindowLong(hwnd, PInvokeConstant.GWL_STYLE, currentStyle);
             Thread.Sleep(250);
-
+                        
             if (!hideTitleBar)
             {
-                var rect = WindowActionManager.GetWindowRectangle(hwnd);
-                var rectShadow = PInvoke.GetWindowRectShadow(hwnd);
-                MoveWindow(hwnd, rect.Left + rectShadow.Left, rect.Top, rect.Width + rectShadow.Width, rect.Height + rectShadow.Height);
+                rectShadow = PInvoke.GetWindowRectShadow(hwnd);
+                PInvoke.MoveWindow(hwnd, rect.Left + rectShadow.Left - _borderWidth, rect.Top - _borderWidth, rect.Width + rectShadow.Width + 2 * _borderWidth, rect.Height + rectShadow.Height + 2 * _borderWidth, true);
             }
         }
 
@@ -337,3 +347,4 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         }
     }
 }
+
