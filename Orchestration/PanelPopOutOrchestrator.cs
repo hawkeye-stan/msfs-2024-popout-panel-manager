@@ -136,8 +136,6 @@ namespace MSFSPopoutPanelManager.Orchestration
 
                 SetupRefocusDisplay();
 
-                StepApplyPanelConfig();
-
                 Thread.Sleep(1000);
             }
 
@@ -306,6 +304,8 @@ namespace MSFSPopoutPanelManager.Orchestration
                             WorkflowStepWithMessage.Execute("Switch Window", () => { OnSwitchWindowOpened?.Invoke(this, panelConfig); }, true);
                             break;
                     }
+
+                    ApplyPanelConfig(panelConfig);
                 }
 
                 // Restore current application location
@@ -394,6 +394,8 @@ namespace MSFSPopoutPanelManager.Orchestration
                         ApplyPanelLocation(panelConfig);
                         ApplyPanelLocation(panelConfig);
                     }
+
+                    ApplyPanelConfig(panelConfig);
                 }
 
                 // Set handles for missing built-in panels
@@ -459,8 +461,6 @@ namespace MSFSPopoutPanelManager.Orchestration
                     StatusMessageWriter.WriteMessageWithNewLine("Pop out has been completed successfully.", StatusMessageType.Info);
                     OnSuccessfulPopOut?.Invoke(this, null);
                 }
-
-                Thread.Sleep(1000);
             });
         }
 

@@ -135,6 +135,9 @@ namespace MSFSPopoutPanelManager.MainApp.AppUserControl.PopOutPanelCard
 
         private void ComboBoxCameraSelection_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (_dataContext == null || _dataContext.DataItem == null)
+                return;
+
             if (!_dataContext.DataItem.IsEditingPanel)
                 return;
 

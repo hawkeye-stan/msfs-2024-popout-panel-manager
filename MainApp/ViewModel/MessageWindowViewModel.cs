@@ -62,7 +62,7 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                 {
                     Task.Run(() => 
                     {
-                        Thread.Sleep(1000);
+                        Thread.Sleep(500);
                         IsVisible = false;
                         MessageList.Clear();
                     });
@@ -94,7 +94,6 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                 {
                     Task.Run(() =>
                     {
-                        Thread.Sleep(1000);
                         IsVisible = false;
                         MessageList.Clear();
                     });
