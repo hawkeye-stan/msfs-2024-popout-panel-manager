@@ -97,8 +97,11 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             }
 
             // If touch point is within pop out panel boundaries and have touch enabled.
-            // RefocusDisplay panels are always included - they have TouchEnabled = false but still need touch handling.
-            var panelConfig = ActiveProfile.PanelConfigs.FirstOrDefault(p => (p.TouchEnabled || p.PanelType == PanelType.RefocusDisplay) &&
+            // Prefer a touch-enabled pop out panel; fall back to a RefocusDisplay panel (which covers a whole
+            // monitor and therefore overlaps every other panel on it) only when no touch panel matches.
+            var panelConfig = ActiveProfile.PanelConfigs.FirstOrDefault(p => p.TouchEnabled &&
+                                                                            ((p.FullScreen && CheckWithinFullScreenCoordinate(p, info)) || CheckWithinWindowCoordinate(p, info)))
+                              ?? ActiveProfile.PanelConfigs.FirstOrDefault(p => p.PanelType == PanelType.RefocusDisplay &&
                                                                             ((p.FullScreen && CheckWithinFullScreenCoordinate(p, info)) || CheckWithinWindowCoordinate(p, info)));
 
             if (panelConfig == null)
