@@ -1,6 +1,10 @@
 # Version History
 <hr/>
 
+## Version 1.0.4
+
+* Fixed - Panel identification and panel location configuration failure (color circles failed to appear) when application is configured to minimize on start.
+
 ## Version 1.0.3
 
 * Added - ChasePlane 2024 support. (Please enable ChasePlane Settings in POPM preferences to allow usage of ChasePlane 2024 camera views)

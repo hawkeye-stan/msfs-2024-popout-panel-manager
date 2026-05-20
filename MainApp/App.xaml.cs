@@ -96,8 +96,6 @@ namespace MSFSPopoutPanelManager.MainApp
                 messageWindow.Show();
 
                 base.OnStartup(e);
-
-                WindowProcessManager.SetApplicationProcess();
             }
         }
 

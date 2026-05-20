@@ -32,11 +32,17 @@ namespace MSFSPopoutPanelManager.MainApp.AppWindow
         {
             var window = Window.GetWindow(this);
 
+           
             if (window == null)
                 throw new ApplicationException("Cannot instantiate Pop Out Panel Manager.");
 
             _viewModel.ApplicationHandle = new WindowInteropHelper(window).Handle;
             _viewModel.ApplicationWindow = Application.Current.MainWindow;
+
+            // Set app window handle in case initialize function below overwrites it when starting the app minimized.
+            WindowProcessManager.SetApplicationProcess();
+            WindowProcessManager.AppProcess.Handle = new WindowInteropHelper(window).Handle;
+
             _viewModel.Initialize();
 
             DataContext = _viewModel;
