@@ -70,6 +70,8 @@ namespace MSFSPopoutPanelManager.DomainModel.Profile
 
         public bool AutoGameRefocus { get; set; } = true;
 
+        public bool EnableStreaming { get; set; } = true;
+
         public FloatingPanel FloatingPanel { get; set; } = new();
 
         public PanelSource PanelSource { get; set; } = new();

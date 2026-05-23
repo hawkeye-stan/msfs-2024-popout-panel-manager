@@ -323,12 +323,8 @@
             </DockPanel>
 
             <StackPanel Grid.Row="2" Background="#444444">
-                <StackPanel Margin="24,2,0,0" Orientation="Horizontal">
-                    <TextBlock
-                        FontSize="14"
-                        Style="{StaticResource TextBlockBody}"
-                        Text="Pop Out Panels" />
-                    <StackPanel Margin="723,0,0,0" Orientation="Horizontal" d:IsLocked="True">
+                <DockPanel Margin="24,2,0,0">
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" d:IsLocked="True">
                         <ToggleButton
                             materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon Kind=CrosshairsGps}"
                             Command="{Binding ToggleEditPanelSourceCommand}"
@@ -354,8 +350,31 @@
                             ToolTip="Lock and unlock pop out panel settings">
                             <materialDesign:PackIcon Kind="UnlockedOutline" />
                         </ToggleButton>
+                        <ToggleButton
+                            Margin="6,0,0,0"
+                            materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon Kind=Cast}"
+                            Command="{Binding ToggleStreamingCommand}"
+                            IsChecked="{Binding AppSettingData.ApplicationSetting.StreamingSetting.IsEnabled, Mode=TwoWay}"
+                            Style="{StaticResource IconToggleButton}"
+                            ToolTip="Enable LAN streaming for marked panels"
+                            Visibility="{c:Binding 'ActiveProfile != null and ActiveProfile.PanelConfigs.Count > 0'}">
+                            <materialDesign:PackIcon Kind="CastOff" />
+                        </ToggleButton>
+                        <Button
+                            Margin="4,0,0,0"
+                            Command="{Binding OpenStreamIndexCommand}"
+                            Style="{StaticResource IconButton}"
+                            ToolTip="{Binding StreamIndexUrl}"
+                            Visibility="{c:Binding 'AppSettingData.ApplicationSetting.StreamingSetting.IsEnabled and ActiveProfile != null and ActiveProfile.PanelConfigs.Count > 0'}">
+                            <materialDesign:PackIcon Kind="OpenInNew" />
+                        </Button>
                     </StackPanel>
-                </StackPanel>
+                    <TextBlock
+                        FontSize="14"
+                        Style="{StaticResource TextBlockBody}"
+                        Text="Pop Out Panels"
+                        VerticalAlignment="Center" />
+                </DockPanel>
                 <appUserControl:PopOutPanelListEmpty Padding="0,0,0,10" Visibility="{c:Binding 'ActiveProfile.PanelConfigs.Count == 0'}" />
                 <appUserControl:PopOutPanelList Padding="0,0,0,10" Visibility="{c:Binding 'ActiveProfile.PanelConfigs.Count > 0'}" />
             </StackPanel>

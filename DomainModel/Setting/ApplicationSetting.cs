@@ -36,6 +36,8 @@ namespace MSFSPopoutPanelManager.DomainModel.Setting
 
         public KeyboardShortcutSetting KeyboardShortcutSetting { get; set; } = new();
 
+        public StreamingSetting StreamingSetting { get; set; } = new();
+
         public event EventHandler<bool> OnIsUsedKeyboardShortcutChanged;
     }
 }
