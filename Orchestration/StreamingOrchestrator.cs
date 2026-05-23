@@ -9,7 +9,9 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,8 +26,8 @@ namespace MSFSPopoutPanelManager.Orchestration
         // Slug → cancellation token (presence means panel is available to stream)
         readonly ConcurrentDictionary<string, CancellationTokenSource> _streams = new();
 
-        HttpListener _listener;
-        Thread _listenerThread;
+        TcpListener _tcpListener;
+        CancellationTokenSource _serverCts;
         int _port;
 
         readonly PanelPopOutOrchestrator _popOutOrchestrator;
@@ -42,10 +44,10 @@ namespace MSFSPopoutPanelManager.Orchestration
                 if (e.PropertyName != nameof(StreamingSetting.Port)) return;
                 if (!AppSettingData.ApplicationSetting.StreamingSetting.IsEnabled) return;
                 _port = AppSettingData.ApplicationSetting.StreamingSetting.Port;
-                Task.Run(() =>
+                Task.Run(async () =>
                 {
-                    _listener?.Stop();
-                    _listener = null;
+                    StopServer();
+                    await Task.Delay(200); // allow OS to release the port
                     EnsureListenerRunning();
                 });
             };
@@ -126,16 +128,39 @@ namespace MSFSPopoutPanelManager.Orchestration
             }
             else
             {
-                _listener?.Stop();
-                _listener = null;
+                StopServer();
                 if (ProfileData?.ActiveProfile == null) return;
                 foreach (var panel in ProfileData.ActiveProfile.PanelConfigs.ToList())
                     StopPanelStream(panel);
             }
         }
 
+        private string StreamHost
+        {
+            get
+            {
+                var ov = AppSettingData.ApplicationSetting.StreamingSetting.HostOverride?.Trim();
+                if (!string.IsNullOrEmpty(ov)) return ov;
+
+                var hostname = Dns.GetHostName();
+                if (string.Equals(hostname, "localhost", StringComparison.OrdinalIgnoreCase))
+                    hostname = DetectLanIp() ?? hostname;
+                return hostname;
+            }
+        }
+
+        private static string DetectLanIp()
+        {
+            foreach (var addr in Dns.GetHostAddresses(Dns.GetHostName()))
+                if (addr.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(addr))
+                    return addr.ToString();
+            return null;
+        }
+
+        public string GetIndexUrl() => $"http://{StreamHost}:{_port}/";
+
         public string GetStreamUrl(PanelConfig panel) =>
-            $"http://localhost:{_port}/stream/{PanelKey(panel)}/";
+            $"http://{StreamHost}:{_port}/stream/{PanelKey(panel)}/";
 
         private void OnPopOutCompleted(object sender, EventArgs e)
         {
@@ -160,122 +185,149 @@ namespace MSFSPopoutPanelManager.Orchestration
 
         private void EnsureListenerRunning()
         {
-            if (_listener != null && _listener.IsListening) return;
-
+            if (_tcpListener != null) return;
             try
             {
-                _listener?.Stop();
-                _listener = new HttpListener();
-                _listener.Prefixes.Add($"http://localhost:{_port}/");
-                _listener.Start();
-
-                _listenerThread = new Thread(ListenLoop) { IsBackground = true, Name = "StreamListener" };
-                _listenerThread.Start();
+                _serverCts = new CancellationTokenSource();
+                _tcpListener = new TcpListener(IPAddress.Any, _port);
+                _tcpListener.Start();
+                Task.Run(() => AcceptLoop(_serverCts.Token));
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"StreamingOrchestrator: failed to start listener: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"StreamingOrchestrator: failed to start server: {ex.Message}");
             }
         }
 
-        private void ListenLoop()
+        private void StopServer()
         {
-            while (_listener?.IsListening == true)
+            _serverCts?.Cancel();
+            _serverCts = null;
+            _tcpListener?.Stop();
+            _tcpListener = null;
+        }
+
+        private async Task AcceptLoop(CancellationToken ct)
+        {
+            while (!ct.IsCancellationRequested)
             {
                 try
                 {
-                    var ctx = _listener.GetContext();
-                    ThreadPool.QueueUserWorkItem(_ => HandleRequest(ctx));
+                    var client = await _tcpListener.AcceptTcpClientAsync(ct);
+                    _ = Task.Run(() => HandleClient(client, ct), CancellationToken.None);
                 }
                 catch { break; }
             }
         }
 
-        private void HandleRequest(HttpListenerContext ctx)
+        private async Task HandleClient(TcpClient client, CancellationToken serverCt)
         {
-            var path = ctx.Request.Url?.AbsolutePath ?? "";
-            var parts = path.Trim('/').Split('/');
-
-            if (parts.Length >= 2 && parts[0] == "stream")
+            using (client)
+            using (var stream = client.GetStream())
+            using (var handshakeCts = CancellationTokenSource.CreateLinkedTokenSource(serverCt))
             {
-                var panel = FindPanelById(parts[1]);
-                if (panel != null) ServeMjpeg(ctx, panel);
-                else Respond404(ctx);
-                return;
-            }
+                handshakeCts.CancelAfter(TimeSpan.FromSeconds(5));
+                var ct = handshakeCts.Token;
+                try
+                {
+                    var requestLine = await ReadLineAsync(stream, ct);
+                    if (string.IsNullOrEmpty(requestLine)) return;
 
-            if (parts.Length >= 2 && parts[0] == "snapshot")
-            {
-                var panel = FindPanelById(parts[1]);
-                if (panel != null) ServeSnapshot(ctx, panel);
-                else Respond404(ctx);
-                return;
-            }
+                    // Drain request headers
+                    string headerLine;
+                    while (!string.IsNullOrEmpty(headerLine = await ReadLineAsync(stream, ct))) { }
 
-            if (path == "/" || path == "")
-            {
-                ServeIndex(ctx);
-                return;
-            }
+                    // Parse "GET /path HTTP/1.1" — strip query string and trim slashes
+                    var tokens = requestLine.Split(' ');
+                    if (tokens.Length < 2) return;
+                    var rawPath = tokens[1].Split('?')[0].Trim('/');
+                    var parts = rawPath.Split('/');
 
-            Respond404(ctx);
+                    if (rawPath == "")
+                        await ServeIndex(stream, serverCt);
+                    else if (parts.Length >= 2 && parts[0] == "stream")
+                        await ServeMjpeg(stream, parts[1], serverCt);
+                    else if (parts.Length >= 2 && parts[0] == "snapshot")
+                        await ServeSnapshot(stream, parts[1]);
+                    else
+                        await stream.WriteAsync(Encoding.ASCII.GetBytes("HTTP/1.1 404 Not Found\r\n\r\n"), serverCt);
+                }
+                catch { }
+            }
         }
 
-        private void ServeMjpeg(HttpListenerContext ctx, PanelConfig panel)
+        private static async Task<string> ReadLineAsync(NetworkStream stream, CancellationToken ct)
         {
-            const string boundary = "mjpegframe";
-            ctx.Response.ContentType = $"multipart/x-mixed-replace; boundary={boundary}";
-            ctx.Response.StatusCode = 200;
-
-            if (!_streams.TryGetValue(PanelKey(panel), out var cts))
+            var sb = new StringBuilder();
+            var buf = new byte[1];
+            while (true)
             {
-                ctx.Response.Close();
+                int n = await stream.ReadAsync(buf, 0, 1, ct);
+                if (n == 0) return null;
+                char c = (char)buf[0];
+                if (c == '\n') return sb.ToString().TrimEnd('\r');
+                if (sb.Length < 4096) sb.Append(c); else return null;
+            }
+        }
+
+        private async Task ServeMjpeg(NetworkStream stream, string key, CancellationToken serverCt)
+        {
+            var panel = FindPanelById(key);
+            if (panel == null || !_streams.TryGetValue(key, out var cts))
+            {
+                await stream.WriteAsync(Encoding.ASCII.GetBytes("HTTP/1.1 404 Not Found\r\n\r\n"), serverCt);
                 return;
             }
 
+            const string boundary = "mjpegframe";
+            await stream.WriteAsync(Encoding.ASCII.GetBytes(
+                $"HTTP/1.1 200 OK\r\nContent-Type: multipart/x-mixed-replace; boundary={boundary}\r\n\r\n"), serverCt);
+
             var (codec, ep) = JpegParams(80);
-            using var stream = ctx.Response.OutputStream;
-            using var writer = new StreamWriter(stream) { AutoFlush = true };
+            using var linked = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, serverCt);
+            var token = linked.Token;
 
             try
             {
-                while (!cts.Token.IsCancellationRequested)
+                while (!token.IsCancellationRequested)
                 {
                     using var bmp = Capture(panel.PanelHandle);
-                    if (bmp == null) { Thread.Sleep(100); continue; }
+                    if (bmp == null) { await Task.Delay(100, token); continue; }
 
                     using var ms = new MemoryStream();
                     bmp.Save(ms, codec, ep);
                     var jpg = ms.ToArray();
 
-                    writer.Write($"\r\n--{boundary}\r\nContent-Type: image/jpeg\r\nContent-Length: {jpg.Length}\r\n\r\n");
-                    writer.Flush();
-                    stream.Write(jpg, 0, jpg.Length);
-                    stream.Flush();
+                    await stream.WriteAsync(Encoding.ASCII.GetBytes(
+                        $"\r\n--{boundary}\r\nContent-Type: image/jpeg\r\nContent-Length: {jpg.Length}\r\n\r\n"), token);
+                    await stream.WriteAsync(jpg, token);
+                    await stream.FlushAsync(token);
 
-                    Thread.Sleep(33);
+                    await Task.Delay(33, token);
                 }
             }
-            catch { }
+            catch (OperationCanceledException) { }
         }
 
-        private void ServeSnapshot(HttpListenerContext ctx, PanelConfig panel)
+        private async Task ServeSnapshot(NetworkStream stream, string key)
         {
+            var panel = FindPanelById(key);
+            if (panel == null) { await stream.WriteAsync(Encoding.ASCII.GetBytes("HTTP/1.1 404 Not Found\r\n\r\n")); return; }
+
             using var bmp = Capture(panel.PanelHandle);
-            if (bmp == null) { Respond404(ctx); return; }
+            if (bmp == null) { await stream.WriteAsync(Encoding.ASCII.GetBytes("HTTP/1.1 404 Not Found\r\n\r\n")); return; }
 
             var (codec, ep) = JpegParams(95);
             using var ms = new MemoryStream();
             bmp.Save(ms, codec, ep);
             var jpg = ms.ToArray();
 
-            ctx.Response.ContentType = "image/jpeg";
-            ctx.Response.ContentLength64 = jpg.Length;
-            ctx.Response.OutputStream.Write(jpg, 0, jpg.Length);
-            ctx.Response.Close();
+            await stream.WriteAsync(Encoding.ASCII.GetBytes(
+                $"HTTP/1.1 200 OK\r\nContent-Type: image/jpeg\r\nContent-Length: {jpg.Length}\r\n\r\n"));
+            await stream.WriteAsync(jpg);
         }
 
-        private void ServeIndex(HttpListenerContext ctx)
+        private async Task ServeIndex(NetworkStream stream, CancellationToken ct)
         {
             var panels = ProfileData?.ActiveProfile?.PanelConfigs
                 .Where(p => p.IsPopOutSuccess == true && p.EnableStreaming)
@@ -333,17 +385,10 @@ namespace MSFSPopoutPanelManager.Orchestration
 </body>
 </html>";
 
-            var bytes = System.Text.Encoding.UTF8.GetBytes(html);
-            ctx.Response.ContentType = "text/html; charset=utf-8";
-            ctx.Response.ContentLength64 = bytes.Length;
-            ctx.Response.OutputStream.Write(bytes, 0, bytes.Length);
-            ctx.Response.Close();
-        }
-
-        private static void Respond404(HttpListenerContext ctx)
-        {
-            ctx.Response.StatusCode = 404;
-            ctx.Response.Close();
+            var bytes = Encoding.UTF8.GetBytes(html);
+            await stream.WriteAsync(Encoding.ASCII.GetBytes(
+                $"HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {bytes.Length}\r\n\r\n"), ct);
+            await stream.WriteAsync(bytes, ct);
         }
 
         private void StartPanelStream(PanelConfig panel)

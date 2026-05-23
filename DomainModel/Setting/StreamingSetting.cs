@@ -6,5 +6,6 @@ namespace MSFSPopoutPanelManager.DomainModel.Setting
     {
         public bool IsEnabled { get; set; } = false;
         public int Port { get; set; } = 8080;
+        public string HostOverride { get; set; } = "";
     }
 }

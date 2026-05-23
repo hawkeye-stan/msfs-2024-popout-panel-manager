@@ -497,6 +497,24 @@
                             </TextBlock>
                         </DockPanel>
                     </StackPanel>
+                    <StackPanel Style="{StaticResource SectionHeader}">
+                        <TextBlock Style="{StaticResource TextBlockHeading}">Host / Address Override</TextBlock>
+                        <Line />
+                        <DockPanel>
+                            <TextBox
+                                Width="200"
+                                Height="24"
+                                Padding="4,2"
+                                Style="{StaticResource TextBox}"
+                                Text="{Binding AppSettingData.ApplicationSetting.StreamingSetting.HostOverride, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+                            <TextBlock
+                                Width="520"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource TextBlockLabel}">
+                                Hostname or IP address used in panel stream URLs. Leave blank to detect automatically.
+                            </TextBlock>
+                        </DockPanel>
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

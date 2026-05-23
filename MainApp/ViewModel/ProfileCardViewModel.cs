@@ -43,7 +43,7 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 
         public ICommand OpenStreamIndexCommand { get; }
 
-        public string StreamIndexUrl => $"http://localhost:{AppSettingData.ApplicationSetting.StreamingSetting.Port}/";
+        public string StreamIndexUrl => _streamingOrchestrator.GetIndexUrl();
 
         public ICommand RefocusDisplayUpdatedCommand { get; }
 
