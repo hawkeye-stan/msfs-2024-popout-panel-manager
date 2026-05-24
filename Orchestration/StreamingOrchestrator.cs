@@ -84,7 +84,10 @@ namespace MSFSPopoutPanelManager.Orchestration
                 var liveKeys = LivePanels().Select(PanelKey).ToHashSet();
                 foreach (var staleKey in _streams.Keys.Where(k => !liveKeys.Contains(k)).ToList())
                     if (_streams.TryRemove(staleKey, out var cts))
+                    {
                         cts.Cancel();
+                        cts.Dispose();
+                    }
 
                 if (panel.EnableStreaming && panel.IsPopOutSuccess == true)
                     StartPanelStream(panel);
@@ -202,6 +205,7 @@ namespace MSFSPopoutPanelManager.Orchestration
         private void StopServer()
         {
             _serverCts?.Cancel();
+            _serverCts?.Dispose();
             _serverCts = null;
             _tcpListener?.Stop();
             _tcpListener = null;
@@ -406,7 +410,10 @@ namespace MSFSPopoutPanelManager.Orchestration
         {
             var key = PanelKey(panel);
             if (_streams.TryRemove(key, out var cts))
+            {
                 cts.Cancel();
+                cts.Dispose();
+            }
 
             if (ProfileData?.ActiveProfile?.IsLocked == true)
                 RestorePanel(panel);

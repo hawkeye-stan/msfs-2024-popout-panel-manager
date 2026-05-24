@@ -515,6 +515,20 @@
                             </TextBlock>
                         </DockPanel>
                     </StackPanel>
+                    <TextBlock Style="{StaticResource TextBlockHeading}">Security Notice</TextBlock>
+                    <Line />
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        Style="{StaticResource TextBlockLabel}"
+                        TextWrapping="Wrap">
+                         Panel streaming has no authentication, so anyone who can reach this port can view the panel streams.
+                    </TextBlock>
+                    <TextBlock
+                        Margin="0,4,0,12"
+                        Style="{StaticResource TextBlockLabel}"
+                        TextWrapping="Wrap">
+                         Use streaming feature only on a trusted home or office network.
+                    </TextBlock>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
