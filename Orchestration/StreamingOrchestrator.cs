@@ -398,11 +398,12 @@ namespace MSFSPopoutPanelManager.Orchestration
         private void StartPanelStream(PanelConfig panel)
         {
             var key = PanelKey(panel);
-            if (_streams.ContainsKey(key)) return;
 
             if (ProfileData?.ActiveProfile?.IsLocked == true)
                 MoveOffScreen(panel);
 
+            if (_streams.ContainsKey(key)) return;
+            
             _streams[key] = new CancellationTokenSource();
         }
 
