@@ -1,6 +1,7 @@
 ﻿using MSFSPopoutPanelManager.DomainModel.Profile;
 using MSFSPopoutPanelManager.Shared;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -16,6 +17,8 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 {
     public class ChasePlaneManager
     {
+        private const int SupportedApiVersion = 2;
+
         private static ClientWebSocket _clientWebSocket;
 
         public static List<ChasePlaneView> ChasePlaneViews { get; private set; }
@@ -53,7 +56,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             {
                 _isApiConnectionStarted = true;
 
-                if(await ConnectWebSocket())
+                if (await ConnectWebSocket())
                 {
                     _msgListenerTask = Task.Run(() => ListenInBackground(_clientWebSocket));
 
@@ -108,7 +111,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             _isViewsReady = false;
 
             //Debug.WriteLine("Connect to ChasePlane and initialize API");
-            
+
             Task timeoutTask = Task.Delay(TimeSpan.FromSeconds(5));
             Task webSocketConnectionTask = _clientWebSocket.ConnectAsync(new Uri("ws://localhost:8652"), CancellationToken.None);
             await Task.WhenAny(webSocketConnectionTask, timeoutTask);
@@ -139,53 +142,52 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
                     var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
 
+                    Debug.WriteLine(message);
+
                     if (!IsJson(message))
                         continue;
 
-                    var chasePlaneMessage = JsonConvert.DeserializeObject<ChasePlaneMessage>(message);
+                    var chasePlaneMessage = ChasePlaneProtocol.DeserializeMessage(message);
 
                     if (chasePlaneMessage != null && !String.IsNullOrEmpty(chasePlaneMessage.Message))
                     {
                         switch (chasePlaneMessage.Message.ToLower())
                         {
                             case "api_version":
-                                //Debug.WriteLine(message);
+                                if (!ChasePlaneProtocol.TryGetApiVersion(chasePlaneMessage, out int apiVersion) || apiVersion != SupportedApiVersion)
+                                    throw new NotSupportedException($"ChasePlane API version {apiVersion} is not supported. Version {SupportedApiVersion} is required.");
                                 break;
                             case "cam_mode_set":
-                                //Debug.WriteLine(message);
+                                Debug.WriteLine(message);
 
-                                var camModeSetMsg = JsonConvert.DeserializeObject<ChasePlaneMessage>(message);
-
-                                if(!_isViewsReady && camModeSetMsg.Payload.ViewsLoaded)
+                                if (!_isViewsReady && ChasePlaneProtocol.TryGetViewsLoaded(chasePlaneMessage, out bool viewsLoaded) && viewsLoaded)
                                 {
                                     _isViewsReady = true;
                                     _getCameraViewRetryCount = 3;
 
                                     Thread.Sleep(1000);
                                     await GetCameraViews();
-                                }    
+                                }
                                 break;
                             case "initialized":
                                 if (_isInitialized)
                                     continue;
 
-                                //Debug.WriteLine(message);
+                                Debug.WriteLine(message);
 
                                 _isInitialized = true;
 
                                 break;
                             case "api_reply":
-                                if (chasePlaneMessage.Payload.Message.Equals("get_views", StringComparison.InvariantCultureIgnoreCase))
+                                if (ChasePlaneProtocol.TryGetCameraViewsPayload(chasePlaneMessage, out ChasePlaneMessagePayload.ChasePlaneApiGetViewReplyPayload viewPayload))
                                 {
-                                    //Debug.WriteLine(message);
+                                    Debug.WriteLine(message);
 
-                                    var viewMessage = JsonConvert.DeserializeObject<ChasePlaneMessage>(message);
-
-                                    var currentAircraftName = viewMessage.Payload.Payload.MetaData.Aircraft;
+                                    var currentAircraftName = viewPayload.MetaData.Aircraft;
 
                                     var chasePlaneCameraConfigs = new List<ChasePlaneCameraConfig>();
-                                    var chasePlaneViews = viewMessage.Payload.Payload.ChasePlaneViews.FindAll(v => (v.ProfileTheme.Equals("ONBOARD_PIC", StringComparison.InvariantCultureIgnoreCase) || v.ProfileTheme.Equals("ONBOARD_SYSTEMS", StringComparison.InvariantCultureIgnoreCase)) && v.Aircraft.Equals(currentAircraftName, StringComparison.InvariantCultureIgnoreCase));
-                                    
+                                    var chasePlaneViews = viewPayload.ChasePlaneViews.FindAll(v => (v.ProfileTheme.Equals("ONBOARD_PIC", StringComparison.InvariantCultureIgnoreCase) || v.ProfileTheme.Equals("ONBOARD_SYSTEMS", StringComparison.InvariantCultureIgnoreCase)) && v.Aircraft.Equals(currentAircraftName, StringComparison.InvariantCultureIgnoreCase));
+
                                     if (chasePlaneViews != null && chasePlaneViews.Count > 0)
                                     {
                                         //Debug.WriteLine("Getting camera view OK");
@@ -223,7 +225,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                                         await Disconnect();
                                     }
                                 }
-                               
+
                                 break;
                         }
                     }
@@ -238,6 +240,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             }
             catch (Exception ex)
             {
+                Debug.WriteLine(ex.Message);
                 FileLogger.WriteException("ChasePlane 2024 Exception", ex);
                 await DisconnectWebSocket();
             }
@@ -320,7 +323,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             }
         }
     }
-    
+
     public class CameraViewReadyEventArgs : EventArgs
     {
         public List<ChasePlaneCameraConfig> CameraConfigs { get; }
@@ -350,7 +353,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         public string Command;
 
         [JsonProperty("payload")]
-        public ChasePlaneMessagePayload Payload;
+        public object Payload;
     }
 
     public class ChasePlaneMessagePayload
@@ -459,5 +462,65 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
         [JsonProperty("payload")]
         public ChasePlaneView Payload;
+    }
+
+    public class ChasePlaneApiVersionPayload
+    {
+        [JsonProperty("version")]
+        public int Version;
+    }
+
+    public class ChasePlaneCamModeSetPayload
+    {
+        [JsonProperty("views_loaded")]
+        public bool ViewsLoaded;
+    }
+
+    internal static class ChasePlaneProtocol
+    {
+        // Parse the message envelope before selecting a message-specific payload type.
+        public static ChasePlaneMessage DeserializeMessage(string message)
+        {
+            return JsonConvert.DeserializeObject<ChasePlaneMessage>(message);
+        }
+
+        public static bool TryGetApiVersion(ChasePlaneMessage message, out int apiVersion)
+        {
+            var payload = DeserializePayload<ChasePlaneApiVersionPayload>(message?.Payload);
+            apiVersion = payload?.Version ?? 0;
+            return apiVersion > 0;
+        }
+
+        public static bool TryGetViewsLoaded(ChasePlaneMessage message, out bool viewsLoaded)
+        {
+            var payload = DeserializePayload<ChasePlaneCamModeSetPayload>(message?.Payload);
+            viewsLoaded = payload?.ViewsLoaded ?? false;
+            return payload != null;
+        }
+
+        public static bool TryGetCameraViewsPayload(ChasePlaneMessage message, out ChasePlaneMessagePayload.ChasePlaneApiGetViewReplyPayload viewPayload)
+        {
+            viewPayload = null;
+            var nestedPayload = DeserializePayload<ChasePlaneMessagePayload>(message?.Payload);
+
+            if (nestedPayload?.Message?.Equals("get_views", StringComparison.InvariantCultureIgnoreCase) == true)
+            {
+                viewPayload = nestedPayload.Payload;
+            }
+            else if (message?.RequestId?.StartsWith("get_views_", StringComparison.InvariantCultureIgnoreCase) == true)
+            {
+                viewPayload = DeserializePayload<ChasePlaneMessagePayload.ChasePlaneApiGetViewReplyPayload>(message.Payload);
+            }
+
+            return viewPayload?.MetaData != null && viewPayload.ChasePlaneViews != null;
+        }
+
+        private static T DeserializePayload<T>(object payload) where T : class
+        {
+            if (payload is JToken token)
+                return token.ToObject<T>();
+
+            return payload == null ? null : JToken.FromObject(payload).ToObject<T>();
+        }
     }
 }

@@ -1,3 +1,3 @@
-## Version 1.0.4
+## Version 1.0.5
 
-* Fixed - Panel identification and panel location configuration failure (color circles failed to appear) when application is configured to minimize on start.
+* Updated - Support ChasePlane API v2.
