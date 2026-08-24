@@ -96,8 +96,12 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                 return PInvoke.CallNextHookEx(_hHook, code, wParam, lParam);
             }
 
-            // If touch point is within pop out panel boundaries and have touch enabled
+            // If touch point is within pop out panel boundaries and have touch enabled.
+            // Prefer a touch-enabled pop out panel; fall back to a RefocusDisplay panel (which covers a whole
+            // monitor and therefore overlaps every other panel on it) only when no touch panel matches.
             var panelConfig = ActiveProfile.PanelConfigs.FirstOrDefault(p => p.TouchEnabled &&
+                                                                            ((p.FullScreen && CheckWithinFullScreenCoordinate(p, info)) || CheckWithinWindowCoordinate(p, info)))
+                              ?? ActiveProfile.PanelConfigs.FirstOrDefault(p => p.PanelType == PanelType.RefocusDisplay &&
                                                                             ((p.FullScreen && CheckWithinFullScreenCoordinate(p, info)) || CheckWithinWindowCoordinate(p, info)));
 
             if (panelConfig == null)
@@ -107,12 +111,16 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             {
                 case WM_RBUTTONDOWN:
                 case WM_RBUTTONUP:
+                    // Let right-click pass through to the underlying app (eg. Air Manager) on a RefocusDisplay monitor
+                    if (panelConfig.PanelType == PanelType.RefocusDisplay)
+                        return PInvoke.CallNextHookEx(_hHook, code, wParam, lParam);
                     return 1;
 
-                case WM_LBUTTONDOWN:                                        
+                case WM_LBUTTONDOWN:
                     _refocusedTaskIndex++;
+                    // Pass the touch through so the underlying app receives it, then refocus happens on touch up
                     if (panelConfig.PanelType == PanelType.RefocusDisplay)
-                        return 1;
+                        return PInvoke.CallNextHookEx(_hHook, code, wParam, lParam);
                 
                     Task.Run(() =>
                     {
@@ -149,6 +157,9 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                                 }
                             }
                         });
+
+                        // Pass the touch up through so the underlying app (eg. Air Manager) receives it
+                        return PInvoke.CallNextHookEx(_hHook, code, wParam, lParam);
                     }
                     else
                     {
@@ -217,9 +228,14 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
         private static bool CheckWithinWindowCoordinate(PanelConfig panelConfig, MSLLHOOKSTRUCT coor)
         {
+            // RefocusDisplay covers a whole monitor and has no title bar - don't reserve the menu bar strip at the top
+            var topOffset = panelConfig.PanelType == PanelType.RefocusDisplay
+                ? 0
+                : (panelConfig.HideTitlebar ? 1 : PANEL_MENUBAR_HEIGHT);
+
             return coor.pt.X > panelConfig.Left
                    && coor.pt.X < panelConfig.Left + panelConfig.Width
-                   && coor.pt.Y > panelConfig.Top + (panelConfig.HideTitlebar ? 1 : PANEL_MENUBAR_HEIGHT)
+                   && coor.pt.Y > panelConfig.Top + topOffset
                    && coor.pt.Y < panelConfig.Top + panelConfig.Height;
         }
 
