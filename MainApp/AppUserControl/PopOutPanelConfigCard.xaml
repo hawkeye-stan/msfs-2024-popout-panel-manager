@@ -309,6 +309,19 @@
                                 </TextBlock>
                             </WrapPanel>
                         </StackPanel>
+                        <ToggleButton
+                            x:Name="TglBtnEnableStreaming"
+                            Margin="20,0,0,0"
+                            VerticalAlignment="Center"
+                            IsChecked="{Binding DataItem.EnableStreaming, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                            SourceUpdated="Data_SourceUpdated"
+                            Style="{StaticResource ToggleButton}" />
+                        <TextBlock
+                            Margin="5,4,10,4"
+                            Style="{StaticResource TextBlockLabel}"
+                            ToolTip="Include this panel in LAN streaming">
+                            Stream Panel
+                        </TextBlock>
                     </WrapPanel>
                 </Border>
             </StackPanel>

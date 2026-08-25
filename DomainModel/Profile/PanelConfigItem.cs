@@ -23,6 +23,7 @@ namespace MSFSPopoutPanelManager.DomainModel.Profile
         AutoGameRefocus,
         AllowFloatPanel,
         IsHiddenOnStart,
+        EnableStreaming,
         None
     }
 }

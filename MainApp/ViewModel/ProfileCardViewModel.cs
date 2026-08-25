@@ -17,6 +17,7 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
         private readonly PanelSourceOrchestrator _panelSourceOrchestrator;
         private readonly PanelConfigurationOrchestrator _panelConfigurationOrchestrator;
         private readonly PanelPopOutOrchestrator _panelPopOutOrchestrator;
+        private readonly StreamingOrchestrator _streamingOrchestrator;
 
         public ICommand AddProfileCommand { get; }
 
@@ -38,6 +39,12 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
 
         public ICommand IncludeInGamePanelUpdatedCommand { get; }
 
+        public ICommand ToggleStreamingCommand { get; }
+
+        public ICommand OpenStreamIndexCommand { get; }
+
+        public string StreamIndexUrl => _streamingOrchestrator.GetIndexUrl();
+
         public ICommand RefocusDisplayUpdatedCommand { get; }
 
         public ICommand AddNumPadUpdatedCommand { get; }
@@ -52,12 +59,13 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
         
         public event EventHandler OnProfileSelected;
 
-        public ProfileCardViewModel(SharedStorage sharedStorage, ProfileOrchestrator profileOrchestrator, PanelSourceOrchestrator panelSourceOrchestrator, PanelConfigurationOrchestrator panelConfigurationOrchestrator, PanelPopOutOrchestrator panelPopOutOrchestrator) : base(sharedStorage)
+        public ProfileCardViewModel(SharedStorage sharedStorage, ProfileOrchestrator profileOrchestrator, PanelSourceOrchestrator panelSourceOrchestrator, PanelConfigurationOrchestrator panelConfigurationOrchestrator, PanelPopOutOrchestrator panelPopOutOrchestrator, StreamingOrchestrator streamingOrchestrator) : base(sharedStorage)
         {
             _profileOrchestrator = profileOrchestrator;
             _panelSourceOrchestrator = panelSourceOrchestrator;
             _panelConfigurationOrchestrator = panelConfigurationOrchestrator;
             _panelPopOutOrchestrator = panelPopOutOrchestrator;
+            _streamingOrchestrator = streamingOrchestrator;
 
             AddProfileCommand = new DelegateCommand(OnAddProfile, () => ProfileData != null && ActiveProfile != null && !ActiveProfile.IsPopOutInProgress)
                                                                                 .ObservesProperty(() => ActiveProfile)
@@ -76,6 +84,12 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                                                                                 .ObservesProperty(() => ProfileData.IsAllowedAddAircraftBinding)
                                                                                 .ObservesProperty(() => FlightSimData.IsSimulatorStarted)
                                                                                 .ObservesProperty(() => ActiveProfile.IsPopOutInProgress);
+
+            ToggleStreamingCommand = new DelegateCommand(OnToggleStreaming, () => ProfileData != null && ActiveProfile != null && ActiveProfile.PanelConfigs.Count > 0)
+                                                                                .ObservesProperty(() => ActiveProfile)
+                                                                                .ObservesProperty(() => ActiveProfile.PanelConfigs.Count);
+
+            OpenStreamIndexCommand = new DelegateCommand(OnOpenStreamIndex);
 
             ToggleLockProfileCommand = new DelegateCommand(OnToggleLockProfile, () => ProfileData != null && ActiveProfile != null && ActiveProfile.PanelConfigs.Count > 0 && !ActiveProfile.IsPopOutInProgress)
                                                                                 .ObservesProperty(() => ActiveProfile)
@@ -157,6 +171,16 @@ namespace MSFSPopoutPanelManager.MainApp.ViewModel
                 _profileOrchestrator.AddProfileBinding(FlightSimData.AircraftName);
             else
                 _profileOrchestrator.DeleteProfileBinding(FlightSimData.AircraftName);
+        }
+
+        private void OnToggleStreaming()
+        {
+            _streamingOrchestrator.ApplyMasterToggle(AppSettingData.ApplicationSetting.StreamingSetting.IsEnabled);
+        }
+
+        private void OnOpenStreamIndex()
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(StreamIndexUrl) { UseShellExecute = true });
         }
 
         private void OnToggleLockProfile()

@@ -36,6 +36,7 @@
                 <TreeViewItem x:Name="CategoryTrackIrSettings" Header="Track IR Settings" />
                 <TreeViewItem x:Name="CategoryWindowedModeSettings" Header="Windowed Mode Settings" />
                 <TreeViewItem x:Name="ChasePlaneSettings" Header="ChasePlane Settings" />
+                <TreeViewItem x:Name="CategoryStreamingSettings" Header="Streaming Settings" />
             </TreeView>
         </ScrollViewer>
 
@@ -470,10 +471,64 @@
                         <DockPanel>
                             <ToggleButton IsChecked="{Binding AppSettingData.ApplicationSetting.ChasePlaneSetting.IsEnabled, Mode=TwoWay}" Style="{StaticResource ToggleButton}" />
                             <TextBlock Style="{StaticResource TextBlockLabel}">
-                                 Enable use of ChasePlane camera view. This setting will apply to all aircraft profiles. You will need to edit panel source for all existing profiles to realign the location of each panel once this setthing is turned on. Re-editing panel source is needed because this step will add additional ChasePlane information to aircraft profiles. 
+                                 Enable use of ChasePlane camera view. This setting will apply to all aircraft profiles. You will need to edit panel source for all existing profiles to realign the location of each panel once this setthing is turned on. Re-editing panel source is needed because this step will add additional ChasePlane information to aircraft profiles.
                             </TextBlock>
                         </DockPanel>
                     </StackPanel>
+                </StackPanel>
+
+                <!--  Streaming Settings  -->
+                <StackPanel Orientation="Vertical" Visibility="{Binding ElementName=CategoryStreamingSettings, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                    <StackPanel Style="{StaticResource SectionHeader}">
+                        <TextBlock Style="{StaticResource TextBlockHeading}">HTTP Port</TextBlock>
+                        <Line />
+                        <DockPanel>
+                            <TextBox
+                                Width="90"
+                                Height="24"
+                                Padding="4,2"
+                                Style="{StaticResource TextBox}"
+                                Text="{Binding AppSettingData.ApplicationSetting.StreamingSetting.Port, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+                            <TextBlock
+                                Width="630"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource TextBlockLabel}">
+                                Port the HTTP streaming server listens on. Change this if port 8080 is already in use. Takes effect after restarting the application.
+                            </TextBlock>
+                        </DockPanel>
+                    </StackPanel>
+                    <StackPanel Style="{StaticResource SectionHeader}">
+                        <TextBlock Style="{StaticResource TextBlockHeading}">Host / Address Override</TextBlock>
+                        <Line />
+                        <DockPanel>
+                            <TextBox
+                                Width="200"
+                                Height="24"
+                                Padding="4,2"
+                                Style="{StaticResource TextBox}"
+                                Text="{Binding AppSettingData.ApplicationSetting.StreamingSetting.HostOverride, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+                            <TextBlock
+                                Width="520"
+                                Margin="10,0,0,0"
+                                Style="{StaticResource TextBlockLabel}">
+                                Hostname or IP address used in panel stream URLs. Leave blank to detect automatically.
+                            </TextBlock>
+                        </DockPanel>
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource TextBlockHeading}">Security Notice</TextBlock>
+                    <Line />
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        Style="{StaticResource TextBlockLabel}"
+                        TextWrapping="Wrap">
+                         Panel streaming has no authentication, so anyone who can reach this port can view the panel streams.
+                    </TextBlock>
+                    <TextBlock
+                        Margin="0,4,0,12"
+                        Style="{StaticResource TextBlockLabel}"
+                        TextWrapping="Wrap">
+                         Use streaming feature only on a trusted home or office network.
+                    </TextBlock>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
