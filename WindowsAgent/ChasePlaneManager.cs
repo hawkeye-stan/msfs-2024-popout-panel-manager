@@ -130,7 +130,7 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                         break;
 
                     var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                    Debug.WriteLine(message);
+                    //Debug.WriteLine(message);
 
                     if (!IsJson(message))
                         continue;

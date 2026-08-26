@@ -1,46 +1,57 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
-using WindowsInput;
 
 namespace MSFSPopoutPanelManager.WindowsAgent
 {
-    public class InputEmulationManager
+    public static class InputEmulationManager
     {
-        private const uint VK_LMENU = 0xA4;
-        private const uint VK_ENT = 0x0D;
-        private const uint KEY_0 = 0x30;
+        private const ushort VirtualKeyMenu = 0xA4;
+        private const ushort VirtualKeyEnter = 0x0D;
+        private const ushort VirtualKeyZero = 0x30;
+        private const ushort VirtualKeyLeftControl = 0xA2;
+        private const ushort VirtualKeyRightControl = 0xA3;
+        private const ushort VirtualKeyRightMenu = 0xA5;
 
-        private const uint NUMPAD_0 = 0x60;
-        private const uint NUMPAD_1 = 0x61;
-        private const uint NUMPAD_2 = 0x62;
-        private const uint NUMPAD_3 = 0x63;
-        private const uint NUMPAD_4 = 0x64;
-        private const uint NUMPAD_5 = 0x65;
-        private const uint NUMPAD_6 = 0x66;
-        private const uint NUMPAD_7 = 0x67;
-        private const uint NUMPAD_8 = 0x68;
-        private const uint NUMPAD_9 = 0x69;
-        private const uint NUMPAD_DECIMAL = 0x6E;
-        private const uint NUMPAD_ADD = 0x6B;
-        private const uint NUMPAD_SUBTRACT = 0x6D;
-        private const uint NUMPAD_DIVIDE = 0x6F;
-        private const uint NUMPAD_MULTIPLY = 0x6A;
-        private const uint NUMPAD_ENTER = 0x0D;
-        private const uint NUMPAD_TAB = 0x09;
+        private const int FocusDelayMilliseconds = 200;
+        private const int ClickDownDelayMilliseconds = 200;
+        private const int ClickReleaseDelayMilliseconds = 200;
+        private const int PopOutModifierDelayMilliseconds = 500;
+        private const int ModifierReleaseDelayMilliseconds = 100;
+        private const int CustomViewKeyDelayMilliseconds = 200;
+        private const int MoveWindowDelayMilliseconds = 1000;
 
-        private static readonly InputSimulator InputSimulator = new ();
+        private static readonly IReadOnlyDictionary<string, ushort> NumPadKeys =
+            new Dictionary<string, ushort>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["0"] = 0x60,
+                ["1"] = 0x61,
+                ["2"] = 0x62,
+                ["3"] = 0x63,
+                ["4"] = 0x64,
+                ["5"] = 0x65,
+                ["6"] = 0x66,
+                ["7"] = 0x67,
+                ["8"] = 0x68,
+                ["9"] = 0x69,
+                ["DECIMAL"] = 0x6E,
+                ["ADD"] = 0x6B,
+                ["SUBTRACT"] = 0x6D,
+                ["DIVIDE"] = 0x6F,
+                ["MULTIPLY"] = 0x6A,
+                ["ENTER"] = VirtualKeyEnter,
+                ["TAB"] = 0x09
+            };
 
         public static void LeftClick(int x, int y)
         {
             PInvoke.SetCursorPos(x, y);
-            Thread.Sleep(300);
+            Thread.Sleep(FocusDelayMilliseconds + ClickDownDelayMilliseconds / 2);
 
-            PInvoke.SendMouseInput(MouseInputFlags.LeftDown, x, y);
-            Thread.Sleep(200);
-            PInvoke.SendMouseInput(MouseInputFlags.LeftUp, x, y);
-            Thread.Sleep(200);
+            SendLeftClick(x, y);
+            Thread.Sleep(ClickReleaseDelayMilliseconds);
         }
 
         public static void PrepareToPopOutPanel(int x, int y, bool isTurboMode)
@@ -50,9 +61,10 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
             MoveAppWindowFromLeftClickPoint(x, y);
 
-            LeftClick(x, y);  // Left click outside the circle area to focus game window
+            // Click outside the source marker to focus the simulator.
+            LeftClick(x, y);
 
-            // Force cursor reset and focus 
+            // Restore the source coordinates after focus changes.
             PInvoke.SetCursorPos(x, y);
             Thread.Sleep(isTurboMode ? 50 : 500);
         }
@@ -61,35 +73,22 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         {
             if (useSecondaryKeys)
             {
-                InputSimulator.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.LCONTROL);
-                InputSimulator.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.RCONTROL);
+                SendKeyDown(VirtualKeyLeftControl);
+                SendKeyDown(VirtualKeyRightControl, KeyboardInputFlags.ExtendedKey);
 
-                Thread.Sleep(isTurbo ? 0: 500);
+                Thread.Sleep(isTurbo ? 0 : PopOutModifierDelayMilliseconds);
+                SendLeftClick(x, y);
 
-                PInvoke.SendMouseInput(MouseInputFlags.LeftDown, x, y);
-                Thread.Sleep(200);
-                PInvoke.SendMouseInput(MouseInputFlags.LeftUp, x, y);
-
-                InputSimulator.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.RCONTROL);
-                InputSimulator.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.LCONTROL);
-                Thread.Sleep(100);
-                InputSimulator.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.RCONTROL);     // resend to make sure Ctrl key is up
-                InputSimulator.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.LCONTROL);
+                ReleaseModifiers(
+                    (VirtualKeyRightControl, KeyboardInputFlags.ExtendedKey),
+                    (VirtualKeyLeftControl, KeyboardInputFlags.KeyDown));
+                return;
             }
-            else
-            {
-                InputSimulator.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.RMENU);
 
-                Thread.Sleep(isTurbo ? 0 : 500);
-
-                PInvoke.SendMouseInput(MouseInputFlags.LeftDown, x, y);
-                Thread.Sleep(200);
-                PInvoke.SendMouseInput(MouseInputFlags.LeftUp, x, y);
-
-                InputSimulator.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.RMENU);
-                Thread.Sleep(100);
-                InputSimulator.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.RMENU);        // resend to make sure Alt key is up
-            }
+            SendKeyDown(VirtualKeyRightMenu, KeyboardInputFlags.ExtendedKey);
+            Thread.Sleep(isTurbo ? 0 : PopOutModifierDelayMilliseconds);
+            SendLeftClick(x, y);
+            ReleaseModifiers((VirtualKeyRightMenu, KeyboardInputFlags.ExtendedKey));
         }
 
         public static void LoadCustomView(string keyBinding)
@@ -99,125 +98,102 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             if (WindowProcessManager.SimulatorProcess == null)
                 return;
 
-            var hWnd = WindowProcessManager.SimulatorProcess.Handle;
-            
-            PInvoke.SetForegroundWindow(hWnd);
-            Thread.Sleep(200);
+            var simulatorHandle = WindowProcessManager.SimulatorProcess.Handle;
+            PInvoke.SetForegroundWindow(simulatorHandle);
+            Thread.Sleep(FocusDelayMilliseconds);
 
-            var customViewKey = (uint)(Convert.ToInt32(keyBinding) + KEY_0);
-
-            // Then load view using Alt-0
-            PInvoke.SendKeyboardInput((ushort)VK_LMENU, KeyboardInputFlags.KeyDown);
-            PInvoke.SendKeyboardInput((ushort)customViewKey, KeyboardInputFlags.KeyDown);
-            Thread.Sleep(200);
-            PInvoke.SendKeyboardInput((ushort)customViewKey, KeyboardInputFlags.KeyUp);
-            PInvoke.SendKeyboardInput((ushort)VK_LMENU, KeyboardInputFlags.KeyUp);
-            Thread.Sleep(200);
+            var customViewKey = (ushort)(Convert.ToInt32(keyBinding) + VirtualKeyZero);
+            SendKeyDown(VirtualKeyMenu);
+            SendKeyDown(customViewKey);
+            Thread.Sleep(CustomViewKeyDelayMilliseconds);
+            SendKeyUp(customViewKey);
+            SendKeyUp(VirtualKeyMenu);
+            Thread.Sleep(CustomViewKeyDelayMilliseconds);
         }
 
-        public static void ToggleFullScreenPanel(IntPtr hWnd)
+        public static void ToggleFullScreenPanel(IntPtr windowHandle)
         {
-            PInvoke.SetForegroundWindow(hWnd);
-            Thread.Sleep(200);
+            PInvoke.SetForegroundWindow(windowHandle);
+            Thread.Sleep(FocusDelayMilliseconds);
 
-            PInvoke.SetFocus(hWnd);
+            PInvoke.SetFocus(windowHandle);
             Thread.Sleep(300);
 
-            PInvoke.SendKeyboardInput((ushort)VK_LMENU, KeyboardInputFlags.KeyDown);
-            PInvoke.SendKeyboardInput((ushort)VK_ENT, KeyboardInputFlags.KeyDown);
-            Thread.Sleep(200);
-            PInvoke.SendKeyboardInput((ushort)VK_ENT, KeyboardInputFlags.KeyUp);
-            PInvoke.SendKeyboardInput((ushort)VK_LMENU, KeyboardInputFlags.KeyUp);
-            Thread.Sleep(200);
+            SendKeyDown(VirtualKeyMenu);
+            SendKeyDown(VirtualKeyEnter);
+            Thread.Sleep(CustomViewKeyDelayMilliseconds);
+            SendKeyUp(VirtualKeyEnter);
+            SendKeyUp(VirtualKeyMenu);
+            Thread.Sleep(CustomViewKeyDelayMilliseconds);
         }
 
         public static void NumPadClick(string numPadKey)
         {
-            var hWnd = WindowProcessManager.SimulatorProcess.Handle;
-            PInvoke.SetForegroundWindow(hWnd);
-            Thread.Sleep(200);
+            var simulatorHandle = WindowProcessManager.SimulatorProcess.Handle;
+            PInvoke.SetForegroundWindow(simulatorHandle);
+            Thread.Sleep(FocusDelayMilliseconds);
 
-            var key = NUMPAD_DECIMAL;
+            var key = NumPadKeys.TryGetValue(numPadKey, out var mappedKey)
+                ? mappedKey
+                : NumPadKeys["DECIMAL"];
 
-            switch (numPadKey.ToUpper())
-            {
-                case "0":
-                    key = NUMPAD_0;
-                    break;
-                case "1":
-                    key = NUMPAD_1;
-                    break;
-                case "2":
-                    key = NUMPAD_2;
-                    break;
-                case "3":
-                    key = NUMPAD_3;
-                    break;
-                case "4":
-                    key = NUMPAD_4;
-                    break;
-                case "5":
-                    key = NUMPAD_5;
-                    break;
-                case "6":
-                    key = NUMPAD_6;
-                    break;
-                case "7":
-                    key = NUMPAD_7;
-                    break;
-                case "8":
-                    key = NUMPAD_8;
-                    break;
-                case "9":
-                    key = NUMPAD_9;
-                    break;
-                case "DECIMAL":
-                    key = NUMPAD_DECIMAL;
-                    break;
-                case "ADD":
-                    key = NUMPAD_ADD;
-                    break;
-                case "SUBTRACT":
-                    key = NUMPAD_SUBTRACT;
-                    break;
-                case "DIVIDE":
-                    key = NUMPAD_DIVIDE;
-                    break;
-                case "MULTIPLY":
-                    key = NUMPAD_MULTIPLY;
-                    break;
-                case "TAB":
-                    key = NUMPAD_TAB;
-                    break;
-                case "ENTER":
-                    key = NUMPAD_ENTER;
-                    break;
-            }
+            SendKeyDown(key);
+            Thread.Sleep(CustomViewKeyDelayMilliseconds);
+            SendKeyUp(key);
+        }
 
-            PInvoke.SendKeyboardInput((ushort)key, KeyboardInputFlags.KeyDown);
-            Thread.Sleep(200);
-            PInvoke.SendKeyboardInput((ushort)key, KeyboardInputFlags.KeyUp);
+        private static void SendLeftClick(int x, int y)
+        {
+            PInvoke.SendMouseInput(MouseInputFlags.LeftDown, x, y);
+            Thread.Sleep(ClickDownDelayMilliseconds);
+            PInvoke.SendMouseInput(MouseInputFlags.LeftUp, x, y);
+        }
+
+        private static void SendKeyDown(ushort virtualKey, KeyboardInputFlags additionalFlags = KeyboardInputFlags.KeyDown)
+        {
+            PInvoke.SendKeyboardInput(virtualKey, additionalFlags);
+        }
+
+        private static void SendKeyUp(ushort virtualKey, KeyboardInputFlags additionalFlags = KeyboardInputFlags.KeyUp)
+        {
+            PInvoke.SendKeyboardInput(virtualKey, KeyboardInputFlags.KeyUp | additionalFlags);
+        }
+
+        private static void ReleaseModifiers(params (ushort VirtualKey, KeyboardInputFlags Flags)[] modifiers)
+        {
+            foreach (var modifier in modifiers)
+                SendKeyUp(modifier.VirtualKey, modifier.Flags);
+
+            Thread.Sleep(ModifierReleaseDelayMilliseconds);
+
+            foreach (var modifier in modifiers)
+                SendKeyUp(modifier.VirtualKey, modifier.Flags);
         }
 
         private static void MoveAppWindowFromLeftClickPoint(int x, int y)
         {
-            var appHandle = WindowProcessManager.AppProcess.Handle;
-            var applicationRectangle = WindowActionManager.GetWindowRectangle(appHandle);
+            var applicationHandle = WindowProcessManager.AppProcess.Handle;
+            var applicationRectangle = WindowActionManager.GetWindowRectangle(applicationHandle);
 
-            if (IsPointWithinRectangle(x, y, applicationRectangle))
-            {
-                var top = y - applicationRectangle.Height - 50;
-                WindowActionManager.MoveWindow(appHandle, applicationRectangle.X, top, applicationRectangle.Width, applicationRectangle.Height);
-                Thread.Sleep(1000);
-            }
+            if (!IsPointWithinRectangle(x, y, applicationRectangle))
+                return;
+
+            var top = y - applicationRectangle.Height - 50;
+            WindowActionManager.MoveWindow(
+                applicationHandle,
+                applicationRectangle.X,
+                top,
+                applicationRectangle.Width,
+                applicationRectangle.Height);
+            Thread.Sleep(MoveWindowDelayMilliseconds);
         }
 
-        private static bool IsPointWithinRectangle(int x, int y, Rectangle rect)
+        private static bool IsPointWithinRectangle(int x, int y, Rectangle rectangle)
         {
-            var rightEdge = rect.X + rect.Width;
-            var bottomEdge = rect.Y + rect.Height;
-
-            return x >= rect.X && x <= rightEdge && y >= rect.Y && y <= bottomEdge;
+            return x >= rectangle.Left
+                   && x <= rectangle.Right
+                   && y >= rectangle.Top
+                   && y <= rectangle.Bottom;
         }
     }
 }
