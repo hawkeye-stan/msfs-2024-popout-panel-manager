@@ -29,8 +29,6 @@ namespace MSFSPopoutPanelManager.WindowsAgent
         private const uint WM_LBUTTONUP = 0x0202;
         private const uint WM_RBUTTONDOWN = 0x0204;
         private const uint WM_RBUTTONUP = 0x0205;
-        private const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
-        private const uint MOUSEEVENTF_LEFTUP = 0x0004;
 
         private const int MouseClickDelay = 15;
         private static Queue<Tuple<int, int>> _queue = new Queue<Tuple<int, int>>();
@@ -122,10 +120,10 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                         { 
                             _queue.Enqueue(new Tuple<int, int>(info.pt.X, info.pt.Y));
 
-                            PInvoke.mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0); ; // focus window
+                            PInvoke.SendMouseInput(MouseInputFlags.LeftUp); ; // focus window
                             Thread.Sleep(ApplicationSetting.TouchSetting.TouchDownUpDelay + MouseClickDelay);
 
-                            PInvoke.mouse_event(MOUSEEVENTF_LEFTDOWN, info.pt.X, info.pt.Y, 0, 0);
+                            PInvoke.SendMouseInput(MouseInputFlags.LeftDown, info.pt.X, info.pt.Y);
                             Thread.Sleep(ApplicationSetting.TouchSetting.TouchDownUpDelay + MouseClickDelay);
                         }
                     });
@@ -162,10 +160,10 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
                                 Debug.WriteLine($"UX: {_coor.Item1}, UY: {_coor.Item2}");
 
-                                PInvoke.mouse_event(MOUSEEVENTF_LEFTUP, _coor.Item1, _coor.Item2, 0, 0);
+                                PInvoke.SendMouseInput(MouseInputFlags.LeftUp, _coor.Item1, _coor.Item2);
                                 Thread.Sleep(ApplicationSetting.TouchSetting.TouchDownUpDelay + MouseClickDelay);
 
-                                PInvoke.mouse_event(MOUSEEVENTF_LEFTUP, _coor.Item1, _coor.Item2, 0, 0);
+                                PInvoke.SendMouseInput(MouseInputFlags.LeftUp, _coor.Item1, _coor.Item2);
 
                                 Debug.WriteLine("-------------------------");
                             }

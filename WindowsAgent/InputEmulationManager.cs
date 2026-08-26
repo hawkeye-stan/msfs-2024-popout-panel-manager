@@ -8,12 +8,6 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 {
     public class InputEmulationManager
     {
-        private const uint MOUSEEVENTF_LEFTDOWN = 0x02;
-        private const uint MOUSEEVENTF_LEFTUP = 0x04;
-        private const uint MOUSEEVENTF_RIGHTDOWN = 0x08;
-        private const uint MOUSEEVENTF_RIGHTUP = 0x10;
-        private const uint KEYEVENTF_KEYDOWN = 0x0;
-        private const uint KEYEVENTF_KEYUP = 0x2;
         private const uint VK_LMENU = 0xA4;
         private const uint VK_ENT = 0x0D;
         private const uint KEY_0 = 0x30;
@@ -43,9 +37,9 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             PInvoke.SetCursorPos(x, y);
             Thread.Sleep(300);
 
-            PInvoke.mouse_event(MOUSEEVENTF_LEFTDOWN, x, y, 0, 0);
+            PInvoke.SendMouseInput(MouseInputFlags.LeftDown, x, y);
             Thread.Sleep(200);
-            PInvoke.mouse_event(MOUSEEVENTF_LEFTUP, x, y, 0, 0);
+            PInvoke.SendMouseInput(MouseInputFlags.LeftUp, x, y);
             Thread.Sleep(200);
         }
 
@@ -72,9 +66,9 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
                 Thread.Sleep(isTurbo ? 0: 500);
 
-                PInvoke.mouse_event(MOUSEEVENTF_LEFTDOWN, x, y, 0, 0);
+                PInvoke.SendMouseInput(MouseInputFlags.LeftDown, x, y);
                 Thread.Sleep(200);
-                PInvoke.mouse_event(MOUSEEVENTF_LEFTUP, x, y, 0, 0);
+                PInvoke.SendMouseInput(MouseInputFlags.LeftUp, x, y);
 
                 InputSimulator.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.RCONTROL);
                 InputSimulator.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.LCONTROL);
@@ -88,9 +82,9 @@ namespace MSFSPopoutPanelManager.WindowsAgent
 
                 Thread.Sleep(isTurbo ? 0 : 500);
 
-                PInvoke.mouse_event(MOUSEEVENTF_LEFTDOWN, x, y, 0, 0);
+                PInvoke.SendMouseInput(MouseInputFlags.LeftDown, x, y);
                 Thread.Sleep(200);
-                PInvoke.mouse_event(MOUSEEVENTF_LEFTUP, x, y, 0, 0);
+                PInvoke.SendMouseInput(MouseInputFlags.LeftUp, x, y);
 
                 InputSimulator.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.RMENU);
                 Thread.Sleep(100);
@@ -113,11 +107,11 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             var customViewKey = (uint)(Convert.ToInt32(keyBinding) + KEY_0);
 
             // Then load view using Alt-0
-            PInvoke.keybd_event(Convert.ToByte(VK_LMENU), 0, KEYEVENTF_KEYDOWN, 0);
-            PInvoke.keybd_event(Convert.ToByte(customViewKey), 0, KEYEVENTF_KEYDOWN, 0);
+            PInvoke.SendKeyboardInput((ushort)VK_LMENU, KeyboardInputFlags.KeyDown);
+            PInvoke.SendKeyboardInput((ushort)customViewKey, KeyboardInputFlags.KeyDown);
             Thread.Sleep(200);
-            PInvoke.keybd_event(Convert.ToByte(customViewKey), 0, KEYEVENTF_KEYUP, 0);
-            PInvoke.keybd_event(Convert.ToByte(VK_LMENU), 0, KEYEVENTF_KEYUP, 0);
+            PInvoke.SendKeyboardInput((ushort)customViewKey, KeyboardInputFlags.KeyUp);
+            PInvoke.SendKeyboardInput((ushort)VK_LMENU, KeyboardInputFlags.KeyUp);
             Thread.Sleep(200);
         }
 
@@ -129,11 +123,11 @@ namespace MSFSPopoutPanelManager.WindowsAgent
             PInvoke.SetFocus(hWnd);
             Thread.Sleep(300);
 
-            PInvoke.keybd_event(Convert.ToByte(VK_LMENU), 0, KEYEVENTF_KEYDOWN, 0);
-            PInvoke.keybd_event(Convert.ToByte(VK_ENT), 0, KEYEVENTF_KEYDOWN, 0);
+            PInvoke.SendKeyboardInput((ushort)VK_LMENU, KeyboardInputFlags.KeyDown);
+            PInvoke.SendKeyboardInput((ushort)VK_ENT, KeyboardInputFlags.KeyDown);
             Thread.Sleep(200);
-            PInvoke.keybd_event(Convert.ToByte(VK_ENT), 0, KEYEVENTF_KEYUP, 0);
-            PInvoke.keybd_event(Convert.ToByte(VK_LMENU), 0, KEYEVENTF_KEYUP, 0);
+            PInvoke.SendKeyboardInput((ushort)VK_ENT, KeyboardInputFlags.KeyUp);
+            PInvoke.SendKeyboardInput((ushort)VK_LMENU, KeyboardInputFlags.KeyUp);
             Thread.Sleep(200);
         }
 
@@ -200,9 +194,9 @@ namespace MSFSPopoutPanelManager.WindowsAgent
                     break;
             }
 
-            PInvoke.keybd_event(Convert.ToByte(key), 0, KEYEVENTF_KEYDOWN, 0);
+            PInvoke.SendKeyboardInput((ushort)key, KeyboardInputFlags.KeyDown);
             Thread.Sleep(200);
-            PInvoke.keybd_event(Convert.ToByte(key), 0, KEYEVENTF_KEYUP, 0);
+            PInvoke.SendKeyboardInput((ushort)key, KeyboardInputFlags.KeyUp);
         }
 
         private static void MoveAppWindowFromLeftClickPoint(int x, int y)
